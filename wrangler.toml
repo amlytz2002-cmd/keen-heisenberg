@@ -1,0 +1,6 @@
+name = "pharmiq-app"
+compatibility_date = "2024-03-01"
+pages_build_output_dir = "dist"
+
+[vars]
+SUPABASE_URL = "https://ibyntbynqkpkkpeoudzv.supabase.co"

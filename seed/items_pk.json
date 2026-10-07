@@ -1,0 +1,77 @@
+[
+  {
+    "slug": "crcl-obese-female-ceftazidime",
+    "pillar": "pk_calc",
+    "stem_tr": "64 yaşında kadın hasta (Boy: 160 cm, Ağırlık: 85 kg, SCr: 1.4 mg/dL) için Cockcroft-Gault yöntemiyle CrCl hesaplayınız.",
+    "correct_key": "41.93",
+    "tolerance_pct": 2.0,
+    "source_ref": "Biruni Biyofarmasötik Ders Notları, Slayt 14",
+    "distractors": [
+      {
+        "option_key": "A",
+        "text_tr": "49.33 mL/dk",
+        "misconception_tag": "MISSED_FEMALE_FACTOR_0_85"
+      },
+      {
+        "option_key": "B",
+        "text_tr": "54.46 mL/dk",
+        "misconception_tag": "USED_TBW_INSTEAD_OF_ADJ_OR_IBW"
+      },
+      {
+        "option_key": "C",
+        "text_tr": "33.56 mL/dk",
+        "misconception_tag": "USED_IBW_WITHOUT_OBESITY_ADJUSTMENT"
+      }
+    ]
+  },
+  {
+    "slug": "pk-ke-half-life-gentamicin",
+    "pillar": "pk_calc",
+    "stem_tr": "Tek doz gentamisin sonrası plazma konsantrasyonu 2. saatte 8 mg/L, 6. saatte 2 mg/L ölçülmüştür. Bu hastada eliminasyon yarı ömrü (t1/2) kaç saattir?",
+    "correct_key": "2.00",
+    "tolerance_pct": 1.0,
+    "source_ref": "Biruni Biyofarmasötik Ders Notları, Slayt 22",
+    "distractors": [
+      {
+        "option_key": "A",
+        "text_tr": "4.00 saat",
+        "misconception_tag": "DELTA_T_DIVIDED_BY_RATIO_ERROR"
+      },
+      {
+        "option_key": "B",
+        "text_tr": "1.38 saat",
+        "misconception_tag": "DIVIDED_BY_LN2_INSTEAD_OF_MULTIPLIED"
+      },
+      {
+        "option_key": "C",
+        "text_tr": "0.34 saat",
+        "misconception_tag": "CONFUSED_KE_WITH_HALF_LIFE"
+      }
+    ]
+  },
+  {
+    "slug": "pk-vd-loading-dose-theophylline",
+    "pillar": "pk_calc",
+    "stem_tr": "Dağılım hacmi Vd = 35 L olan bir hastada hedeflenen teofilin kararlı durum tepe konsantrasyonu 15 mg/L'dir. Teofilin anhidr (S = 1.0) için gereken IV yükleme dozu nedir?",
+    "correct_key": "525.00",
+    "tolerance_pct": 1.0,
+    "source_ref": "Biruni Biyofarmasötik Ders Notları, Slayt 31",
+    "distractors": [
+      {
+        "option_key": "A",
+        "text_tr": "656.25 mg",
+        "misconception_tag": "ERRONEOUSLY_DIVIDED_BY_AMINOPHYLLINE_SALT_FACTOR"
+      },
+      {
+        "option_key": "B",
+        "text_tr": "2.33 mg",
+        "misconception_tag": "INVERTED_VD_EQUATION"
+      },
+      {
+        "option_key": "C",
+        "text_tr": "420.00 mg",
+        "misconception_tag": "MISAPPLIED_CLEARANCE_PRODUCT"
+      }
+    ]
+  }
+]
