@@ -4,5 +4,6 @@ dist/
 .DS_Store
 *.local
 .env
+.dev.vars
 .env.*
 !.env.example

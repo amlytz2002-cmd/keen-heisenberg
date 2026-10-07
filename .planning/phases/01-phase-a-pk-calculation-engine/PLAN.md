@@ -1,21 +1,25 @@
-# Phase A Plan: PK & Calculation Engine Proof
+# Phase A Plan: PK & Calculation Engine Proof (Updated with OpenRouter AI Infrastructure)
 
 ## Objective
-Establish the deterministic foundation of PharmIQ with:
-1. Supabase schema migrations, RLS policies, and seed dataset.
-2. Deterministic TypeScript Cockcroft-Gault derivation engine with 3 atomic intermediate failure nodes.
-3. Socratic Finite State Machine with strict JSON schema, turn budget ($N \le 4$), and clinical guardrails.
-4. Mobile-first Ant Design calculation drill workspace with intermediate scratchpad and step-level diagnosis drawer.
-5. Automated Vitest suites and Cloudflare Pages/Worker deployment readiness verification.
+Establish the deterministic and AI foundation of PharmIQ with:
+1. **OpenRouter AI Infrastructure:** Free-tier LLMs (`meta-llama/llama-3.3-70b-instruct:free`, `google/gemini-2.0-flash-exp:free`) and embeddings via a single drop-in `.env` key (`OPENROUTER_API_KEY`).
+2. **Three-Tier Resilient Tutor Runtime:**
+   - Tier 1: Cloudflare Worker `/api/tutor/turn` gateway with OpenRouter streaming/JSON parsing and clinical redirection guardrails.
+   - Tier 2: Direct client-side OpenRouter fallback when running standalone PWA without worker.
+   - Tier 3: Deterministic clinical preceptor fallback conforming to `SocraticTurnSchema` (3-sentence rule, `reveals_answer: false`).
+3. **Deterministic Math Foundation:** TypeScript Cockcroft-Gault DAG derivation engine with 3 atomic intermediate failure nodes (`ibw_node`, `weight_selection_node`, `crcl_final_node`) and distractor misconception tagging.
+4. **Pedagogical Telemetry:** Supabase database schema with Row Level Security, student attempts, hypercorrection error events, and Next-Time Rule generation.
+5. **Mobile-First Workspace:** Ant Design Web (antd v5) responsive mobile workspace with scratchpad, step diagnosis drawer, preceptor dialogue chat, and Biruni University pilot branding.
 
 ## Execution Matrix & Quality Gates
-- **Gate 1 (Agent 1):** Supabase DB initialized, RLS active, seed items loaded, TypeScript types generated.
-- **Gate 2 (Agent 2):** Deterministic engine + Vitest passes with 100% test coverage on edge cases (obese female, normal male, distractor tagging).
-- **Gate 3 (Agent 3):** AntD mobile drill UI renders scratchpad inputs, connects to deterministic engine, logs attempts, and triggers step-level diagnostic drawer.
-- **Gate 4 (Agent 4):** Production build passes cleanly (`npm run build`), dry-run deployment succeeds (`npx wrangler pages deploy dist/ --dry-run`).
+- **Gate 1 (Database & Auth):** Supabase schema initialized, RLS active, seed items loaded, TypeScript types generated, one-click demo student login wired.
+- **Gate 2 (Deterministic Engine & Socratic FSM):** Vitest test suite achieves 100% pass rate (edge cases: obese female, normal male, underweight, distractor tagging, and Socratic guardrails).
+- **Gate 3 (UI & AI Preceptor):** AntD mobile drill UI renders scratchpad inputs, connects to deterministic engine, logs attempts to Supabase, interfaces with OpenRouter Socratic preceptor, and captures Next-Time rules on hypercorrection.
+- **Gate 4 (Production Build):** `tsc --noEmit` and `npm run build` pass cleanly with static assets in `dist/`.
 
-## Decisions Locked (from /grill-me session)
-1. **UI Framework:** Standard Ant Design Web (antd v5.24.3) constrained to mobile width (480px) matching Section 8.
-2. **DAG Scope:** Cockcroft-Gault multi-step DAG is the primary derivation engine; other seed PK items run as distractor-tagged diagnostic questions with exact numeric checking.
-3. **Socratic Runtime:** Dual-mode tutor client supporting Cloudflare Worker `/api/tutor/turn` with local deterministic preceptor fallback for offline/test environments.
-4. **Auth & Sessions:** Supabase Auth with quick Demo Student session for frictionless testing while respecting RLS.
+## OpenRouter AI Configuration Reference
+- **API Endpoint:** `https://openrouter.ai/api/v1/chat/completions`
+- **Default Free Model:** `meta-llama/llama-3.3-70b-instruct:free`
+- **Fallback Free Model:** `google/gemini-2.0-flash-exp:free`
+- **Embedding Model:** `text-embedding-3-small`
+- **Drop-in Config:** `.env` and `.dev.vars`
