@@ -1,14 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import { ConfigProvider, Button, Tag, Typography } from 'antd';
-import { UserOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { ConfigProvider, Button, Tag, Typography, Segmented } from 'antd';
+import { UserOutlined, CheckCircleOutlined, CalculatorOutlined, BugOutlined, BulbOutlined, TrophyOutlined } from '@ant-design/icons';
 import { CalculationDrill } from './app/drill/CalculationDrill';
+import { ErrorClinic, ErrorEventRecord } from './app/clinic/ErrorClinic';
+import { NextTimeRulesView, NextTimeRuleItem } from './app/rules/NextTimeRulesView';
+import { MasteryView, ConceptMasteryRecord } from './app/mastery/MasteryView';
 import { ensureDemoSession, supabase } from './lib/supabaseClient';
 
 const { Text } = Typography;
 
 export const App: React.FC = () => {
+  const [currentTab, setCurrentTab] = useState<'drill' | 'clinic' | 'rules' | 'mastery'>('drill');
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(false);
+
+  // App-level state buffers (synced with Supabase and local drills)
+  const [errors, setErrors] = useState<ErrorEventRecord[]>([
+    {
+      id: 'err-1',
+      concept_name: 'Cockcroft-Gault Klerens',
+      error_family: 'DAG_NODE_FAILURE',
+      misconception_tag: 'MISSED_FEMALE_FACTOR_0_85',
+      failed_node: 'crcl_final_node',
+      is_hypercorrection: true,
+      resolved: false,
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ]);
+
+  const [rules, setRules] = useState<NextTimeRuleItem[]>([
+    {
+      id: 'rule-1',
+      misconception_tag: 'MISSED_FEMALE_FACTOR_0_85',
+      rule_text_tr: 'Kadın hastalarda CrCl hesaplarken formül sonucunu daima 0.85 katsayısı ile çarpmayı unutma.',
+      times_shown: 2,
+      edited_by_user: true,
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ]);
+
+  const [concepts] = useState<ConceptMasteryRecord[]>([
+    {
+      conceptSlug: 'crcl_cockcroft_gault',
+      nameTr: 'Kreatinin Klerensi (Cockcroft-Gault)',
+      pillar: 'Biyofarmasötik & Klerens',
+      masteryScore: 0.85,
+      stabilityDays: 4.2,
+      lastReviewedDaysAgo: 0.2,
+      nextDueInDays: 3,
+    },
+    {
+      conceptSlug: 'gentamicin_elimination',
+      nameTr: 'Gentamisin Eliminasyon Hızı & Yarı Ömür',
+      pillar: '1-Kompartman İntravenöz PK',
+      masteryScore: 0.70,
+      stabilityDays: 2.1,
+      lastReviewedDaysAgo: 1.0,
+      nextDueInDays: 1,
+    },
+    {
+      conceptSlug: 'theophylline_loading_dose',
+      nameTr: 'Teofilin Dağılım Hacmi & Yükleme Dozu',
+      pillar: 'Klinik Dozaj Rejimi',
+      masteryScore: 0.60,
+      stabilityDays: 1.5,
+      lastReviewedDaysAgo: 2.0,
+      nextDueInDays: 0,
+    },
+  ]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -27,6 +86,14 @@ export const App: React.FC = () => {
     setAuthLoading(false);
   };
 
+  const handleNewError = (err: ErrorEventRecord) => {
+    setErrors((prev) => [err, ...prev]);
+  };
+
+  const handleNewRule = (rule: NextTimeRuleItem) => {
+    setRules((prev) => [rule, ...prev]);
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -37,7 +104,7 @@ export const App: React.FC = () => {
         },
       }}
     >
-      <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
+      <div style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: 32 }}>
         {/* Top Pilot Navigation Bar */}
         <header
           style={{
@@ -88,9 +155,33 @@ export const App: React.FC = () => {
           </div>
         </header>
 
-        {/* Main Calculation Drill Screen */}
+        {/* View Switcher Tabs (Segmented) */}
+        <div style={{ maxWidth: 480, margin: '12px auto 0 auto', padding: '0 12px' }}>
+          <Segmented
+            block
+            value={currentTab}
+            onChange={(val) => setCurrentTab(val as any)}
+            options={[
+              { label: 'Görev', value: 'drill', icon: <CalculatorOutlined /> },
+              { label: 'Klinik', value: 'clinic', icon: <BugOutlined /> },
+              { label: 'Kurallarım', value: 'rules', icon: <BulbOutlined /> },
+              { label: 'Ustalık', value: 'mastery', icon: <TrophyOutlined /> },
+            ]}
+            style={{ background: '#E2E8F0', borderRadius: 8, padding: 3 }}
+          />
+        </div>
+
+        {/* Main Content Area */}
         <main>
-          <CalculationDrill />
+          {currentTab === 'drill' && (
+            <CalculationDrill
+              onErrorLogged={handleNewError}
+              onRuleLogged={handleNewRule}
+            />
+          )}
+          {currentTab === 'clinic' && <ErrorClinic localErrors={errors} />}
+          {currentTab === 'rules' && <NextTimeRulesView localRules={rules} />}
+          {currentTab === 'mastery' && <MasteryView concepts={concepts} />}
         </main>
       </div>
     </ConfigProvider>
