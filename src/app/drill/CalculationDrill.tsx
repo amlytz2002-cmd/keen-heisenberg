@@ -5,7 +5,7 @@ import { CockcroftGaultEngine, PatientContext } from '../../lib/engines/cockcrof
 import { GentamicinEngine } from '../../lib/engines/gentamicin';
 import { TheophyllineEngine } from '../../lib/engines/theophylline';
 import { BaseEvaluationNode } from '../../lib/engines/types';
-import { scheduleNextReview } from '../../lib/engines/fsrs';
+import { recordAttemptAndTelemetry } from '../../lib/telemetry';
 import { requestTutorTurn } from '../../lib/tutorClient';
 import { SocraticTurn } from '../../worker/socraticFSM';
 import { supabase } from '../../lib/supabaseClient';
@@ -91,20 +91,45 @@ export const CalculationDrill: React.FC<CalculationDrillProps> = ({ onErrorLogge
 
     setEvalResults(results);
 
-    // FSRS Spaced Repetition calculation
-    const schedule = scheduleNextReview(
-      { stability: 1.0, difficulty: 5.0 },
-      { isCorrect: isAllCorrect, confidence }
-    );
-    setFsrsResult({
-      stability: schedule.stability,
-      intervalDays: schedule.intervalDays,
+    const firstFailed = results.find((r) => !r.isCorrect);
+
+    const activeCaseSlug =
+      activeCaseIdx === 0
+        ? 'crcl-obese-female-ceftazidime'
+        : activeCaseIdx === 1
+        ? 'pk-ke-half-life-gentamicin'
+        : 'pk-vd-loading-dose-theophylline';
+
+    const activeConceptId =
+      activeCaseIdx === 0
+        ? 'cockcroft-gault-crcl'
+        : activeCaseIdx === 1
+        ? 'gentamicin-elimination'
+        : 'theophylline-loading-dose';
+
+    const scratchpad =
+      activeCaseIdx === 0 ? stepsCase1 : activeCaseIdx === 1 ? stepsCase2 : stepsCase3;
+
+    // FSRS Spaced Repetition calculation & Supabase telemetry persistence
+    const telemetryResult = await recordAttemptAndTelemetry({
+      itemId: activeCaseSlug,
+      conceptId: activeConceptId,
+      confidence,
+      isCorrect: isAllCorrect,
+      timeSpentMs: 4000,
+      scratchpadData: scratchpad as Record<string, number>,
+      primaryMisconceptionTag: firstFailed?.misconceptionTag,
+      firstFailingNodeId: firstFailed ? String(firstFailed.nodeId) : undefined,
     });
 
-    const hyper = schedule.isHypercorrection;
+    setFsrsResult({
+      stability: telemetryResult.nextSchedule.stability,
+      intervalDays: telemetryResult.nextSchedule.intervalDays,
+    });
+
+    const hyper = telemetryResult.nextSchedule.isHypercorrection;
     setIsHypercorrection(hyper);
 
-    const firstFailed = results.find((r) => !r.isCorrect);
     if (firstFailed && firstFailed.misconceptionTag) {
       setActiveMisconception(firstFailed.misconceptionTag);
       setTurnCount(1);
@@ -147,24 +172,6 @@ export const CalculationDrill: React.FC<CalculationDrillProps> = ({ onErrorLogge
     } else {
       setSocraticTurns([]);
       setActiveMisconception('');
-    }
-
-    // Persist to Supabase if session active
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await supabase.from('attempts').insert({
-          user_id: session.user.id,
-          submitted_answer: JSON.stringify(activeCaseIdx === 0 ? stepsCase1 : activeCaseIdx === 1 ? stepsCase2 : stepsCase3),
-          is_correct: isAllCorrect,
-          confidence,
-          latency_ms: 4000,
-          hint_level: 0,
-          assisted: false,
-        });
-      }
-    } catch (err) {
-      console.warn('Telemetry persistence:', err);
     }
 
     setDrawerOpen(true);

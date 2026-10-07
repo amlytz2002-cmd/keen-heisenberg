@@ -1,4 +1,10 @@
-import { SocraticTurnSchema, generateDeterministicFallbackTurn, SocraticRequest } from './socraticFSM';
+import {
+  SocraticTurnSchema,
+  generateDeterministicFallbackTurn,
+  SocraticRequest,
+  CLINICAL_CONSULTATION_REGEX,
+  CLINICAL_REFUSAL_TURN,
+} from './socraticFSM';
 
 export interface Env {
   OPENROUTER_API_KEY?: string;
@@ -33,22 +39,19 @@ export default {
       try {
         body = (await request.json()) as SocraticRequest;
 
-        // Redirection guardrail against live clinical consultation
-        const clinicalRegex = /(hasta|yaşında|erkek|kadın|ne vermeliyim|doz önerisi)/i;
-        if (clinicalRegex.test(body.studentInput) && body.studentInput.length > 50) {
-          return Response.json(
-            {
-              clinical_observation_tr: "PharmIQ yalnızca sentetik eğitim vakaları ve ders tekrarı için tasarlanmıştır.",
-              conceptual_pivot_tr: "Gerçek hasta verileri veya klinik tedavi kararları sistem kapsamı dışındadır.",
-              actionable_question_tr: "Bu konuyu ders slaytlarındaki teorik örnek üzerinden tekrar inceleyelim mi?",
-              current_state: "PROBE",
-              misconception_tag: null,
-              reveals_answer: false,
-            },
-            {
-              headers: { 'Access-Control-Allow-Origin': '*' },
-            }
-          );
+        // 1. Redirection guardrail against live clinical consultation
+        if (CLINICAL_CONSULTATION_REGEX.test(body.studentInput)) {
+          return Response.json(CLINICAL_REFUSAL_TURN, {
+            headers: { 'Access-Control-Allow-Origin': '*' },
+          });
+        }
+
+        // 2. Turn budget exhausted (turnCount >= 4) -> immediately return deterministic DIRECT_TEACH fallback
+        if (body.turnCount >= 4) {
+          const fallback = generateDeterministicFallbackTurn(body);
+          return Response.json(fallback, {
+            headers: { 'Access-Control-Allow-Origin': '*' },
+          });
         }
 
         const apiKey = env.OPENROUTER_API_KEY || env.OPENAI_API_KEY;
@@ -61,6 +64,7 @@ export default {
           });
         }
 
+        const currentState = (body.turnCount ?? 1) >= 3 ? 'PATCH' : 'PROBE';
         const systemPrompt = `Sen bir klinik eczacılık preseptörüsün. Konu: ${body.conceptName}.
 Öğrencinin kavram yanılgısı: ${body.misconceptionTag}.
 
@@ -72,7 +76,7 @@ GÖREV KURALLARI:
   "clinical_observation_tr": "...",
   "conceptual_pivot_tr": "...",
   "actionable_question_tr": "...",
-  "current_state": "PROBE",
+  "current_state": "${currentState}",
   "misconception_tag": "${body.misconceptionTag}",
   "reveals_answer": false
 }
