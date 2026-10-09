@@ -17,25 +17,14 @@ export async function onRequestGet(context: { params: { token: string }; env: En
   const tokenHash = await sha256(params.token);
   const serviceClient = getSupabaseServiceClient(env);
 
-  const { data: invite, error } = await serviceClient
-    .from('classroom_invitations')
-    .select(`
-      id,
-      classroom_id,
-      expires_at,
-      max_uses,
-      use_count,
-      revoked_at,
-      classrooms (
-        id,
-        name,
-        description
-      )
-    `)
-    .eq('token_hash', tokenHash)
-    .single();
+  const { data: rpcRows, error: rpcErr } = await (serviceClient.rpc as any)(
+    'get_invitation_by_token_hash',
+    { p_hash: tokenHash }
+  );
 
-  if (error || !invite) {
+  const invite = rpcRows && rpcRows.length > 0 ? rpcRows[0] : null;
+
+  if (rpcErr || !invite) {
     return errorResponse('INVALID_TOKEN', 'Invitation is invalid or has expired', 404);
   }
 
@@ -53,7 +42,11 @@ export async function onRequestGet(context: { params: { token: string }; env: En
 
   return jsonResponse({
     valid: true,
-    classroom: invite.classrooms,
+    classroom: {
+      id: invite.classroom_id,
+      name: invite.classroom_name,
+      description: invite.classroom_description,
+    },
   });
 }
 
@@ -67,75 +60,18 @@ export async function onRequestPost(context: { request: Request; params: { token
   const tokenHash = await sha256(params.token);
   const serviceClient = getSupabaseServiceClient(env);
 
-  // Validate invitation atomically
-  const { data: invite, error: fetchErr } = await serviceClient
-    .from('classroom_invitations')
-    .select('id, classroom_id, expires_at, max_uses, use_count, revoked_at')
-    .eq('token_hash', tokenHash)
-    .single();
+  const { data: result, error: rpcErr } = await (serviceClient.rpc as any)(
+    'redeem_classroom_invitation',
+    { p_hash: tokenHash, p_user_id: user.id }
+  );
 
-  if (fetchErr || !invite) {
-    return errorResponse('INVALID_TOKEN', 'Invalid invitation', 404);
+  if (rpcErr || !result) {
+    return errorResponse('REDEEM_FAILED', rpcErr?.message || 'Failed to redeem invitation', 500);
   }
 
-  if (invite.revoked_at || new Date(invite.expires_at) < new Date()) {
-    return errorResponse('EXPIRED', 'This invitation is no longer active', 410);
+  if (!result.success) {
+    return errorResponse(result.code || 'ERROR', result.message || 'Invitation redemption failed', 400);
   }
 
-  if (invite.max_uses && invite.use_count >= invite.max_uses) {
-    return errorResponse('USAGE_LIMIT', 'Invitation usage limit reached', 410);
-  }
-
-  // Check if user is already a member
-  const { data: existingMember } = await serviceClient
-    .from('classroom_members')
-    .select('id, role')
-    .eq('classroom_id', invite.classroom_id)
-    .eq('user_id', user.id)
-    .single();
-
-  if (existingMember) {
-    return jsonResponse({
-      message: 'Already enrolled in this classroom',
-      classroomId: invite.classroom_id,
-      alreadyEnrolled: true,
-    });
-  }
-
-  // Atomically increment use count
-  await serviceClient
-    .from('classroom_invitations')
-    .update({ use_count: invite.use_count + 1 })
-    .eq('id', invite.id);
-
-  // Enroll user
-  const { data: newMember, error: enrollErr } = await serviceClient
-    .from('classroom_members')
-    .insert({
-      classroom_id: invite.classroom_id,
-      user_id: user.id,
-      role: 'student',
-      status: 'active',
-    })
-    .select()
-    .single();
-
-  if (enrollErr) {
-    return errorResponse('ENROLLMENT_FAILED', enrollErr.message, 500);
-  }
-
-  // Log audit event
-  await serviceClient.from('audit_logs').insert({
-    actor_user_id: user.id,
-    action: 'CLASSROOM_JOINED',
-    target_type: 'classrooms',
-    target_id: invite.classroom_id,
-    metadata: { invitation_id: invite.id },
-  });
-
-  return jsonResponse({
-    success: true,
-    classroomId: invite.classroom_id,
-    membership: newMember,
-  });
+  return jsonResponse(result);
 }

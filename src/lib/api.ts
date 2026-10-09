@@ -34,8 +34,34 @@ export async function apiRequest<T = any>(
       headers,
     });
 
-    const json = await response.json();
-    return json as ApiResponse<T>;
+    const json = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: json.message || json.error || `Request failed with status ${response.status}`,
+        details: json,
+      };
+    }
+
+    if (json && typeof json === 'object' && 'success' in json && 'data' in json) {
+      return json as ApiResponse<T>;
+    }
+
+    // Auto-unwrap common entity list wrappers
+    let unwrappedData = json;
+    if (json && typeof json === 'object') {
+      if (Array.isArray(json.exams)) unwrappedData = json.exams;
+      else if (Array.isArray(json.classrooms)) unwrappedData = json.classrooms;
+      else if (Array.isArray(json.courses)) unwrappedData = json.courses;
+      else if (Array.isArray(json.resources)) unwrappedData = json.resources;
+    }
+
+    return {
+      success: true,
+      data: unwrappedData as T,
+      ...json,
+    };
   } catch (err: any) {
     console.error(`API Request Error [${path}]:`, err);
     return {
