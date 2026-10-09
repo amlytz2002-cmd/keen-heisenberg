@@ -1,62 +1,123 @@
 {
-  "project": "PharmIQ v0.3",
-  "phase": "Full Product Build - PK Pedagogical Engine",
-  "orchestrator": "Agent 0 & Teamwork Swarm",
-  "last_updated": "2026-10-07T13:42:00+03:00",
+  "project": "CENNA.live",
+  "version": "1.0 - Pilot Implementation",
+  "architecture": "React 18 + Vite + TypeScript (Strict) + Supabase (PostgreSQL 17 + Auth + Storage + RLS) + Cloudflare Pages Functions + Resend",
+  "last_updated": "2026-10-09T21:40:00+03:00",
+  "current_phase": "Phase 7: Full Verification and Delivery",
   "gates": {
-    "Gate_A_Proof": "PASSED",
-    "Gate_B_Companion_Ready": "PASSED"
+    "Phase_0_Baseline_Audit": "PASSED",
+    "Phase_1_Infrastructure_Security": "PASSED",
+    "Phase_2_Classroom_Course": "PASSED",
+    "Phase_3_Resource_Content_Review": "PASSED",
+    "Phase_4_Core_Student_Learning": "PASSED",
+    "Phase_5_Mock_Exams_Analytics": "PASSED",
+    "Phase_6_Resend_Operational_Hardening": "PASSED",
+    "Phase_7_QA_Verification": "PASSED"
   },
   "metrics": {
-    "test_suites_passed": "6 / 6 (100%)",
-    "total_tests_passed": "154 / 154 (100%)",
-    "typescript_errors": 0,
-    "production_build": "dist/ verified (1.4 MB minified, 432 kB gzip)"
+    "typecheck_errors": 0,
+    "automated_tests_passed": "290 / 290 (100% PASS)",
+    "test_suites_passed": "12 / 12 (100% PASS)",
+    "production_build": "dist/ verified (367 kB index, 1.07 MB antd, 25 kB icons)",
+    "database_tables": 27,
+    "rls_policies_active": "100% active on all 27 tables",
+    "storage_buckets": "course-resources (50MB private), user-avatars (5MB private)",
+    "database_connectivity": "VERIFIED (Supabase project ibyntbynqkpkkpeoudzv)"
   },
-  "modules": {
-    "M1_PK_Calculation_Engines": {
+  "phases": {
+    "Phase_0": {
+      "name": "Repository Audit and Baseline",
       "status": "COMPLETED",
-      "engines": [
-        "CockcroftGaultEngine (IBW, TBW, DVA over 120%, 0.85 female factor)",
-        "GentamicinEngine (deltaT, ke = ln(C1/C2)/deltaT, halfLife = 0.693/ke)",
-        "TheophyllineEngine (effectiveVd, targetMass, saltFactor S=1.0 vs S=0.8, loadingDose)"
-      ],
-      "tests": "tests/cockcroftGault.test.ts (15 passed), tests/gentamicin.test.ts (14 passed), tests/theophylline.test.ts (13 passed)"
+      "artifacts": ["docs/REPOSITORY_AUDIT.md", "docs/IMPLEMENTATION_PLAN.md"]
     },
-    "M2_Socratic_Dialogue_FSM": {
+    "Phase_1": {
+      "name": "Infrastructure and Security Foundation",
       "status": "COMPLETED",
-      "cascade": [
-        "nvidia/nemotron-3-ultra:free",
-        "nvidia/nemotron-3.5-lightning:free",
-        "google/gemma-4-31b:free",
-        "Deterministic Clinical Preceptor Fallback"
-      ],
-      "guardrails": "Max 3 sentences, reveals_answer: false, clinical consultation refusal",
-      "tests": "tests/socraticFSM.test.ts (4 passed)"
+      "artifacts": [
+        "supabase/migrations/002_cennalive_core.sql",
+        "src/types/database.types.ts",
+        "functions/_lib/supabaseServer.ts"
+      ]
     },
-    "M3_FSRS_Spaced_Repetition": {
+    "Phase_2": {
+      "name": "Classroom, Course and Membership Architecture",
       "status": "COMPLETED",
-      "features": [
-        "R(t, S) = (1 + 19/81 * t/S)^(-0.5) retrievability decay curve",
-        "Hypercorrection rule: confidence >= 4 & incorrect -> S=0, 24h mandatory re-test",
-        "Dynamic difficulty adjustment and due date scheduling",
-        "Running theta concept mastery bounded in [0.0, 1.0]"
-      ],
-      "tests": "tests/fsrs.test.ts (24 passed)"
+      "artifacts": [
+        "functions/api/classrooms.ts",
+        "functions/api/invitations/[token].ts",
+        "functions/api/courses.ts",
+        "src/views/Instructor/ClassroomManagerView.tsx",
+        "src/views/Instructor/CourseManagerView.tsx",
+        "src/views/Public/InviteRedeemView.tsx"
+      ]
     },
-    "M4_Workspace_UI_and_Supabase": {
+    "Phase_3": {
+      "name": "Document Ingestion, Semantic Chunking & Review Gate",
       "status": "COMPLETED",
-      "views": [
-        "Daily Mission (3 clinical PK cases with multi-step scratchpads)",
-        "Error Clinic (diagnosed misconception tags, hypercorrection log, review status)",
-        "Next-Time Rules Notebook (student memory heuristics, inline editing, show count)",
-        "Mastery & FSRS View (concept theta gauges, memory stability days, retrievability %)"
-      ],
-      "persistence": "Supabase Auth with quick Demo session, RLS policies active"
+      "artifacts": [
+        "functions/api/resources.ts",
+        "functions/api/resources/[id]/process.ts",
+        "functions/api/ai/generate.ts",
+        "functions/api/teach/content-review.ts",
+        "src/views/Instructor/ResourceManagerView.tsx",
+        "src/views/Instructor/ContentReviewWorkspace.tsx"
+      ]
     },
-    "M_TEST_E2E_Integration": {
+    "Phase_4": {
+      "name": "Core Student Active Retrieval & Spaced Review",
       "status": "COMPLETED",
-      "tests": "tests/e2e_requirements.test.ts (84 passed across Tiers 1-4)"
+      "artifacts": [
+        "functions/_lib/spacedReview.ts",
+        "functions/api/study/session.ts",
+        "functions/api/study/hint.ts",
+        "functions/api/study/submit-answer.ts",
+        "functions/api/reviews.ts",
+        "src/views/Student/TodayView.tsx",
+        "src/views/Student/StudySessionView.tsx",
+        "src/views/Student/ReviewQueueView.tsx"
+      ]
+    },
+    "Phase_5": {
+      "name": "Timed Mock Exams & Learning Analytics",
+      "status": "COMPLETED",
+      "artifacts": [
+        "functions/api/exams.ts",
+        "functions/api/exams/[id]/start.ts",
+        "functions/api/exams/attempts/[attemptId]/answers.ts",
+        "functions/api/exams/attempts/[attemptId]/submit.ts",
+        "functions/api/analytics.ts",
+        "src/views/Student/ExamsListView.tsx",
+        "src/views/Student/ExamTakeView.tsx",
+        "src/views/Student/ExamResultsView.tsx",
+        "src/views/Student/ProgressView.tsx",
+        "src/views/Instructor/InstructorAnalyticsView.tsx"
+      ]
+    },
+    "Phase_6": {
+      "name": "Resend Integration & Operational Hardening",
+      "status": "COMPLETED",
+      "artifacts": [
+        "functions/_lib/emailService.ts",
+        "src/views/Admin/AdminAuditView.tsx"
+      ]
+    },
+    "Phase_7": {
+      "name": "Quality Assurance, Comprehensive Tests & Documentation",
+      "status": "COMPLETED",
+      "artifacts": [
+        "tests/cennalive_spaced_review.test.ts",
+        "tests/cennalive_exam_scoring.test.ts",
+        "tests/cennalive_invitations.test.ts",
+        "tests/cennalive_content_review_gate.test.ts",
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "docs/DATABASE.md",
+        "docs/SECURITY.md",
+        "docs/DEPLOYMENT.md",
+        "docs/API.md",
+        "docs/TESTING.md",
+        "docs/AI_CONTENT_POLICY.md"
+      ]
     }
   }
 }
