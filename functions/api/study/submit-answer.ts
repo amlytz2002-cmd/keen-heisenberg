@@ -206,7 +206,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     isCorrect,
     score,
     feedback: {
-      summary: isCorrect ? 'Correct! Excellent retrieval.' : 'Incorrect. Revisit the core concept below.',
+      summary: isCorrect ? 'Tebrikler! Doğru çözüm ve başarılı geri çağırma.' : 'Hatalı veya eksik yanıt. İlgili temel kavramı ve kaynak açıklamayı aşağıda inceleyin.',
       explanation: question.explanation,
       sources: question.question_sources || [],
     },

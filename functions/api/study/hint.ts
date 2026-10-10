@@ -42,20 +42,20 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     if (targetStage === 1) {
       selectedHint = {
         stage: 1,
-        title: 'Orientation',
-        hintText: 'Identify the underlying academic principle and consider the governing rules defined in the source material.',
+        title: '1. Kademe: Yönlendirme ve Temel İlke',
+        hintText: 'Sorunun temelindeki farmakolojik veya fizyolojik kuralı hatırlayın; kaynak ders notlarında belirtilen ana prensibi göz önüne getirin.',
       };
     } else if (targetStage === 2) {
       selectedHint = {
         stage: 2,
-        title: 'Reasoning',
-        hintText: 'Break down the question into intermediate steps. What is the next logical deduction from the given premises?',
+        title: '2. Kademe: Akıl Yürütme ve Mantıksal İlişki',
+        hintText: 'Soruyu ara adımlara bölün. Verilen klinik parametreler (örneğin klerens, dağılım hacmi, ağırlık faktörü) arasındaki mantıksal bağıntıyı kurun.',
       };
     } else {
       selectedHint = {
         stage: 3,
-        title: 'Application',
-        hintText: 'Eliminate choices that contradict the fundamental constraints or physical units of the problem.',
+        title: '3. Kademe: Uygulama ve Çözüm Adımı',
+        hintText: 'Formüldeki sayısal değerleri yerine koyun; birimlerle veya fizyolojik kısıtlamalarla çelişen seçenekleri eleyin.',
       };
     }
   }

@@ -14,12 +14,23 @@ export async function ensureDemoSession() {
 
   // Pre-seed demo student for pilot testing
   const demoEmail = 'pilot.student@biruni.edu.tr';
-  const demoPassword = 'PharmIQ2026!DemoStudent';
+  const demoPassword = 'CennaLive2026!Demo';
 
-  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+  let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email: demoEmail,
     password: demoPassword,
   });
+
+  if (signInError) {
+    const legacyAttempt = await supabase.auth.signInWithPassword({
+      email: demoEmail,
+      password: 'PharmIQ2026!DemoStudent',
+    });
+    if (legacyAttempt.data?.user) {
+      signInData = legacyAttempt.data;
+      signInError = null;
+    }
+  }
 
   if (signInData?.user) {
     return signInData.user;

@@ -76,8 +76,8 @@ GÖREV KURALLARI:
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${clientKey}`,
-            'HTTP-Referer': 'https://pharmiq.biruni.edu.tr',
-            'X-Title': 'PharmIQ Pedagogical Engine',
+            'HTTP-Referer': 'https://cenna.live',
+            'X-Title': 'CENNA.live Pedagogical Engine',
           },
           body: JSON.stringify({
             model,

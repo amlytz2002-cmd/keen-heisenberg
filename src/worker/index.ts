@@ -106,8 +106,8 @@ GÖREV KURALLARI:
         };
 
         if (isOpR) {
-          headers['HTTP-Referer'] = 'https://pharmiq.biruni.edu.tr';
-          headers['X-Title'] = 'PharmIQ Pedagogical Engine';
+          headers['HTTP-Referer'] = 'https://cenna.live';
+          headers['X-Title'] = 'CENNA.live Pedagogical Engine';
         }
 
         let parsedTurn: any = null;

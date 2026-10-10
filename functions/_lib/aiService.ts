@@ -134,23 +134,24 @@ export async function generateGroundedConcepts(
   const systemPrompt = `You are CENNA.live's educational concept extraction engine.
 Analyze the provided educational source excerpt and extract a structured learning concept.
 Rules:
-1. Ground all claims strictly in the provided excerpt. Do not invent external facts.
-2. Return JSON matching:
+1. Language: TURKISH. All fields (title, summary, explanation, learningObjectives, keyTerms) must be in natural, professional academic Turkish appropriate for pharmacy and medical students.
+2. Ground all claims strictly in the provided excerpt. Do not invent external facts.
+3. Return JSON matching:
 {
-  "title": "string (concise topic name)",
-  "summary": "string (1-2 sentences)",
-  "explanation": "string (comprehensive pedagogical explanation)",
+  "title": "string (kısa ve net konu adı)",
+  "summary": "string (1-2 cümlelik özet)",
+  "explanation": "string (kapsamlı pedagojik açıklama)",
   "difficulty": "beginner" | "intermediate" | "advanced",
   "learningObjectives": ["string"],
   "keyTerms": ["string"],
   "citation": {
     "pageNumber": ${pageNumber || 'null'},
     "sectionTitle": "string or null",
-    "supportingExcerpt": "exact quotation from source"
+    "supportingExcerpt": "kaynaktan birebir alıntı"
   }
 }`;
 
-  const userPrompt = `Source Document Excerpt:\n"""\n${sanitized}\n"""`;
+  const userPrompt = `Ders Dokümanı Metni:\n"""\n${sanitized}\n"""`;
 
   const result = await queryAiWithSchema(env, systemPrompt, userPrompt, ConceptExtractionSchema);
   if (result) {
@@ -159,15 +160,15 @@ Rules:
 
   // Deterministic curriculum fallback
   return {
-    title: 'Extracted Academic Core Concept',
-    summary: 'Core pedagogical principle extracted from the provided course resource materials.',
-    explanation: sanitized.length > 50 ? sanitized.slice(0, 400) + '...' : 'Fundamental course concept grounded in course literature.',
+    title: 'Müfredat Temel Kavramı',
+    summary: 'İlgili ders materyalinden çıkarılan temel pedagojik ve farmakolojik ilke.',
+    explanation: sanitized.length > 50 ? sanitized.slice(0, 400) + '...' : 'Ders literatürüne dayalı temel akademik kavram açıklaması.',
     difficulty: 'intermediate',
-    learningObjectives: ['Understand the foundational definitions', 'Apply the principle in practice questions'],
-    keyTerms: ['Principle', 'Retrieval', 'Application'],
+    learningObjectives: ['Temel tanımları ve etki mekanizmasını kavramak', 'Kavramı pratik klinik senaryolarda uygulamak'],
+    keyTerms: ['Farmakokinetik', 'Aktif Pekiştirme', 'Klinik Uygulama'],
     citation: {
       pageNumber: pageNumber || 1,
-      sectionTitle: 'Course Resource Overview',
+      sectionTitle: 'Ders Materyali Özeti',
       supportingExcerpt: sanitized.slice(0, 120),
     },
   };
@@ -187,36 +188,37 @@ export async function generateGroundedQuestions(
   const systemPrompt = `You are CENNA.live's assessment authoring engine.
 Generate a high-yield practice question based on the concept "${conceptTitle}".
 Rules:
-1. Ground the question strictly in the provided text.
-2. Formulate a 3-stage progressive Socratic hint ladder:
-   - Stage 1 (Orientation): Identifies the relevant governing principle without giving away the answer.
-   - Stage 2 (Reasoning): Points to the next logical deductive step.
-   - Stage 3 (Application): Provides a specific clue or suggests eliminating an incorrect distractor.
-3. Return JSON matching:
+1. Language: TURKISH. All fields (questionText, options, explanation, hint titles and texts) MUST be in natural, professional academic Turkish appropriate for university pharmacy and health sciences students.
+2. Ground the question strictly in the provided text.
+3. Formulate a 3-stage progressive Socratic hint ladder in Turkish:
+   - Stage 1 (1. Kademe: Yönlendirme): İlgili temel kuralı ve kavramı işaret eder, cevabı ifşa etmez.
+   - Stage 2 (2. Kademe: Akıl Yürütme): Parametreler arasındaki mantıksal ilişkiyi açıklar.
+   - Stage 3 (3. Kademe: Uygulama): Doğrudan çözüm adımı ve çeldiricileri eleme rehberliği verir.
+4. Return JSON matching:
 {
   "questionText": "string",
   "questionType": "${questionType}",
   "difficulty": "intermediate",
   "options": [
-    {"key": "A", "text": "Option A"},
-    {"key": "B", "text": "Option B"},
-    {"key": "C", "text": "Option C"},
-    {"key": "D", "text": "Option D"}
+    {"key": "A", "text": "A seçeneği"},
+    {"key": "B", "text": "B seçeneği"},
+    {"key": "C", "text": "C seçeneği"},
+    {"key": "D", "text": "D seçeneği"}
   ],
   "answerKey": {"correctKey": "A"},
-  "explanation": "Detailed explanation why the correct answer is correct and why other options fail.",
+  "explanation": "Doğru cevabın neden doğru olduğunu ve çeldiricilerin neden elendiğini açıklayan pedagojik Türkçe metin.",
   "hintSequence": [
-    {"stage": 1, "title": "Orientation", "hintText": "Hint 1..."},
-    {"stage": 2, "title": "Reasoning", "hintText": "Hint 2..."},
-    {"stage": 3, "title": "Application", "hintText": "Hint 3..."}
+    {"stage": 1, "title": "1. Kademe: Yönlendirme", "hintText": "İpucu 1..."},
+    {"stage": 2, "title": "2. Kademe: Akıl Yürütme", "hintText": "İpucu 2..."},
+    {"stage": 3, "title": "3. Kademe: Uygulama", "hintText": "İpucu 3..."}
   ],
   "citation": {
     "pageNumber": 1,
-    "supportingExcerpt": "verifiable quote from source"
+    "supportingExcerpt": "kaynaktan birebir alıntı"
   }
 }`;
 
-  const userPrompt = `Concept: ${conceptTitle}\nExplanation: ${conceptExplanation}\n\nReference text:\n"""\n${sanitized}\n"""`;
+  const userPrompt = `Kavram: ${conceptTitle}\nAçıklama: ${conceptExplanation}\n\nKaynak metin:\n"""\n${sanitized}\n"""`;
 
   const result = await queryAiWithSchema(env, systemPrompt, userPrompt, QuestionGenerationSchema);
   if (result) {
@@ -225,21 +227,21 @@ Rules:
 
   // Deterministic curriculum fallback
   return {
-    questionText: `Which of the following statements most accurately reflects the core principle of ${conceptTitle}?`,
+    questionText: `Aşağıdaki ifadelerden hangisi "${conceptTitle}" kavramının temel prensibini en doğru şekilde açıklamaktadır?`,
     questionType: 'single_choice',
     difficulty: 'intermediate',
     options: [
-      { key: 'A', text: `It dictates the primary governing mechanism outlined in the course materials.` },
-      { key: 'B', text: `It operates independently without correlation to biological or physical properties.` },
-      { key: 'C', text: `It has been superseded by empirical trial-and-error without mathematical modeling.` },
-      { key: 'D', text: `It applies only to qualitative diagnostics without quantitative application.` },
+      { key: 'A', text: `Ders kaynaklarında belirtilen temel farmakolojik/klinik mekanizmayı doğrudan yönetir.` },
+      { key: 'B', text: `Biyolojik ve fizikokimyasal parametrelerden tamamen bağımsız çalışır.` },
+      { key: 'C', text: `Matematiksel modelleme olmaksızın sadece deneme-yanılma yaklaşımına dayanır.` },
+      { key: 'D', text: `Yalnızca teorik tanımlamalar için geçerli olup kantitatif klinik hesaplamalara uygulanamaz.` },
     ],
     answerKey: { correctKey: 'A' },
-    explanation: `Option A is correct because the source documentation establishes this concept as the primary governing mechanism for this topic.`,
+    explanation: `A seçeneği doğrudur; çünkü ders kaynakları bu kavramın ilgili konudaki ana belirleyici mekanizma olduğunu doğrulamaktadır. Diğer seçenekler temel farmakolojik ilkelerle çelişmektedir.`,
     hintSequence: [
-      { stage: 1, title: 'Orientation', hintText: `Focus on the foundational definition of ${conceptTitle} given in your course reading.` },
-      { stage: 2, title: 'Reasoning', hintText: `Consider how quantitative relationships dictate predictable outcomes in this discipline.` },
-      { stage: 3, title: 'Application', hintText: `Eliminate options claiming qualitative-only or independent behavior.` },
+      { stage: 1, title: '1. Kademe: Yönlendirme', hintText: `${conceptTitle} kavramının ders notlarınızda vurgulanan temel tanım ve işlevine odaklanın.` },
+      { stage: 2, title: '2. Kademe: Akıl Yürütme', hintText: `Bu alandaki nicel parametrelerin klinik sonuçları nasıl doğrudan belirlediğini değerlendirin.` },
+      { stage: 3, title: '3. Kademe: Uygulama', hintText: `Mekanizmanın bağımsız veya yalnızca nitel olduğunu iddia eden seçenekleri eleyin.` },
     ],
     citation: {
       pageNumber: 1,

@@ -25,7 +25,7 @@ export const CLINICAL_CONSULTATION_REGEX =
   /(ne vermeliyim|hangi doz(u)?|doz önerisi|kaç mg (ver\w*|başla\w*)|reçete önerisi|hastaya ne başlanmalı|tedavi önerisi)/i;
 
 export const CLINICAL_REFUSAL_TURN: SocraticTurn = {
-  clinical_observation_tr: "PharmIQ yalnızca sentetik eğitim vakaları ve ders tekrarı için tasarlanmıştır.",
+  clinical_observation_tr: "CENNA.live yalnızca sentetik eğitim vakaları ve ders tekrarı için tasarlanmıştır.",
   conceptual_pivot_tr: "Gerçek hasta verileri veya klinik tedavi kararları sistem kapsamı dışındadır.",
   actionable_question_tr: "Bu konuyu ders slaytlarındaki teorik örnek üzerinden tekrar inceleyelim mi?",
   current_state: "PROBE",

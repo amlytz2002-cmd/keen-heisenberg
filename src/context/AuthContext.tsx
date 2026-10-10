@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const normalizedProfile: UserProfile = {
           id: u.id || currentUser.id,
           email: u.email || currentUser.email || '',
-          full_name: p.display_name || u.full_name || raw.full_name || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+          full_name: p.display_name || u.full_name || raw.full_name || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
           avatar_url: p.avatar_path || u.avatar_url || raw.avatar_url,
           primary_role: primaryRole,
           roles,
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const defaultProfile: UserProfile = {
           id: currentUser.id,
           email: currentUser.email || '',
-          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
           primary_role: 'student',
           roles: ['student'],
         };
@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const fallbackProfile: UserProfile = {
         id: currentUser.id,
         email: currentUser.email || '',
-        full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+        full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
         primary_role: 'student',
         roles: ['student'],
       };
@@ -159,7 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           password,
           options: {
             data: {
-              full_name: role === 'instructor' ? 'Dr. Cenan Demir (Lead Instructor)' : 'Biruni Pilot Learner',
+              full_name: role === 'instructor' ? 'Dr. Cenan Demir (Eğitmen)' : 'Biruni Pilot Öğrencisi',
               role,
             },
           },
@@ -176,7 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(authUser);
         setSession(authSession);
         await api.auth.updateProfile({
-          full_name: role === 'instructor' ? 'Dr. Cenan Demir' : 'Biruni Pilot Learner',
+          full_name: role === 'instructor' ? 'Dr. Cenan Demir (Eğitmen)' : 'Biruni Pilot Öğrencisi',
           primary_role: role,
         });
         await fetchProfile(authUser);

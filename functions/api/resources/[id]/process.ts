@@ -24,15 +24,15 @@ function chunkDocumentText(rawText: string, defaultPage: number = 1): Array<{
 
   let currentChunk = '';
   let currentPage = defaultPage;
-  let currentTitle = 'Introduction';
+  let currentTitle = 'Giriş ve Genel Bakış';
   let chunkIdx = 0;
 
   for (const p of paragraphs) {
     const trimmed = p.trim();
     if (!trimmed) continue;
 
-    // Detect page headers e.g. "Page 2" or "--- Page 3 ---"
-    const pageMatch = trimmed.match(/(?:page|sayfa)\s*(\d+)/i);
+    // Detect page or slide headers e.g. "Page 2", "Sayfa 3", "Slayt 4"
+    const pageMatch = trimmed.match(/(?:page|sayfa|slayt|slide)\s*(\d+)/i);
     if (pageMatch) {
       currentPage = parseInt(pageMatch[1], 10);
     }
