@@ -26,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('CENNA.live UI Error Boundary caught an error:', error, errorInfo);
+    console.error('CENNA.live UI Error Boundary yakalanan hata:', error, errorInfo);
     this.setState({ errorInfo });
   }
 
@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
       localStorage.clear();
       sessionStorage.clear();
     } catch (e) {
-      console.warn('Storage clear exception:', e);
+      console.warn('Oturum depolama alanı temizleme istisnası:', e);
     }
     window.location.href = '/auth/login';
   };
@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <Result
             status="warning"
             title="Beklenmeyen Bir Hata Oluştu"
-            subTitle="Sayfa yüklenirken bir sistem uyuşmazlığı meydana geldi. Aşağıdaki seçenekleri kullanarak sayfayı yenileyebilir veya çalışma alanınıza dönebilirsiniz."
+            subTitle="Arayüz bileşenleri işlenirken beklenmeyen bir sistem uyuşmazlığı saptandı. Oturum verilerinizin bütünlüğünü korumak adına sayfayı yenileyebilir veya çalışma alanınıza dönebilirsiniz."
             extra={
               <Space direction="vertical" align="center" size="middle">
                 <Space wrap>
@@ -96,13 +96,33 @@ export class ErrorBoundary extends Component<Props, State> {
                   </Button>
                 </Space>
 
+                <div
+                  style={{
+                    marginTop: 12,
+                    textAlign: 'center',
+                    color: '#64748B',
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    maxWidth: 560,
+                  }}
+                >
+                  Sorun devam ederse lütfen tarayıcı önbelleğinizi temizleyiniz veya{' '}
+                  <a
+                    href="mailto:destek@cenna.live"
+                    style={{ color: '#2563EB', fontWeight: 600, textDecoration: 'underline' }}
+                  >
+                    destek@cenna.live
+                  </a>{' '}
+                  üzerinden teknik destek birimiyle iletişime geçiniz.
+                </div>
+
                 {this.state.error && (
                   <Paragraph
                     style={{
-                      maxWidth: 600,
+                      maxWidth: 640,
                       textAlign: 'left',
-                      marginTop: 24,
-                      padding: 12,
+                      marginTop: 20,
+                      padding: 14,
                       background: '#F1F5F9',
                       borderRadius: 8,
                       border: '1px solid #CBD5E1',
@@ -112,6 +132,9 @@ export class ErrorBoundary extends Component<Props, State> {
                       overflowX: 'auto',
                     }}
                   >
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', marginBottom: 6, textTransform: 'uppercase' }}>
+                      Sistem Denetim ve Hata Kaydı:
+                    </div>
                     <Text strong style={{ color: '#DC2626' }}>
                       {this.state.error.name}: {this.state.error.message}
                     </Text>

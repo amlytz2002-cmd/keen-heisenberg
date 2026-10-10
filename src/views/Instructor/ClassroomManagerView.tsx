@@ -61,14 +61,14 @@ export const ClassroomManagerView: React.FC = () => {
         description: values.description?.trim(),
       });
       if (res.success) {
-        message.success('Classroom created successfully');
+        message.success('Sınıf başarıyla oluşturuldu');
         setCreateModalOpen(false);
         await fetchClassrooms();
       } else {
-        message.error(res.error || 'Failed to create classroom');
+        message.error(res.error || 'Sınıf oluşturulamadı');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error creating classroom');
+      message.error(err.message || 'Sınıf oluşturulurken hata oluştu');
     } finally {
       setCreating(false);
     }
@@ -87,12 +87,12 @@ export const ClassroomManagerView: React.FC = () => {
         const rawToken = res.data.raw_token;
         const fullUrl = `${window.location.origin}/invite/${rawToken}`;
         setGeneratedInviteUrl(fullUrl);
-        message.success('Cryptographic invitation created');
+        message.success('Kriptografik davet bağlantısı oluşturuldu');
       } else {
-        message.error(res.error || 'Failed to generate invitation');
+        message.error(res.error || 'Davet bağlantısı oluşturulamadı');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error generating invitation');
+      message.error(err.message || 'Davet oluşturulurken hata oluştu');
     } finally {
       setGeneratingInvite(false);
     }
@@ -100,12 +100,12 @@ export const ClassroomManagerView: React.FC = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    message.success('Invitation link copied to clipboard!');
+    message.success('Davet bağlantısı panoya kopyalandı!');
   };
 
   const columns = [
     {
-      title: 'Classroom Name & Description',
+      title: 'Sınıf Adı ve Açıklaması',
       key: 'name',
       render: (_: any, r: any) => (
         <div>
@@ -113,20 +113,20 @@ export const ClassroomManagerView: React.FC = () => {
             {r.name}
           </Text>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            {r.description || 'Academic study group.'}
+            {r.description || 'Akademik çalışma grubu.'}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Courses',
+      title: 'Ders Sayısı',
       key: 'courses',
       render: (_: any, r: any) => (
-        <Tag color="blue">{r.courses?.length || 0} Courses</Tag>
+        <Tag color="blue">{r.courses?.length || 0} Ders</Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: 'İşlemler',
       key: 'actions',
       render: (_: any, r: any) => (
         <Space>
@@ -139,7 +139,7 @@ export const ClassroomManagerView: React.FC = () => {
               setInviteModalOpen(true);
             }}
           >
-            Create Invite Link
+            Davet Bağlantısı Oluştur
           </Button>
         </Space>
       ),
@@ -150,7 +150,7 @@ export const ClassroomManagerView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading classroom administration...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Sınıf yönetim paneli yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -160,10 +160,10 @@ export const ClassroomManagerView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Classroom Administration
+            Sınıf Yönetimi
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Manage academic classrooms, configure courses, and distribute cryptographic enrollment tokens.
+            Akademik sınıfları yönetin, dersleri yapılandırın ve kriptografik katılım bağlantıları dağıtın.
           </Text>
         </div>
         <Button
@@ -172,7 +172,7 @@ export const ClassroomManagerView: React.FC = () => {
           onClick={() => setCreateModalOpen(true)}
           style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
-          Create Classroom
+          Yeni Sınıf Oluştur
         </Button>
       </div>
 
@@ -187,7 +187,7 @@ export const ClassroomManagerView: React.FC = () => {
 
       {/* Create Classroom Modal */}
       <Modal
-        title="Create New Academic Classroom"
+        title="Yeni Akademik Sınıf Oluştur"
         open={createModalOpen}
         onCancel={() => setCreateModalOpen(false)}
         footer={null}
@@ -195,14 +195,14 @@ export const ClassroomManagerView: React.FC = () => {
         <Form layout="vertical" onFinish={handleCreateClassroom} style={{ marginTop: 16 }}>
           <Form.Item
             name="name"
-            label="Classroom Name"
-            rules={[{ required: true, message: 'Please enter a classroom name' }]}
+            label="Sınıf Adı"
+            rules={[{ required: true, message: 'Lütfen bir sınıf adı giriniz' }]}
           >
-            <Input placeholder="e.g. Dönem 3 Biyofarmasötik & Farmakokinetik" size="large" />
+            <Input placeholder="Örn: Dönem 3 Biyofarmasötik & Farmakokinetik" size="large" />
           </Form.Item>
 
-          <Form.Item name="description" label="Description / Academic Year">
-            <Input.TextArea rows={3} placeholder="Faculty of Pharmacy, Fall 2026 cohort" />
+          <Form.Item name="description" label="Açıklama / Akademik Dönem">
+            <Input.TextArea rows={3} placeholder="Eczacılık Fakültesi, 2026 Güz Dönemi" />
           </Form.Item>
 
           <Button
@@ -213,14 +213,14 @@ export const ClassroomManagerView: React.FC = () => {
             size="large"
             style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
           >
-            Create Classroom
+            Sınıfı Oluştur
           </Button>
         </Form>
       </Modal>
 
       {/* Generate Invitation Modal */}
       <Modal
-        title={`Generate Invite Link: ${selectedClassroom?.name}`}
+        title={`Davet Bağlantısı Oluştur: ${selectedClassroom?.name || ''}`}
         open={inviteModalOpen}
         onCancel={() => {
           setInviteModalOpen(false);
@@ -236,14 +236,14 @@ export const ClassroomManagerView: React.FC = () => {
               initialValues={{ maxUses: 50, expiresInDays: 14 }}
             >
               <Paragraph style={{ color: '#64748B' }}>
-                Generate a single-use or multi-use cryptographic enrollment token with expiration.
+                Süreli ve kullanım sınırı belirlenmiş kriptografik sınıf kayıt bağlantısı oluşturun.
               </Paragraph>
 
-              <Form.Item name="maxUses" label="Max Permitted Redemptions">
+              <Form.Item name="maxUses" label="Maksimum Katılımcı Sayısı">
                 <InputNumber min={1} max={500} style={{ width: '100%' }} size="large" />
               </Form.Item>
 
-              <Form.Item name="expiresInDays" label="Link Validity (Days)">
+              <Form.Item name="expiresInDays" label="Bağlantı Geçerlilik Süresi (Gün)">
                 <InputNumber min={1} max={90} style={{ width: '100%' }} size="large" />
               </Form.Item>
 
@@ -255,14 +255,14 @@ export const ClassroomManagerView: React.FC = () => {
                 size="large"
                 style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
               >
-                Generate Cryptographic Link
+                Kriptografik Bağlantı Üret
               </Button>
             </Form>
           ) : (
             <div>
               <Alert
-                message="Invitation Token Ready"
-                description="Share this link with your students. Upon clicking, their account will be enrolled into this classroom immediately."
+                message="Davet Bağlantısı Hazır"
+                description="Bu bağlantıyı öğrencilerinizle paylaşın. Bağlantıya tıklayan öğrenciler doğrudan bu sınıfa kaydedilecektir."
                 type="success"
                 showIcon
                 style={{ marginBottom: 16, borderRadius: 8 }}
@@ -288,12 +288,12 @@ export const ClassroomManagerView: React.FC = () => {
                   type="primary"
                   style={{ backgroundColor: '#2563EB' }}
                 >
-                  Copy
+                  Kopyala
                 </Button>
               </div>
 
               <div style={{ textAlign: 'right', marginTop: 16 }}>
-                <Button onClick={() => setGeneratedInviteUrl(null)}>Create Another</Button>
+                <Button onClick={() => setGeneratedInviteUrl(null)}>Yeni Bağlantı Oluştur</Button>
               </div>
             </div>
           )}

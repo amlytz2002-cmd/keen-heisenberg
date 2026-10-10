@@ -20,8 +20,8 @@ Uygulamanın arka planındaki matematiksel modeller (Cockcroft-Gault, Gentamicin
    - Form doğrulama mesajlarında "Please enter your password", "Enter a valid email" gibi standart, özenilmemiş metinler yer almaktadır.
    - Soru çözüm ekranında ipuçları "Orientation", "Reasoning", "Application" şeklinde pedagojik bağlamdan kopuk İngilizce etiketlerle sunulmaktadır.
 
-3. **Eski Marka Adı İhlali (PharmIQ Kalıntıları):**
-   - Ürün kimliği kesin olarak **CENNA.live** olmasına rağmen; `supabaseClient.ts`, `tutorClient.ts`, `worker/index.ts`, `worker/socraticFSM.ts` ve `functions/_lib/socraticFSM.ts` dosyalarında hala "PharmIQ" adı geçmektedir (Örn: `clinical_observation_tr: "PharmIQ yalnızca sentetik eğitim vakaları..."`).
+3. **Eski Marka Adı İhlali (Eski Prototip Kalıntıları):**
+   - Ürün kimliği kesin olarak **CENNA.live** olmasına rağmen; `supabaseClient.ts`, `tutorClient.ts`, `worker/index.ts`, `worker/socraticFSM.ts` ve `functions/_lib/socraticFSM.ts` dosyalarında hala eski prototip adı geçmektedir (Örn: `clinical_observation_tr: "Eski prototip yalnızca sentetik eğitim vakaları..."`).
 
 4. **Yapay Zekâ ve Üretim Motorunun Yabancı Dil ve Zayıf Şablon Kusurları:**
    - `functions/_lib/aiService.ts` dosyasındaki sistem promptları yapay zekaya İngilizce soru ve kavram üretmesini emretmektedir.
@@ -80,7 +80,7 @@ Uygulamanın arka planındaki matematiksel modeller (Cockcroft-Gault, Gentamicin
 | `functions/api/study/hint.ts` | 42-60. satırlarda yer alan varsayılan ipucu metinleri ("Stage 1: Orientation - Identify the underlying academic principle...", "Stage 2: Reasoning...", "Stage 3: Application..."). | Yüksek standartlı akademik Türkçe ipucu basamakları ile değiştirilecek. |
 | `functions/api/study/submit-answer.ts` | 209. satırdaki feedback özeti ("Correct! Excellent retrieval.", "Incorrect. Revisit the core concept below.") ve 70, 77, 105, 137. satırlardaki İngilizce hata yanıtları. | Türkçe geri bildirim ve standart hata nesneleri. |
 | `functions/_lib/aiService.ts` | Sistem promptları İngilizce çıktı talep ediyor; deterministik yedekler İngilizce. | Sistem promptları müfredat terminolojisine uygun Türkçe kavram ve sorular üretmeye yönlendirilecek; deterministik yedekler Türkçe olacak. |
-| `functions/_lib/socraticFSM.ts` & `src/worker/socraticFSM.ts` | Satır 28: `"PharmIQ yalnızca sentetik eğitim vakaları..."` (Eski marka adı kalıntısı). | `"CENNA.live yalnızca sentetik eğitim vakaları..."` olarak güncellenecek. |
+| `functions/_lib/socraticFSM.ts` & `src/worker/socraticFSM.ts` | Satır 28: `"Eski prototip yalnızca sentetik eğitim vakaları..."` (Eski marka adı kalıntısı). | `"CENNA.live yalnızca sentetik eğitim vakaları..."` olarak güncellenecek. |
 | `functions/api/resources/[id]/process.ts` | Varsayılan bölüm başlığı `'Introduction'`, sayfa ayrıştırma ve başlık regex'i Türkçe karakter duyarsızlığı. | Varsayılan başlık `'Giriş'`, Türkçe karakterler (ç, ğ, ı, ö, ş, ü, İ) ile uyumlu chunking. |
 | `functions/api/exams/attempts/[attemptId]/submit.ts` | Sınav süre aşımı ve değerlendirme teşhis metinleri İngilizce. | Türkçe sınav sonuç çıktısı ve klinik telafi önerileri. |
 | Tüm `functions/api/**/*.ts` | 401, 400, 404, 500 dönen hata yanıtları saf İngilizce stringler içeriyor. | Kullanıcıya yansıyabilecek mesajlar Türkçe ve tutarlı kod formatında yapılandırılacak. |
@@ -91,5 +91,5 @@ Uygulamanın arka planındaki matematiksel modeller (Cockcroft-Gault, Gentamicin
 
 1. **Sıfır İngilizce Kuralı:** Kullanıcı arayüzünde (öğrenci veya eğitmen) hiçbir ekranda kontrolsüz veya çevrilmemiş İngilizce kelime kalmayacak.
 2. **Pedagojik Türkçe Dil Standardı:** Kullanılan dil çeviri kokmayacak ("translated-sounding" olmayacak); Türk tıp ve eczacılık fakültelerinde kullanılan resmi ve akademik terminolojiye (klerens, eliminasyon hız sabiti, yarılanma ömrü, yükleme dozu, dağılım hacmi, aralıklı tekrar, geri çağırma pratiği) tam uyumlu olacak.
-3. **Eski Marka Sıfırlaması:** `PharmIQ` veya `CENNA.ai` referansları tüm kod tabanında taranıp `CENNA.live` olarak teyit edilecek.
+3. **Eski Marka Sıfırlaması:** Eski prototip ve gayriresmi referanslar tüm kod tabanında taranıp `CENNA.live` olarak teyit edilecek.
 4. **Test ve Derleme Bütünlüğü:** Tüm değişiklikler sonrasında 290 testin tamamı firesiz geçecek, `npm run typecheck` ve `npm run build` sıfır hatayla tamamlanacak.

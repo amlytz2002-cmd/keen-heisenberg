@@ -69,7 +69,7 @@ export const AdminAuditView: React.FC = () => {
 
   const columns = [
     {
-      title: 'Action Event',
+      title: 'İşlem Türü',
       dataIndex: 'action',
       key: 'action',
       render: (text: string) => (
@@ -79,27 +79,27 @@ export const AdminAuditView: React.FC = () => {
       ),
     },
     {
-      title: 'Target Entity',
+      title: 'Hedef Varlık',
       key: 'target',
       render: (_: any, r: any) => (
         <span>
-          <Tag>{r.target_type || 'system'}</Tag>
+          <Tag>{r.target_type || 'sistem'}</Tag>
           <Text code style={{ fontSize: 11 }}>{r.target_id || '-'}</Text>
         </span>
       ),
     },
     {
-      title: 'Timestamp (UTC)',
+      title: 'Zaman Damgası',
       dataIndex: 'created_at',
       key: 'created_at',
       render: (t: string) => (
         <Text style={{ fontSize: 12, color: '#64748B' }}>
-          {new Date(t).toLocaleString()}
+          {new Date(t).toLocaleString('tr-TR')}
         </Text>
       ),
     },
     {
-      title: 'Metadata / Context',
+      title: 'Meta Veri / Bağlam',
       dataIndex: 'details',
       key: 'details',
       render: (d: any) => (
@@ -114,7 +114,7 @@ export const AdminAuditView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading security audit logs...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Güvenlik denetim kayıtları yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -124,14 +124,14 @@ export const AdminAuditView: React.FC = () => {
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <Tag color="red" style={{ fontWeight: 600 }}>
-            <SecurityScanOutlined /> Platform Security & Audit
+            <SecurityScanOutlined /> Platform Güvenliği ve Denetim
           </Tag>
         </div>
         <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-          System Audit Trail & Health
+          Sistem Denetim İzi ve Durumu
         </Title>
         <Text style={{ fontSize: 15, color: '#64748B' }}>
-          Immutable logs of privileged administrative actions, AI extraction jobs, and role transitions.
+          Yetkili idari işlemler, yapay zekâ çıkarım süreçleri ve rol değişikliklerinin değiştirilemez denetim kayıtları.
         </Text>
       </div>
 
@@ -139,8 +139,8 @@ export const AdminAuditView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Database Cluster"
-              value="Healthy"
+              title="Veritabanı Kümesi"
+              value="Sağlıklı"
               prefix={<DatabaseOutlined style={{ color: '#059669' }} />}
               valueStyle={{ color: '#059669', fontWeight: 800 }}
             />
@@ -149,8 +149,8 @@ export const AdminAuditView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="RLS Policies Active"
-              value="27 Tables"
+              title="Aktif RLS Politikaları"
+              value="27 Tablo"
               prefix={<SafetyCertificateOutlined style={{ color: '#2563EB' }} />}
               valueStyle={{ color: '#2563EB', fontWeight: 800 }}
             />
@@ -159,7 +159,7 @@ export const AdminAuditView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Audit Logs Recorded"
+              title="Kaydedilen Denetim İzi"
               value={auditLogs.length}
               valueStyle={{ color: '#0F172A', fontWeight: 800 }}
             />
@@ -168,7 +168,7 @@ export const AdminAuditView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Edge Functions"
+              title="Uç Nokta Fonksiyonları (Edge)"
               value="Cloudflare"
               valueStyle={{ color: '#7C3AED', fontWeight: 800 }}
             />

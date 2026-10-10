@@ -10,7 +10,7 @@
   - $0\%$ arithmetic/calculation errors produced by deterministic engine.
 
 ### Phase 2: Systemic Polish, Backend Resilience & 100% Turkish Academic Localization [ACTIVE]
-- **Goal:** Conduct a comprehensive, uncompromising audit and overhaul of the entire application: eliminate all English, mixed language, and machine-translated copywriting in favor of natural, high-register academic Turkish appropriate for pharmacy and health sciences students; harden backend Cloudflare Pages functions, error states, and Turkish character encodings; eliminate all legacy brand references ("PharmIQ" -> "CENNA.live"); and polish every student and instructor interaction.
+- **Goal:** Conduct a comprehensive, uncompromising audit and overhaul of the entire application: eliminate all English, mixed language, and machine-translated copywriting in favor of natural, high-register academic Turkish appropriate for pharmacy and health sciences students; harden backend Cloudflare Pages functions, error states, and Turkish character encodings; eliminate all legacy brand references (legacy prototype -> "CENNA.live"); and polish every student and instructor interaction.
 - **Decision Gate B:**
   - 100% of user-facing UI labels, descriptions, empty states, error alerts, and modals in fluent academic Turkish.
   - 0 legacy brand references across code, UI, and edge functions (strictly "CENNA.live").

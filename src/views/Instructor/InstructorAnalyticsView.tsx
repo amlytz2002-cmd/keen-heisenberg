@@ -50,31 +50,31 @@ export const InstructorAnalyticsView: React.FC = () => {
 
   const atRiskConcepts = analyticsData?.at_risk_concepts || [
     {
-      concept_name: 'Cockcroft-Gault Female Gender Adjustment (0.85)',
+      concept_name: 'Cockcroft-Gault Kadın Cinsiyet Düzeltme Katsayısı (0.85)',
       error_rate: 42,
       attempts_count: 58,
-      common_misconception: 'Omitted 0.85 multiplier for female patients',
-      status: 'High Error Rate',
+      common_misconception: 'Kadın hastalarda 0.85 katsayısı ile çarpım atlandı',
+      status: 'Yüksek Hata Oranı',
     },
     {
-      concept_name: 'Steady-State Half-Life Accumulation Time',
+      concept_name: 'Kararlı Durum (Steady-State) Yarılanma Ömrü ve Birikme Süresi',
       error_rate: 35,
       attempts_count: 44,
-      common_misconception: 'Confused 3.3 half-lives (90%) with 5 half-lives (97%)',
-      status: 'Moderate Error Rate',
+      common_misconception: '3.3 yarılanma ömrü (%90) ile 5 yarılanma ömrü (%97) karıştırıldı',
+      status: 'Orta Hata Oranı',
     },
     {
-      concept_name: 'Aminoglycoside Peak/Trough Dosing Window',
+      concept_name: 'Aminoglikozid Tepe/Dip (Peak/Trough) Dozajlama Penceresi',
       error_rate: 28,
       attempts_count: 50,
-      common_misconception: 'Measured trough drawn too early post-infusion',
-      status: 'Moderate Error Rate',
+      common_misconception: 'Dip düzeyi ölçümü infüzyon sonrasında gereğinden erken alındı',
+      status: 'Orta Hata Oranı',
     },
   ];
 
   const columns = [
     {
-      title: 'Topic / Concept Requiring Remediation',
+      title: 'Pekiştirme Gerektiren Kavram / Konu',
       key: 'name',
       render: (_: any, r: any) => (
         <div>
@@ -82,31 +82,31 @@ export const InstructorAnalyticsView: React.FC = () => {
             {r.concept_name}
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Frequent error: {r.common_misconception}
+            Sık Karşılaşılan Yanılgı: {r.common_misconception}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Classroom Error Rate',
+      title: 'Sınıf Hata Oranı',
       key: 'error_rate',
       render: (_: any, r: any) => (
         <Tag color={r.error_rate > 35 ? 'volcano' : 'orange'}>
-          {r.error_rate}% Error Rate
+          %{r.error_rate} Hata Oranı
         </Tag>
       ),
     },
     {
-      title: 'Attempts',
+      title: 'Deneme Sayısı',
       dataIndex: 'attempts_count',
       key: 'attempts',
     },
     {
-      title: 'Teaching Recommendation',
+      title: 'Eğitsel Müdahale Önerisi',
       key: 'status',
       render: (_: any, r: any) => (
         <span style={{ fontSize: 13, color: '#64748B' }}>
-          {r.error_rate > 35 ? 'Prioritize in next live seminar' : 'Reinforce in spaced retrieval queue'}
+          {r.error_rate > 35 ? 'Gelecek seminerde öncelikli olarak işlenmeli' : 'Aralıklı hatırlama kuyruğunda pekiştirilmeli'}
         </span>
       ),
     },
@@ -117,10 +117,10 @@ export const InstructorAnalyticsView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Classroom Learning Diagnostics
+            Sınıf Öğrenme Teşhisi ve Analitiği
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Aggregate concept performance, error rates, and clinical misconceptions.
+            Kavram bazlı toplu başarı grafikleri, hata oranları ve klinik kavram yanılgıları.
           </Text>
         </div>
         {classrooms.length > 0 && (
@@ -142,7 +142,7 @@ export const InstructorAnalyticsView: React.FC = () => {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <Spin size="large" />
-          <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Aggregating student telemetry...</Paragraph>
+          <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Öğrenci telemetrisi ve başarı verileri derleniyor...</Paragraph>
         </div>
       ) : (
         <>
@@ -151,7 +151,7 @@ export const InstructorAnalyticsView: React.FC = () => {
             <Col xs={12} sm={6}>
               <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
                 <Statistic
-                  title="Enrolled Learners"
+                  title="Kayıtlı Öğrenciler"
                   value={analyticsData?.total_students || 34}
                   prefix={<TeamOutlined style={{ color: '#2563EB' }} />}
                   valueStyle={{ fontWeight: 800, color: '#0F172A' }}
@@ -161,7 +161,7 @@ export const InstructorAnalyticsView: React.FC = () => {
             <Col xs={12} sm={6}>
               <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
                 <Statistic
-                  title="Classroom Avg Mastery"
+                  title="Sınıf Ortalama Yetkinliği"
                   value={analyticsData?.average_mastery_pct || 76}
                   suffix="%"
                   valueStyle={{ fontWeight: 800, color: '#059669' }}
@@ -171,7 +171,7 @@ export const InstructorAnalyticsView: React.FC = () => {
             <Col xs={12} sm={6}>
               <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
                 <Statistic
-                  title="Questions Practiced"
+                  title="Çözülen Soru Sayısı"
                   value={analyticsData?.total_question_attempts || 412}
                   prefix={<LineChartOutlined style={{ color: '#0284C7' }} />}
                   valueStyle={{ fontWeight: 800, color: '#0F172A' }}
@@ -181,7 +181,7 @@ export const InstructorAnalyticsView: React.FC = () => {
             <Col xs={12} sm={6}>
               <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
                 <Statistic
-                  title="At-Risk Concepts"
+                  title="Kritik/Riskli Kavramlar"
                   value={atRiskConcepts.length}
                   prefix={<WarningOutlined style={{ color: '#DC2626' }} />}
                   valueStyle={{ fontWeight: 800, color: '#DC2626' }}
@@ -194,7 +194,7 @@ export const InstructorAnalyticsView: React.FC = () => {
           <Card
             bordered
             style={{ borderRadius: 16, borderColor: '#E2E8F0' }}
-            title="Concepts Requiring In-Class Teaching Attention"
+            title="Ders İçi Müdahale ve Açıklama Gerektiren Kritik Kavramlar"
           >
             <Table
               dataSource={atRiskConcepts}

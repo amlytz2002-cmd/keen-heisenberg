@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-This repository initially contained a prototype named "PharmIQ" focused on pharmacokinetic calculations (Cockcroft-Gault, Gentamicin, Theophylline) and clinical preceptor Socratic dialogue experiments. While the underlying mathematical and cognitive science foundations (FSRS spaced repetition algorithms, Socratic finite state machines, Zod schemas, and Vitest test runners) are sound, the interface was an early single-screen mobile prototype with hardcoded mock state, Turkish medical school labels, and legacy COTE assumptions.
+This repository initially contained an experimental prototype focused on pharmacokinetic calculations (Cockcroft-Gault, Gentamicin, Theophylline) and clinical preceptor Socratic dialogue experiments. While the underlying mathematical and cognitive science foundations (FSRS spaced repetition algorithms, Socratic finite state machines, Zod schemas, and Vitest test runners) are sound, the interface was an early single-screen mobile prototype with hardcoded mock state, Turkish medical school labels, and legacy COTE assumptions.
 
 Per the master directive:
 - **Product Identity:** CENNA.live is the authoritative identity. Legacy COTE tools do not dictate main navigation, branding, or onboarding.

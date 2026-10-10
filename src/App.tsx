@@ -1,5 +1,12 @@
 import React from 'react';
 import { ConfigProvider } from 'antd';
+import trTR from 'antd/locale/tr_TR';
+import dayjs from 'dayjs';
+import 'dayjs/locale/tr';
+
+// Synchronize global Dayjs calendar locale with Turkish Ant Design configuration
+dayjs.locale('tr');
+
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { RouterProvider, useRouter } from './context/RouterContext';
 import { Navbar } from './components/Navbar';
@@ -99,6 +106,7 @@ export const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <ConfigProvider
+        locale={trTR}
         theme={{
           token: {
             colorPrimary: '#2563EB',

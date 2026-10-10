@@ -30,7 +30,7 @@ import workerHandler, { Env } from '../src/worker/index';
 
 /**
  * ============================================================================
- * PHARMIQ PEDAGOGICAL ENGINE — E2E REQUIREMENT-DRIVEN TEST SUITE
+ * CENNA.LIVE PEDAGOGICAL ENGINE — E2E REQUIREMENT-DRIVEN TEST SUITE
  * ============================================================================
  * Coverage Map:
  *   - Tier 1: Feature Coverage (F1 to F13) [>=5 tests per feature]
@@ -40,7 +40,7 @@ import workerHandler, { Env } from '../src/worker/index';
  * ============================================================================
  */
 
-describe('PharmIQ E2E Requirements Suite', () => {
+describe('CENNA.live E2E Requirements Suite', () => {
   const cgEngine = new CockcroftGaultEngine();
   const gentaEngine = new GentamicinEngine();
   const theoEngine = new TheophyllineEngine();

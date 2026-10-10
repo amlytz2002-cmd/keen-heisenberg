@@ -42,8 +42,8 @@ export const Footer: React.FC = () => {
             </div>
             <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>CENNA.live</span>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.6, maxWidth: 300, color: '#94A3B8' }}>
-            Eczacılık ve sağlık bilimleri için yapay zekâ destekli aktif hatırlama ve bilinçli pratik platformu. Kesintisiz döngü: Öğren, Hatırla, Uygula, Eksik Gider, Tekrar Et.
+          <p style={{ fontSize: 14, lineHeight: 1.6, maxWidth: 320, color: '#94A3B8' }}>
+            Eczacılık ve sağlık bilimleri öğrencilerine yönelik, yapay zekâ destekli aktif geri çağırma ve amaçlı pratik platformu. Bütünleşik öğrenme döngüsü: Öğren, Hatırla, Uygula, Eksik Gider ve Pekiştir.
           </p>
           <div style={{ fontSize: 12, color: '#64748B', marginTop: 16 }}>
             © {new Date().getFullYear()} CENNA.live. Tüm hakları saklıdır.
@@ -58,7 +58,7 @@ export const Footer: React.FC = () => {
             <li>
               <button
                 onClick={() => navigate('/how-it-works')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
               >
                 5 Aşamalı Öğrenme Döngüsü
               </button>
@@ -66,7 +66,7 @@ export const Footer: React.FC = () => {
             <li>
               <button
                 onClick={() => navigate('/features')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
               >
                 Belgeye Dayalı Yapay Zekâ & Kaynak Doğrulama
               </button>
@@ -74,7 +74,7 @@ export const Footer: React.FC = () => {
             <li>
               <button
                 onClick={() => navigate('/features')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
               >
                 3 Kademeli Sokratik İpucu Merdiveni
               </button>
@@ -82,9 +82,9 @@ export const Footer: React.FC = () => {
             <li>
               <button
                 onClick={() => navigate('/features')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
               >
-                1-3-7-14 Günlük Aralıklı Tekrar (SRS)
+                Aralıklı Tekrar ve Pekiştirme (FSRS Algoritması)
               </button>
             </li>
           </ul>
@@ -92,30 +92,38 @@ export const Footer: React.FC = () => {
 
         <div>
           <h4 style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Güvenlik & Akademik Denetim
+            Hukuki Şartlar & İletişim
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
             <li>
               <button
-                onClick={() => navigate('/privacy')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
-              >
-                Gizlilik Politikası & RLS İzolasyonu
-              </button>
-            </li>
-            <li>
-              <button
                 onClick={() => navigate('/terms')}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
               >
                 Kullanım Koşulları
               </button>
             </li>
             <li>
-              <span style={{ color: '#64748B' }}>Eğitmen Onay Kapısı (Zorunlu)</span>
+              <button
+                onClick={() => navigate('/privacy')}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left' }}
+              >
+                Gizlilik Politikası
+              </button>
             </li>
             <li>
-              <span style={{ color: '#64748B' }}>Sunucu Taraflı Anahtar Koruması</span>
+              <a
+                href="mailto:destek@cenna.live"
+                style={{ color: '#94A3B8', textDecoration: 'none' }}
+              >
+                İletişim
+              </a>
+            </li>
+            <li style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #1E293B' }}>
+              <span style={{ color: '#64748B', fontSize: 13 }}>Eğitmen Onay Kapısı (Zorunlu)</span>
+            </li>
+            <li>
+              <span style={{ color: '#64748B', fontSize: 13 }}>Satır Düzeyi Veri Güvenliği (PostgreSQL RLS)</span>
             </li>
           </ul>
         </div>

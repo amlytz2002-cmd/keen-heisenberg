@@ -27,6 +27,20 @@ export const Navbar: React.FC = () => {
   const isInstructor = (Array.isArray(profile?.roles) && profile.roles.includes('instructor')) || profile?.primary_role === 'instructor' || activeRole === 'instructor';
   const isAdmin = (Array.isArray(profile?.roles) && profile.roles.includes('admin')) || profile?.primary_role === 'admin' || activeRole === 'admin';
 
+  const getRoleBadgeConfig = (role?: string) => {
+    switch (role) {
+      case 'admin':
+        return { label: 'YÖNETİCİ', color: 'red' };
+      case 'instructor':
+        return { label: 'EĞİTMEN', color: 'purple' };
+      case 'student':
+      default:
+        return { label: 'ÖĞRENCİ', color: 'blue' };
+    }
+  };
+
+  const roleBadgeConfig = getRoleBadgeConfig(activeRole);
+
   const handleRoleToggle = () => {
     const nextRole = activeRole === 'student' ? 'instructor' : 'student';
     setActiveRole(nextRole);
@@ -45,14 +59,26 @@ export const Navbar: React.FC = () => {
           <div style={{ fontWeight: 600, color: '#0F172A' }}>{profile?.full_name || 'Kullanıcı'}</div>
           <div style={{ fontSize: 12, color: '#64748B' }}>{user?.email}</div>
           <div style={{ marginTop: 4 }}>
-            <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-              {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
+            <Tag color={roleBadgeConfig.color}>
+              {roleBadgeConfig.label}
             </Tag>
           </div>
         </div>
       ),
     },
     { type: 'divider' },
+    {
+      key: 'my_profile',
+      icon: <UserOutlined />,
+      label: 'Profilim',
+      onClick: () => {
+        if (activeRole === 'instructor') {
+          navigate('/app/teach');
+        } else {
+          navigate('/app/progress');
+        }
+      },
+    },
     ...(isInstructor
       ? [
           {
@@ -73,11 +99,12 @@ export const Navbar: React.FC = () => {
           },
         ]
       : []),
+    { type: 'divider' },
     {
       key: 'sign_out',
       icon: <LogoutOutlined />,
       danger: true,
-      label: 'Çıkış Yap',
+      label: 'Oturumu Kapat',
       onClick: async () => {
         await signOut();
         navigate('/');
@@ -87,18 +114,18 @@ export const Navbar: React.FC = () => {
 
   const studentNavItems = [
     { label: 'Bugün', path: '/app/today', icon: <CalendarOutlined /> },
-    { label: 'Sınıflarım', path: '/app/classrooms', icon: <AppstoreOutlined /> },
+    { label: 'Sınıflar', path: '/app/classrooms', icon: <AppstoreOutlined /> },
     { label: 'Aralıklı Tekrar', path: '/app/review', icon: <HistoryOutlined /> },
     { label: 'Süreli Sınavlar', path: '/app/exams', icon: <FormOutlined /> },
-    { label: 'Akademik Gelişim', path: '/app/progress', icon: <LineChartOutlined /> },
+    { label: 'Gelişim & İlerleme', path: '/app/progress', icon: <LineChartOutlined /> },
   ];
 
   const instructorNavItems = [
     { label: 'Eğitmen Paneli', path: '/app/teach', icon: <BookOutlined /> },
     { label: 'Sınıf Yönetimi', path: '/app/teach/classrooms', icon: <TeamOutlined /> },
     { label: 'Dersler', path: '/app/teach/courses', icon: <AppstoreOutlined /> },
-    { label: 'Ders Belgeleri', path: '/app/teach/resources', icon: <FileTextOutlined /> },
-    { label: 'İçerik İnceleme & Onay', path: '/app/teach/content-review', icon: <CheckCircleOutlined /> },
+    { label: 'Belgeler & Kaynaklar', path: '/app/teach/resources', icon: <FileTextOutlined /> },
+    { label: 'İçerik İnceleme', path: '/app/teach/content-review', icon: <CheckCircleOutlined /> },
     { label: 'Analitik', path: '/app/teach/analytics', icon: <LineChartOutlined /> },
   ];
 
@@ -273,7 +300,7 @@ export const Navbar: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    {profile?.full_name?.split(' ')[0] || 'Hesabım'}
+                    {profile?.full_name?.split(' ')[0] || 'Profilim'}
                   </span>
                 </Button>
               </Dropdown>
@@ -304,6 +331,7 @@ export const Navbar: React.FC = () => {
           {/* Mobile hamburger button */}
           <Button
             type="text"
+            aria-label="Gezinme Menüsünü Aç"
             icon={<MenuOutlined style={{ fontSize: 18, color: '#1E293B' }} />}
             onClick={() => setMobileMenuOpen(true)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -318,8 +346,8 @@ export const Navbar: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontWeight: 800, color: '#0F172A' }}>CENNA.live</span>
             {user && (
-              <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-                {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
+              <Tag color={roleBadgeConfig.color}>
+                {roleBadgeConfig.label}
               </Tag>
             )}
           </div>
@@ -380,7 +408,7 @@ export const Navbar: React.FC = () => {
                   navigate('/');
                 }}
               >
-                Çıkış Yap
+                Oturumu Kapat
               </Button>
             </>
           ) : (
@@ -427,7 +455,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Gizlilik & Veri Güvenliği
+                Gizlilik Politikası
               </Button>
               <Button
                 block

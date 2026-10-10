@@ -55,7 +55,7 @@ export const TeachDashboardView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading instructor hub...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Eğitmen kontrol paneli yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -65,12 +65,12 @@ export const TeachDashboardView: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <Tag color="purple" style={{ marginBottom: 4 }}>Instructional Management</Tag>
+          <Tag color="purple" style={{ marginBottom: 4 }}>Eğitim & Müfredat Yönetimi</Tag>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Instructor Teaching Hub
+            Eğitmen Yönetim Paneli
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Classroom administration, document ingestion, AI curriculum generation, and publication gates.
+            Sınıf yönetimi, ders materyali ayrıştırma, yapay zekâ soru üretimi ve eğitmen onay kapısı.
           </Text>
         </div>
         <Space>
@@ -80,14 +80,14 @@ export const TeachDashboardView: React.FC = () => {
             onClick={() => navigate('/app/teach/classrooms')}
             style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40 }}
           >
-            New Classroom
+            Yeni Sınıf
           </Button>
           <Button
             icon={<UploadOutlined />}
             onClick={() => navigate('/app/teach/resources')}
             style={{ borderRadius: 8, height: 40 }}
           >
-            Upload Document
+            Ders Belgesi Yükle
           </Button>
         </Space>
       </div>
@@ -97,7 +97,7 @@ export const TeachDashboardView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Classrooms"
+              title="Kayıtlı Sınıflar"
               value={classroomsCount}
               prefix={<TeamOutlined style={{ color: '#2563EB' }} />}
               valueStyle={{ fontWeight: 800, color: '#0F172A' }}
@@ -107,7 +107,7 @@ export const TeachDashboardView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Active Courses"
+              title="Aktif Dersler"
               value={coursesCount}
               prefix={<BookOutlined style={{ color: '#0284C7' }} />}
               valueStyle={{ fontWeight: 800, color: '#0F172A' }}
@@ -117,7 +117,7 @@ export const TeachDashboardView: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Ingested Documents"
+              title="İşlenen Belgeler"
               value={resourcesCount}
               prefix={<FileTextOutlined style={{ color: '#D97706' }} />}
               valueStyle={{ fontWeight: 800, color: '#0F172A' }}
@@ -134,7 +134,7 @@ export const TeachDashboardView: React.FC = () => {
             }}
           >
             <Statistic
-              title="Pending Content Review"
+              title="İnceleme Bekleyenler"
               value={pendingReviewCount}
               prefix={<SafetyCertificateOutlined style={{ color: '#D97706' }} />}
               valueStyle={{ fontWeight: 800, color: pendingReviewCount > 0 ? '#B45309' : '#059669' }}
@@ -160,11 +160,11 @@ export const TeachDashboardView: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <SafetyCertificateOutlined style={{ color: '#B45309', fontSize: 20 }} />
                 <Title level={4} style={{ margin: 0, color: '#92400E' }}>
-                  {pendingReviewCount} Generated Items Awaiting Review
+                  {pendingReviewCount} Yeni İçerik Eğitmen İncelemesi Bekliyor
                 </Title>
               </div>
               <Paragraph style={{ color: '#78350F', margin: '4px 0 0 0', fontSize: 14 }}>
-                Unverified AI items remain hidden from students until an instructor approves or publishes them.
+                Yapay zekâ tarafından oluşturulan hiçbir içerik eğitmen onaylayıp yayınlayana kadar öğrencilere gösterilmez.
               </Paragraph>
             </div>
             <Button
@@ -172,7 +172,7 @@ export const TeachDashboardView: React.FC = () => {
               onClick={() => navigate('/app/teach/content-review')}
               style={{ backgroundColor: '#B45309', borderColor: '#B45309', borderRadius: 8, height: 40, fontWeight: 600 }}
             >
-              Open Content Review Gate
+              İçerik İnceleme Kapısını Aç
             </Button>
           </div>
         </Card>
@@ -189,10 +189,10 @@ export const TeachDashboardView: React.FC = () => {
           >
             <TeamOutlined style={{ fontSize: 32, color: '#2563EB', marginBottom: 16 }} />
             <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
-              Classrooms & Invitations
+              Sınıflar & Davet Yönetimi
             </Title>
             <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
-              Generate cryptographic invitation links, manage enrolled student rosters, and monitor membership.
+              Kriptografik davet bağlantıları oluşturun, kayıtlı öğrenci listelerini yönetin ve katılımı denetleyin.
             </Paragraph>
           </Card>
         </Col>
@@ -206,10 +206,10 @@ export const TeachDashboardView: React.FC = () => {
           >
             <FileTextOutlined style={{ fontSize: 32, color: '#D97706', marginBottom: 16 }} />
             <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
-              Document Processing
+              Belge İşleme & Ayrıştırma
             </Title>
             <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
-              Upload lecture notes, textbooks, and slides. Extract semantically grounded chunks with exact coordinates.
+              Ders notlarını, slaytları ve kaynak kitapları yükleyin; kaynak koordinatları korunmuş anlamsal bölümler çıkarın.
             </Paragraph>
           </Card>
         </Col>
@@ -223,10 +223,10 @@ export const TeachDashboardView: React.FC = () => {
           >
             <LineChartOutlined style={{ fontSize: 32, color: '#059669', marginBottom: 16 }} />
             <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
-              Classroom Analytics
+              Sınıf Başarı Analitiği
             </Title>
             <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
-              Spot challenging topics with high error rates to guide in-person lecture review and remediation.
+              Öğrencilerin en çok zorlandığı kavramları ve yüksek hata oranına sahip konuları tespit edin.
             </Paragraph>
           </Card>
         </Col>

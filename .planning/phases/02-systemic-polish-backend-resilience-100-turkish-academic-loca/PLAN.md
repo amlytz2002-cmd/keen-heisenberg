@@ -1,13 +1,13 @@
 # Phase 2 Plan: Systemic Polish, Backend Resilience & 100% Turkish Academic Localization
 
 ## Objective
-Execute an uncompromising, comprehensive overhaul of the entire CENNA.live platform to eliminate all English, mixed language, and machine-translated copywriting in favor of natural, high-register academic Turkish appropriate for pharmacy and medical students. Simultaneously harden all backend Cloudflare Pages functions, eliminate all legacy brand references ("PharmIQ" -> "CENNA.live"), standardize error handling, and ensure zero regression across all 290 automated tests.
+Execute an uncompromising, comprehensive overhaul of the entire CENNA.live platform to eliminate all English, mixed language, and machine-translated copywriting in favor of natural, high-register academic Turkish appropriate for pharmacy and medical students. Simultaneously harden all backend Cloudflare Pages functions, eliminate all legacy brand references (legacy prototype -> "CENNA.live"), standardize error handling, and ensure zero regression across all 290 automated tests.
 
 ---
 
 ## Execution Matrix & Quality Gates
 
-- **Gate 1 (Brand & Backend Hardening):** Zero occurrences of "PharmIQ" or "CENNA.ai" in code/edge functions; Cloudflare edge functions return localized Turkish user feedback; `aiService.ts` prompts and deterministic fallbacks produce natural academic Turkish; `hint.ts` and `submit-answer.ts` localized.
+- **Gate 1 (Brand & Backend Hardening):** Zero occurrences of legacy prototype references in code/edge functions; Cloudflare edge functions return localized Turkish user feedback; `aiService.ts` prompts and deterministic fallbacks produce natural academic Turkish; `hint.ts` and `submit-answer.ts` localized.
 - **Gate 2 (Public Shell & Auth Localization):** `index.html`, `Navbar.tsx`, `Footer.tsx`, `ErrorBoundary.tsx`, `LandingView.tsx`, `AuthView.tsx`, `FeaturesView.tsx`, `HowItWorksView.tsx`, `LegalView.tsx`, and `InviteRedeemView.tsx` are 100% fluent academic Turkish with zero untranslated English strings.
 - **Gate 3 (Student Experience Localization):** `TodayView.tsx`, `StudySessionView.tsx` (including 3-stage Socratic hint progression modal and feedback alerts), `ReviewQueueView.tsx`, `ExamsListView.tsx`, `ExamTakeView.tsx`, `ExamResultsView.tsx`, `ProgressView.tsx`, `ClassroomsView.tsx`, and `CourseDetailView.tsx` completely localized and polished.
 - **Gate 4 (Instructor Portal & Verification):** `TeachDashboardView.tsx`, `ClassroomManagerView.tsx`, `CourseManagerView.tsx`, `ResourceManagerView.tsx`, `ContentReviewWorkspace.tsx` (fixing broken toast grammar), `InstructorAnalyticsView.tsx`, and `AdminAuditView.tsx` completely localized. All 290 tests pass, `npm run typecheck` passes with 0 errors, and production build succeeds.
@@ -29,7 +29,7 @@ Execute an uncompromising, comprehensive overhaul of the entire CENNA.live platf
   - `functions/api/resources/[id]/process.ts`
   - `functions/api/**/*.ts` (error responses)
 - **Actions:**
-  1. Purge every reference to `PharmIQ` and `CENNA.ai` and enforce `CENNA.live`.
+  1. Purge every reference to legacy prototypes and enforce `CENNA.live`.
   2. Localize Socratic refusal turn: `"CENNA.live yalnızca sentetik eğitim vakaları ve ders tekrarı için tasarlanmıştır..."`.
   3. Localize default 3-stage hint fallbacks in `functions/api/study/hint.ts`:
      - Stage 1: "1. Kademe: Yönlendirme ve Temel İlke" (Konunun temel farmakolojik veya klinik ilkesini göz önüne getirin; kaynak belgede belirtilen kuralları hatırlayın).

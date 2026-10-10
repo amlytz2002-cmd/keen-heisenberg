@@ -16,7 +16,7 @@ import {
 
 /**
  * ============================================================================
- * PHARMIQ ADVERSARIAL EMPIRICAL STRESS TEST SUITE
+ * CENNA.LIVE ADVERSARIAL EMPIRICAL STRESS TEST SUITE
  * ============================================================================
  * Rigorous adversarial validation across:
  * 1. Cockcroft-Gault Engine:

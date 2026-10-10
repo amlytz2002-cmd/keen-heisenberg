@@ -21,17 +21,6 @@ export async function ensureDemoSession() {
     password: demoPassword,
   });
 
-  if (signInError) {
-    const legacyAttempt = await supabase.auth.signInWithPassword({
-      email: demoEmail,
-      password: 'PharmIQ2026!DemoStudent',
-    });
-    if (legacyAttempt.data?.user) {
-      signInData = legacyAttempt.data;
-      signInError = null;
-    }
-  }
-
   if (signInData?.user) {
     return signInData.user;
   }

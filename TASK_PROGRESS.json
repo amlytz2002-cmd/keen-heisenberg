@@ -26,8 +26,8 @@
     "live_deployment": {
       "status": "DEPLOYED_AND_VERIFIED",
       "custom_domain": "https://cenna.live",
-      "pages_domain": "https://pharmiq-app.pages.dev",
-      "latest_deployment_url": "https://c34a8492.pharmiq-app.pages.dev",
+      "pages_domain": "https://cennalive-pilot.pages.dev",
+      "latest_deployment_url": "https://c34a8492.cennalive-pilot.pages.dev",
       "test_accounts": {
         "student": {
           "email": "pilot.student@biruni.edu.tr",

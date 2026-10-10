@@ -81,17 +81,17 @@ export const ResourceManagerView: React.FC = () => {
       });
 
       if (res.success && res.data?.id) {
-        message.success('Resource registered. Processing semantic chunks...');
+        message.success('Kaynak kaydedildi. Semantik parçalara ayrılıyor...');
         setUploadModalOpen(false);
 
         // Trigger immediate processing
         await api.resources.process(res.data.id, rawText);
         await fetchData();
       } else {
-        message.error(res.error || 'Failed to create resource');
+        message.error(res.error || 'Kaynak oluşturulamadı');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error uploading resource');
+      message.error(err.message || 'Kaynak yüklenirken bir hata oluştu');
     } finally {
       setUploading(false);
     }
@@ -102,13 +102,13 @@ export const ResourceManagerView: React.FC = () => {
     try {
       const res = await api.resources.process(resourceId);
       if (res.success) {
-        message.success(`Document processed into ${res.data?.chunks_count || 0} chunks`);
+        message.success(`Belge başarıyla ${res.data?.chunks_count || 0} anlamsal parçaya ayrıldı`);
         await fetchData();
       } else {
-        message.error(res.error || 'Processing failed');
+        message.error(res.error || 'Belge işleme başarısız oldu');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error processing resource');
+      message.error(err.message || 'Kaynak işlenirken bir hata oluştu');
     } finally {
       setProcessingId(null);
     }
@@ -123,13 +123,13 @@ export const ResourceManagerView: React.FC = () => {
         mode: 'all',
       });
       if (res.success) {
-        message.success('Concepts & questions generated and sent to Content Review Workspace!');
+        message.success('Kavramlar ve sorular oluşturuldu ve İçerik İnceleme Alanı\'na aktarıldı!');
         navigate('/app/teach/content-review');
       } else {
-        message.error(res.error || 'AI generation run failed');
+        message.error(res.error || 'Yapay zekâ üretim süreci başarısız oldu');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error generating AI content');
+      message.error(err.message || 'İçerik üretilirken bir hata oluştu');
     } finally {
       setProcessingId(null);
     }
@@ -143,7 +143,7 @@ export const ResourceManagerView: React.FC = () => {
 
   const columns = [
     {
-      title: 'Resource Title & Type',
+      title: 'Kaynak Başlığı ve Türü',
       key: 'title',
       render: (_: any, r: any) => (
         <div>
@@ -155,34 +155,42 @@ export const ResourceManagerView: React.FC = () => {
             <Tag style={{ textTransform: 'uppercase', fontSize: 11 }}>{r.file_type || 'TXT'}</Tag>
           </div>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Course: {r.course?.title || 'Unassigned'}
+            Ders: {r.course?.title || 'Atanmamış'}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Status & Chunks',
+      title: 'Durum ve Parçalar',
       key: 'status',
       render: (_: any, r: any) => {
         let color = 'default';
-        if (r.processing_status === 'completed') color = 'green';
-        if (r.processing_status === 'processing') color = 'processing';
-        if (r.processing_status === 'failed') color = 'error';
+        let statusLabel = 'Beklemede';
+        if (r.processing_status === 'completed') {
+          color = 'green';
+          statusLabel = 'Tamamlandı';
+        } else if (r.processing_status === 'processing') {
+          color = 'processing';
+          statusLabel = 'İşleniyor';
+        } else if (r.processing_status === 'failed') {
+          color = 'error';
+          statusLabel = 'Başarısız';
+        }
 
         return (
           <Space>
-            <Tag color={color} style={{ textTransform: 'capitalize' }}>
-              {r.processing_status || 'pending'}
+            <Tag color={color}>
+              {statusLabel}
             </Tag>
             {r.chunks && r.chunks.length > 0 && (
-              <Tag color="purple">{r.chunks.length} Chunks</Tag>
+              <Tag color="purple">{r.chunks.length} Parça</Tag>
             )}
           </Space>
         );
       },
     },
     {
-      title: 'Provenance & Extraction',
+      title: 'Kaynak Doğrulama ve Çıkarım',
       key: 'actions',
       render: (_: any, r: any) => (
         <Space>
@@ -193,7 +201,7 @@ export const ResourceManagerView: React.FC = () => {
               loading={processingId === r.id}
               onClick={() => handleProcessResource(r.id)}
             >
-              Chunk Text
+              Metni Parçala
             </Button>
           ) : (
             <>
@@ -202,7 +210,7 @@ export const ResourceManagerView: React.FC = () => {
                 icon={<EyeOutlined />}
                 onClick={() => handleViewChunks(r)}
               >
-                View Chunks
+                Parçaları Görüntüle
               </Button>
               <Button
                 size="small"
@@ -212,7 +220,7 @@ export const ResourceManagerView: React.FC = () => {
                 onClick={() => handleGenerateAI(r.id, r.course_id)}
                 style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED' }}
               >
-                Extract with AI
+                Yapay Zekâ ile Çıkar
               </Button>
             </>
           )}
@@ -225,7 +233,7 @@ export const ResourceManagerView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading document pipeline...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Belge işleme hattı yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -235,10 +243,10 @@ export const ResourceManagerView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Course Documents & Semantic Chunking
+            Ders Belgeleri ve Semantik Parçalama
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Ingest authoritative course materials, chunk with paragraph provenance, and generate draft questions.
+            Yetkili ders materyallerini yükleyin, paragraf kaynak bağıyla semantik parçalara ayırın ve soru taslakları üretin.
           </Text>
         </div>
         <Button
@@ -247,7 +255,7 @@ export const ResourceManagerView: React.FC = () => {
           onClick={() => setUploadModalOpen(true)}
           style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
-          Add Document
+          Yeni Belge Ekle
         </Button>
       </div>
 
@@ -262,15 +270,15 @@ export const ResourceManagerView: React.FC = () => {
 
       {/* Upload / Ingest Document Modal */}
       <Modal
-        title="Add Learning Document to Repository"
+        title="Öğrenme Belgesini Depoya Ekle"
         open={uploadModalOpen}
         onCancel={() => setUploadModalOpen(false)}
         footer={null}
         width={600}
       >
         <Form layout="vertical" onFinish={handleUploadResource} style={{ marginTop: 16 }}>
-          <Form.Item name="course_id" label="Associate with Course">
-            <Select placeholder="Select course (optional)" allowClear>
+          <Form.Item name="course_id" label="Ders ile İlişkilendir">
+            <Select placeholder="Ders seçin (isteğe bağlı)" allowClear>
               {courses.map((c) => (
                 <Select.Option key={c.id} value={c.id}>
                   {c.title}
@@ -281,20 +289,20 @@ export const ResourceManagerView: React.FC = () => {
 
           <Form.Item
             name="title"
-            label="Document Title"
-            rules={[{ required: true, message: 'Please enter document title' }]}
+            label="Belge Başlığı"
+            rules={[{ required: true, message: 'Lütfen belge başlığını girin' }]}
           >
-            <Input placeholder="e.g. Clinical Pharmacokinetics Lecture 04 — Renal Clearance" size="large" />
+            <Input placeholder="Örn: Klinik Farmakokinetik 04. Hafta — Renal Klerens ve Doz Ayarı" size="large" />
           </Form.Item>
 
           <Form.Item
             name="rawText"
-            label="Document Content / Syllabus Text"
-            rules={[{ required: true, message: 'Please input source text for semantic chunking' }]}
+            label="Belge İçeriği / Ders Notu Metni"
+            rules={[{ required: true, message: 'Lütfen semantik parçalama için kaynak metni girin' }]}
           >
             <Input.TextArea
               rows={8}
-              placeholder="Paste lecture text, textbook chapter excerpts, formulas, or clinical case studies here..."
+              placeholder="Ders notlarını, akademik kitap alıntılarını, formülleri veya klinik vaka çalışmalarını buraya yapıştırın..."
             />
           </Form.Item>
 
@@ -306,26 +314,26 @@ export const ResourceManagerView: React.FC = () => {
             size="large"
             style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
           >
-            Ingest & Chunk Document
+            Belgeyi Kaydet ve Parçala
           </Button>
         </Form>
       </Modal>
 
       {/* Chunks Viewer Modal */}
       <Modal
-        title={`Extracted Chunks: ${selectedResourceTitle}`}
+        title={`Ayrıştırılan Semantik Parçalar: ${selectedResourceTitle}`}
         open={chunksModalOpen}
         onCancel={() => setChunksModalOpen(false)}
         footer={[
           <Button key="close" onClick={() => setChunksModalOpen(false)}>
-            Close
+            Kapat
           </Button>,
         ]}
         width={720}
       >
         <div style={{ maxHeight: '60vh', overflowY: 'auto', padding: '8px 0' }}>
           {selectedResourceChunks.length === 0 ? (
-            <Paragraph style={{ color: '#64748B' }}>No chunks extracted yet.</Paragraph>
+            <Paragraph style={{ color: '#64748B' }}>Henüz çıkarılmış bir semantik parça bulunmuyor.</Paragraph>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {selectedResourceChunks.map((chunk, idx) => (
@@ -336,9 +344,9 @@ export const ResourceManagerView: React.FC = () => {
                   style={{ borderRadius: 8, borderColor: '#E2E8F0', backgroundColor: '#F8FAFC' }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <Tag color="blue">Chunk #{chunk.chunk_index || idx + 1}</Tag>
+                    <Tag color="blue">Parça #{chunk.chunk_index || idx + 1}</Tag>
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                      Page {chunk.page_number || 1} · {chunk.token_count || 120} tokens
+                      Sayfa {chunk.page_number || 1} · {chunk.token_count || 120} belirteç
                     </Text>
                   </div>
                   <Paragraph style={{ margin: 0, fontSize: 13, color: '#334155' }}>

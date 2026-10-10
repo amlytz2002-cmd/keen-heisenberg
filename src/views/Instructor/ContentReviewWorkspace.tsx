@@ -79,14 +79,27 @@ export const ContentReviewWorkspace: React.FC = () => {
         edited_payload: editedPayload,
       });
 
+      const actionLabels: Record<string, string> = {
+        approve: 'onaylandı',
+        publish: 'yayımlandı',
+        reject: 'reddedildi',
+        edit_and_approve: 'düzenlenip onaylandı',
+      };
+      const actionErrorLabels: Record<string, string> = {
+        approve: 'onaylanamadı',
+        publish: 'yayımlanamadı',
+        reject: 'reddedilemedi',
+        edit_and_approve: 'düzenleme kaydedilemedi',
+      };
+
       if (res.success) {
-        message.success(`Item ${action}d successfully`);
+        message.success(`İçerik başarıyla ${actionLabels[action] || 'işlendi'}.`);
         await fetchItems(activeTab);
       } else {
-        message.error(res.error || `Failed to ${action} item`);
+        message.error(res.error || `İçerik ${actionErrorLabels[action] || 'işlenemedi'}.`);
       }
     } catch (err: any) {
-      message.error(err.message || 'Error updating item');
+      message.error(err.message || 'Öğe güncellenirken bir hata oluştu');
     } finally {
       setProcessingId(null);
       setEditModalOpen(false);
@@ -107,19 +120,41 @@ export const ContentReviewWorkspace: React.FC = () => {
 
   const totalCount = (reviewData.concepts?.length || 0) + (reviewData.questions?.length || 0);
 
+  const tabLabels: Record<string, string> = {
+    needs_review: 'İnceleme Bekleyenler',
+    approved: 'Onaylananlar',
+    published: 'Yayındakiler',
+    rejected: 'Reddedilenler',
+  };
+
+  const questionTypeMap: Record<string, string> = {
+    multiple_choice: 'ÇOKTAN SEÇMELİ',
+    open_ended: 'AÇIK UÇLU',
+    formula: 'FARMAKOKİNETİK HESAPLAMA',
+    case_study: 'KLİNİK VAKA',
+    cloze: 'BOŞLUK DOLDURMA',
+  };
+
+  const statusMap: Record<string, { label: string; color: string }> = {
+    published: { label: 'Yayında', color: 'green' },
+    approved: { label: 'Onaylandı', color: 'blue' },
+    needs_review: { label: 'İnceleme Bekliyor', color: 'orange' },
+    rejected: { label: 'Reddedildi', color: 'red' },
+  };
+
   return (
     <div style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <Tag color="orange" style={{ borderRadius: 6, fontWeight: 600 }}>
-            <SafetyCertificateOutlined /> Anti-Hallucination Review Gate
+            <SafetyCertificateOutlined /> Halüsinasyon Önleyici İnceleme Geçidi
           </Tag>
         </div>
         <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-          Content Review & Publication Workspace
+          İçerik İnceleme ve Yayımlama Alanı
         </Title>
         <Text style={{ fontSize: 15, color: '#64748B' }}>
-          Review AI-extracted concepts and retrieval questions against source documents before publishing to students.
+          Yapay zekâ tarafından çıkarılan kavram ve aktif hatırlama sorularını öğrencilere sunmadan önce kaynak belgelerle karşılaştırarak doğrulayın.
         </Text>
       </div>
 
@@ -128,10 +163,10 @@ export const ContentReviewWorkspace: React.FC = () => {
           activeKey={activeTab}
           onChange={(k) => setActiveTab(k as any)}
           items={[
-            { key: 'needs_review', label: 'Needs Review (Drafts)' },
-            { key: 'approved', label: 'Approved (Ready to Publish)' },
-            { key: 'published', label: 'Published (Live for Students)' },
-            { key: 'rejected', label: 'Rejected / Archived' },
+            { key: 'needs_review', label: 'İnceleme Bekleyenler (Taslak)' },
+            { key: 'approved', label: 'Onaylananlar (Yayıma Hazır)' },
+            { key: 'published', label: 'Yayındakiler (Öğrencilere Açık)' },
+            { key: 'rejected', label: 'Reddedilenler / Arşiv' },
           ]}
         />
       </Card>
@@ -139,14 +174,14 @@ export const ContentReviewWorkspace: React.FC = () => {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <Spin size="large" />
-          <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading review queue...</Paragraph>
+          <Paragraph style={{ marginTop: 16, color: '#64748B' }}>İnceleme kuyruğu yükleniyor...</Paragraph>
         </div>
       ) : totalCount === 0 ? (
         <Card bordered style={{ borderRadius: 16, textAlign: 'center', padding: '48px 20px' }}>
           <CheckCircleOutlined style={{ fontSize: 44, color: '#059669', marginBottom: 12 }} />
-          <Title level={4} style={{ color: '#0F172A', margin: 0 }}>Queue is Clear</Title>
+          <Title level={4} style={{ color: '#0F172A', margin: 0 }}>İnceleme Kuyruğu Boş</Title>
           <Paragraph style={{ color: '#64748B', marginTop: 4 }}>
-            There are no items currently in the <strong>{activeTab.replace('_', ' ')}</strong> state.
+            Şu anda <strong>{tabLabels[activeTab] || activeTab}</strong> aşamasında incelenecek bir içerik bulunmuyor.
           </Paragraph>
         </Card>
       ) : (
@@ -155,7 +190,7 @@ export const ContentReviewWorkspace: React.FC = () => {
           {reviewData.questions && reviewData.questions.length > 0 && (
             <div>
               <Title level={4} style={{ color: '#0F172A', marginBottom: 16 }}>
-                Retrieval Questions ({reviewData.questions.length})
+                Aktif Hatırlama Soruları ({reviewData.questions.length})
               </Title>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 {reviewData.questions.map((q) => (
@@ -184,13 +219,13 @@ export const ContentReviewWorkspace: React.FC = () => {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                             <FileTextOutlined style={{ color: '#2563EB' }} />
                             <Text strong style={{ fontSize: 13, color: '#1E293B' }}>
-                              Source Provenance
+                              Kaynak Bağı (Grounded Provenance)
                             </Text>
                           </div>
                           <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
-                            Document: <strong>{q.sources?.[0]?.resource_title || 'Pharmacokinetics Source'}</strong>
+                            Kaynak Belge: <strong>{q.sources?.[0]?.resource_title || 'Klinik Farmakokinetik Kaynağı'}</strong>
                             <br />
-                            Coordinates: Page {q.sources?.[0]?.page_number || '1'} (Para {q.sources?.[0]?.paragraph_index || '1'})
+                            Konum: Sayfa {q.sources?.[0]?.page_number || '1'} (Paragraf {q.sources?.[0]?.paragraph_index || '1'})
                           </Text>
                           <div
                             style={{
@@ -207,7 +242,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                             }}
                           >
                             "{q.sources?.[0]?.chunk_excerpt ||
-                              'The Cockcroft-Gault equation estimates creatinine clearance from serum creatinine. For female patients, multiply by 0.85.'}"
+                              'Cockcroft-Gault denklemi, serum kreatinin düzeyinden kreatinin klerensini tahmin eder. Kadın hastalar için bulunan değer 0.85 katsayısı ile çarpılır.'}"
                           </div>
                         </div>
                       </Col>
@@ -215,11 +250,11 @@ export const ContentReviewWorkspace: React.FC = () => {
                       {/* Right Side: Generated Question Item */}
                       <Col xs={24} md={14}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <Tag color="purple" style={{ textTransform: 'uppercase' }}>
-                            {q.question_type?.replace('_', ' ') || 'QUESTION'}
+                          <Tag color="purple">
+                            {questionTypeMap[q.question_type] || q.question_type?.toUpperCase() || 'SORU'}
                           </Tag>
-                          <Tag color={q.status === 'published' ? 'green' : q.status === 'approved' ? 'blue' : 'orange'}>
-                            {q.status?.replace('_', ' ')}
+                          <Tag color={statusMap[q.status]?.color || 'default'}>
+                            {statusMap[q.status]?.label || q.status}
                           </Tag>
                         </div>
 
@@ -243,7 +278,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                               >
                                 <strong>{opt.key}.</strong> {opt.text}
                                 {opt.key === q.correct_answer && (
-                                  <Tag color="green" style={{ marginLeft: 8, fontSize: 10 }}>CORRECT</Tag>
+                                  <Tag color="green" style={{ marginLeft: 8, fontSize: 10 }}>DOĞRU CEVAP</Tag>
                                 )}
                               </div>
                             ))}
@@ -252,7 +287,7 @@ export const ContentReviewWorkspace: React.FC = () => {
 
                         <div style={{ backgroundColor: '#F1F5F9', padding: 12, borderRadius: 8, marginBottom: 16 }}>
                           <Text strong style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>
-                            Explanation:
+                            Akademik Açıklama ve Gerekçe:
                           </Text>
                           <Text style={{ fontSize: 13, color: '#334155' }}>
                             {q.explanation}
@@ -267,7 +302,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                               size="small"
                               onClick={() => openRejectModal(q, 'question')}
                             >
-                              Reject
+                              Reddet
                             </Button>
                           )}
                           <Button
@@ -275,7 +310,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                             icon={<EditOutlined />}
                             onClick={() => openEditModal(q, 'question')}
                           >
-                            Edit
+                            Düzenle
                           </Button>
                           {q.status === 'needs_review' && (
                             <Button
@@ -285,7 +320,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                               onClick={() => handleAction('question', q.id, 'approve')}
                               style={{ backgroundColor: '#2563EB' }}
                             >
-                              Approve
+                              Onayla
                             </Button>
                           )}
                           {(q.status === 'needs_review' || q.status === 'approved') && (
@@ -297,7 +332,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                               onClick={() => handleAction('question', q.id, 'publish')}
                               style={{ backgroundColor: '#059669', borderColor: '#059669' }}
                             >
-                              Publish Live
+                              Öğrencilere Yayımla
                             </Button>
                           )}
                         </div>
@@ -313,19 +348,21 @@ export const ContentReviewWorkspace: React.FC = () => {
           {reviewData.concepts && reviewData.concepts.length > 0 && (
             <div style={{ marginTop: 16 }}>
               <Title level={4} style={{ color: '#0F172A', marginBottom: 16 }}>
-                Extracted Concepts ({reviewData.concepts.length})
+                Çıkarılan Akademik Kavramlar ({reviewData.concepts.length})
               </Title>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {reviewData.concepts.map((c) => (
                   <Card key={c.id} bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                       <div>
-                        <Tag color="cyan">CONCEPT</Tag>
+                        <Tag color="cyan">KAVRAM</Tag>
                         <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginLeft: 8 }}>
                           {c.name}
                         </span>
                       </div>
-                      <Tag color={c.status === 'published' ? 'green' : 'orange'}>{c.status}</Tag>
+                      <Tag color={c.status === 'published' ? 'green' : 'orange'}>
+                        {c.status === 'published' ? 'Yayında' : 'İnceleme Bekliyor'}
+                      </Tag>
                     </div>
                     <Paragraph style={{ color: '#475569', fontSize: 14 }}>
                       {c.description}
@@ -337,7 +374,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                         onClick={() => handleAction('concept', c.id, 'publish')}
                         style={{ backgroundColor: '#059669', borderColor: '#059669' }}
                       >
-                        Publish Concept
+                        Kavramı Yayımla
                       </Button>
                     </div>
                   </Card>
@@ -350,7 +387,7 @@ export const ContentReviewWorkspace: React.FC = () => {
 
       {/* Edit Item Modal */}
       <Modal
-        title={`Edit Question: ${editingItem?.stem?.substring(0, 40)}...`}
+        title={`Soru Düzenleme: ${editingItem?.stem?.substring(0, 40) || ''}...`}
         open={editModalOpen}
         onCancel={() => setEditModalOpen(false)}
         footer={null}
@@ -374,16 +411,16 @@ export const ContentReviewWorkspace: React.FC = () => {
           }}
           style={{ marginTop: 16 }}
         >
-          <Form.Item name="stem" label="Question Stem" rules={[{ required: true }]}>
+          <Form.Item name="stem" label="Soru Kökü" rules={[{ required: true, message: 'Lütfen soru kökünü girin' }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
 
-          <Form.Item name="explanation" label="Explanation & Source Reference" rules={[{ required: true }]}>
+          <Form.Item name="explanation" label="Akademik Açıklama ve Kaynak Referansı" rules={[{ required: true, message: 'Lütfen açıklamayı girin' }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item name="correct_answer" label="Correct Answer Key">
-            <Input placeholder="e.g. A, B, or numeric value" />
+          <Form.Item name="correct_answer" label="Doğru Cevap Anahtarı">
+            <Input placeholder="Örn: A, B veya sayısal değer" />
           </Form.Item>
 
           <Button
@@ -394,14 +431,14 @@ export const ContentReviewWorkspace: React.FC = () => {
             size="large"
             style={{ backgroundColor: '#059669', borderColor: '#059669', borderRadius: 8 }}
           >
-            Save Edits & Approve
+            Değişiklikleri Kaydet ve Onayla
           </Button>
         </Form>
       </Modal>
 
       {/* Reject Reason Modal */}
       <Modal
-        title="Reject Content Item"
+        title="İçeriği Reddet"
         open={rejectModalOpen}
         onCancel={() => setRejectModalOpen(false)}
         onOk={() => {
@@ -412,16 +449,17 @@ export const ContentReviewWorkspace: React.FC = () => {
             rejectReason
           );
         }}
-        okText="Confirm Rejection"
+        okText="Reddetmeyi Onayla"
+        cancelText="Vazgeç"
         okButtonProps={{ danger: true }}
       >
         <div style={{ padding: '8px 0' }}>
           <Paragraph>
-            State the reason for rejecting this AI generated item (e.g. inaccurate equation, out of scope):
+            Bu yapay zekâ üretimini reddetme gerekçenizi belirtin (örn: formül katsayısı eksik, müfredat dışı):
           </Paragraph>
           <Input.TextArea
             rows={3}
-            placeholder="e.g. Formula missing female gender adjustment factor."
+            placeholder="Örn: Cockcroft-Gault formülünde kadın cinsiyet düzeltme katsayısı (0.85) atlanmış."
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
           />

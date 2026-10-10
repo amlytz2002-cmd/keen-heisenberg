@@ -1,7 +1,7 @@
 # Phase A Plan: PK & Calculation Engine Proof (Updated with OpenRouter AI Infrastructure)
 
 ## Objective
-Establish the deterministic and AI foundation of PharmIQ with:
+Establish the deterministic and AI foundation of CENNA.live with:
 1. **OpenRouter AI Infrastructure:** Free-tier LLMs (`meta-llama/llama-3.3-70b-instruct:free`, `google/gemini-2.0-flash-exp:free`) and embeddings via a single drop-in `.env` key (`OPENROUTER_API_KEY`).
 2. **Three-Tier Resilient Tutor Runtime:**
    - Tier 1: Cloudflare Worker `/api/tutor/turn` gateway with OpenRouter streaming/JSON parsing and clinical redirection guardrails.

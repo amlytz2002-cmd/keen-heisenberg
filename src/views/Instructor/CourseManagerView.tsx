@@ -60,14 +60,14 @@ export const CourseManagerView: React.FC = () => {
       });
 
       if (res.success) {
-        message.success('Course created successfully');
+        message.success('Ders başarıyla oluşturuldu');
         setCreateCourseOpen(false);
         await fetchData();
       } else {
-        message.error(res.error || 'Failed to create course');
+        message.error(res.error || 'Ders oluşturulamadı');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error creating course');
+      message.error(err.message || 'Ders oluşturulurken bir hata meydana geldi');
     } finally {
       setCreatingCourse(false);
     }
@@ -83,14 +83,14 @@ export const CourseManagerView: React.FC = () => {
       });
 
       if (res.success) {
-        message.success('Module added to syllabus');
+        message.success('Modül müfredata başarıyla eklendi');
         setAddModuleOpen(false);
         await fetchData();
       } else {
-        message.error(res.error || 'Failed to add module');
+        message.error(res.error || 'Modül eklenemedi');
       }
     } catch (err: any) {
-      message.error(err.message || 'Error adding module');
+      message.error(err.message || 'Modül eklenirken bir hata meydana geldi');
     } finally {
       setCreatingModule(false);
     }
@@ -98,38 +98,38 @@ export const CourseManagerView: React.FC = () => {
 
   const columns = [
     {
-      title: 'Course Title & Code',
+      title: 'Ders Başlığı ve Kodu',
       key: 'title',
       render: (_: any, r: any) => (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Tag color="blue">{r.code || 'COURSE'}</Tag>
+            <Tag color="blue">{r.code || 'DERS'}</Tag>
             <Text strong style={{ fontSize: 15, color: '#0F172A' }}>
               {r.title}
             </Text>
           </div>
           <Text type="secondary" style={{ fontSize: 13, marginTop: 4, display: 'block' }}>
-            {r.description || 'Structured retrieval syllabus.'}
+            {r.description || 'Yapılandırılmış aktif hatırlama müfredatı.'}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Classroom',
+      title: 'Sınıf',
       key: 'classroom',
       render: (_: any, r: any) => (
-        <span>{r.classroom?.name || 'General Course'}</span>
+        <span>{r.classroom?.name || 'Genel Ders'}</span>
       ),
     },
     {
-      title: 'Modules',
+      title: 'Modüller',
       key: 'modules',
       render: (_: any, r: any) => (
-        <Tag color="cyan">{r.modules?.length || 0} Modules</Tag>
+        <Tag color="cyan">{r.modules?.length || 0} Modül</Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: 'İşlemler',
       key: 'actions',
       render: (_: any, r: any) => (
         <Space>
@@ -141,7 +141,7 @@ export const CourseManagerView: React.FC = () => {
               setAddModuleOpen(true);
             }}
           >
-            Add Module
+            Modül Ekle
           </Button>
         </Space>
       ),
@@ -152,7 +152,7 @@ export const CourseManagerView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading course management...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Ders yönetimi yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -162,10 +162,10 @@ export const CourseManagerView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Course & Syllabus Architecture
+            Ders ve Müfredat Mimarisi
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Author structured learning modules and anchor curriculum concepts.
+            Yapılandırılmış öğrenme modülleri oluşturun ve müfredat kavramlarını sabitleyin.
           </Text>
         </div>
         <Button
@@ -174,7 +174,7 @@ export const CourseManagerView: React.FC = () => {
           onClick={() => setCreateCourseOpen(true)}
           style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
-          Create Course
+          Yeni Ders Oluştur
         </Button>
       </div>
 
@@ -189,14 +189,14 @@ export const CourseManagerView: React.FC = () => {
 
       {/* Create Course Modal */}
       <Modal
-        title="Create New Academic Course"
+        title="Yeni Akademik Ders Oluştur"
         open={createCourseOpen}
         onCancel={() => setCreateCourseOpen(false)}
         footer={null}
       >
         <Form layout="vertical" onFinish={handleCreateCourse} style={{ marginTop: 16 }}>
-          <Form.Item name="classroom_id" label="Assigned Classroom">
-            <Select placeholder="Select classroom (optional)" allowClear>
+          <Form.Item name="classroom_id" label="Atanan Sınıf">
+            <Select placeholder="Sınıf seçin (isteğe bağlı)" allowClear>
               {classrooms.map((cr) => (
                 <Select.Option key={cr.id} value={cr.id}>
                   {cr.name}
@@ -207,18 +207,18 @@ export const CourseManagerView: React.FC = () => {
 
           <Form.Item
             name="title"
-            label="Course Title"
-            rules={[{ required: true, message: 'Please enter course title' }]}
+            label="Ders Başlığı"
+            rules={[{ required: true, message: 'Lütfen ders başlığını girin' }]}
           >
-            <Input placeholder="e.g. Clinical Pharmacokinetics" size="large" />
+            <Input placeholder="Örn: Klinik Farmakokinetik" size="large" />
           </Form.Item>
 
-          <Form.Item name="code" label="Course Code">
-            <Input placeholder="e.g. PHA-304" size="large" />
+          <Form.Item name="code" label="Ders Kodu">
+            <Input placeholder="Örn: FAR-304" size="large" />
           </Form.Item>
 
-          <Form.Item name="description" label="Course Overview / Syllabus Objectives">
-            <Input.TextArea rows={3} placeholder="Focus on clearance, volume of distribution, and dosing regimens." />
+          <Form.Item name="description" label="Ders Özeti / Müfredat Hedefleri">
+            <Input.TextArea rows={3} placeholder="Klerens, dağılım hacmi, yarılanma ömrü ve dozaj rejimleri odağında." />
           </Form.Item>
 
           <Button
@@ -229,14 +229,14 @@ export const CourseManagerView: React.FC = () => {
             size="large"
             style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
           >
-            Create Course
+            Dersi Oluştur
           </Button>
         </Form>
       </Modal>
 
       {/* Add Module Modal */}
       <Modal
-        title={`Add Syllabus Module to ${selectedCourse?.title}`}
+        title={`${selectedCourse?.title || 'Derse'} Müfredat Modülü Ekle`}
         open={addModuleOpen}
         onCancel={() => setAddModuleOpen(false)}
         footer={null}
@@ -244,14 +244,14 @@ export const CourseManagerView: React.FC = () => {
         <Form layout="vertical" onFinish={handleAddModule} style={{ marginTop: 16 }}>
           <Form.Item
             name="title"
-            label="Module Title"
-            rules={[{ required: true, message: 'Please enter module title' }]}
+            label="Modül Başlığı"
+            rules={[{ required: true, message: 'Lütfen modül başlığını girin' }]}
           >
-            <Input placeholder="e.g. Module 1: Clearance & Cockcroft-Gault Equation" size="large" />
+            <Input placeholder="Örn: Modül 1: Klerens ve Cockcroft-Gault Denklemi" size="large" />
           </Form.Item>
 
-          <Form.Item name="description" label="Module Scope / Learning Objectives">
-            <Input.TextArea rows={3} placeholder="Calculate CrCl for male and female patients with adjusted weight." />
+          <Form.Item name="description" label="Modül Kapsamı / Öğrenme Hedefleri">
+            <Input.TextArea rows={3} placeholder="Düzeltilmiş vücut ağırlığı ile kadın ve erkek hastalarda CrCl hesaplama prensipleri." />
           </Form.Item>
 
           <Button
@@ -262,7 +262,7 @@ export const CourseManagerView: React.FC = () => {
             size="large"
             style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
           >
-            Add Module
+            Modülü Ekle
           </Button>
         </Form>
       </Modal>
