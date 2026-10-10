@@ -48,44 +48,44 @@ export const ReviewQueueView: React.FC = () => {
 
   const columns = [
     {
-      title: 'Concept & Course',
+      title: 'Kavram ve Ders',
       key: 'concept',
       render: (_: any, record: any) => (
         <div>
           <Text strong style={{ fontSize: 14, color: '#0F172A', display: 'block' }}>
-            {record.concept_name || record.name || 'Core Concept'}
+            {record.concept_name || record.name || 'Temel Kavram'}
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {record.course_title || 'General Curriculum'}
+            {record.course_title || 'Genel Müfredat'}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Interval Stage',
+      title: 'Aralık Kademesi',
       key: 'interval',
       render: (_: any, record: any) => {
         const interval = record.current_interval_days || 1;
         return (
           <Tag color="geekblue" style={{ borderRadius: 4 }}>
-            Day {interval} Interval
+            {interval}. Gün Aralığı
           </Tag>
         );
       },
     },
     {
-      title: 'Mastery',
+      title: 'Kavrama Skoru',
       key: 'mastery',
       render: (_: any, record: any) => {
         const score = record.mastery_score || 70;
         let color = 'green';
         if (score < 50) color = 'volcano';
         else if (score < 75) color = 'gold';
-        return <Tag color={color}>{score}%</Tag>;
+        return <Tag color={color}>%{score}</Tag>;
       },
     },
     {
-      title: 'Lapses',
+      title: 'Hata Sayısı',
       key: 'lapses',
       render: (_: any, record: any) => (
         <span style={{ color: record.lapse_count > 0 ? '#DC2626' : '#64748B' }}>
@@ -94,7 +94,7 @@ export const ReviewQueueView: React.FC = () => {
       ),
     },
     {
-      title: 'Action',
+      title: 'İşlem',
       key: 'action',
       render: (_: any, record: any) => (
         <Button
@@ -104,7 +104,7 @@ export const ReviewQueueView: React.FC = () => {
           onClick={() => handleStartReview(record.concept_id || record.id)}
           style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED', borderRadius: 6 }}
         >
-          Review
+          Tekrar Et
         </Button>
       ),
     },
@@ -114,7 +114,7 @@ export const ReviewQueueView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Calculating spaced repetition queue...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Aralıklı tekrar kuyruğu hesaplanıyor...</Paragraph>
       </div>
     );
   }
@@ -124,10 +124,10 @@ export const ReviewQueueView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Spaced Repetition Review Queue
+            Aralıklı Tekrar Kuyruğu (SRS)
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Scientifically scheduled 1, 3, 7, and 14-day intervals to consolidate memory.
+            Hafızayı pekiştirmek ve unutmayı önlemek için bilimsel olarak planlanmış 1, 3, 7 ve 14 günlük tekrar aralıkları.
           </Text>
         </div>
         {queue.length > 0 && (
@@ -138,7 +138,7 @@ export const ReviewQueueView: React.FC = () => {
             onClick={() => handleStartReview()}
             style={{ backgroundColor: '#7C3AED', borderRadius: 8, height: 44, fontWeight: 600 }}
           >
-            Review All Due Concepts
+            Günü Gelen Tüm Kavramları Tekrar Et
           </Button>
         )}
       </div>
@@ -148,7 +148,7 @@ export const ReviewQueueView: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Due for Review Today"
+              title="Bugün Tekrar Edilecekler"
               value={queue.length}
               valueStyle={{ color: queue.length > 0 ? '#7C3AED' : '#059669', fontWeight: 800 }}
               prefix={<HistoryOutlined />}
@@ -158,7 +158,7 @@ export const ReviewQueueView: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Overdue Items"
+              title="Geciken Kavramlar"
               value={overdueCount}
               valueStyle={{ color: overdueCount > 0 ? '#DC2626' : '#64748B', fontWeight: 800 }}
               prefix={<WarningOutlined />}
@@ -168,7 +168,7 @@ export const ReviewQueueView: React.FC = () => {
         <Col xs={24} sm={8}>
           <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
             <Statistic
-              title="Interval Protocol"
+              title="Tekrar Protokolü"
               value="1 · 3 · 7 · 14"
               valueStyle={{ color: '#2563EB', fontWeight: 800, fontSize: 22 }}
               prefix={<CalendarOutlined />}
@@ -182,12 +182,12 @@ export const ReviewQueueView: React.FC = () => {
         {queue.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
             <CheckCircleOutlined style={{ fontSize: 44, color: '#059669', marginBottom: 12 }} />
-            <Title level={4} style={{ color: '#0F172A', margin: 0 }}>All Caught Up!</Title>
+            <Title level={4} style={{ color: '#0F172A', margin: 0 }}>Tüm Tekrarlar Tamamlandı!</Title>
             <Paragraph style={{ color: '#64748B', marginTop: 4 }}>
-              You have completed all scheduled spaced reviews for today. New items will appear as their intervals mature.
+              Bugün için planlanan tüm aralıklı tekrarları bitirdiniz. Yeni tekrarlar günleri geldikçe kuyruğa eklenecektir.
             </Paragraph>
             <Button onClick={() => navigate('/app/today')} style={{ marginTop: 12, borderRadius: 6 }}>
-              Back to Today's Dashboard
+              Bugünün Paneline Dön
             </Button>
           </div>
         ) : (

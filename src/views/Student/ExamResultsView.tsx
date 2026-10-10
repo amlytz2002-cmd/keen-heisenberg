@@ -45,7 +45,7 @@ export const ExamResultsView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Grading attempt and compiling topic diagnostics...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Sınav puanlanıyor ve konu bazlı eksik giderme raporu oluşturuluyor...</Paragraph>
       </div>
     );
   }
@@ -55,9 +55,9 @@ export const ExamResultsView: React.FC = () => {
   const isPassed = scorePct >= (resultsData?.passing_score_pct || 70);
 
   const topicBreakdown = resultsData?.topic_breakdown || [
-    { topic: 'Creatinine Clearance & Cockcroft-Gault', total: 4, correct: 4, accuracy: 100, needs_remediation: false },
-    { topic: 'One-Compartment Elimination Kinetics', total: 3, correct: 2, accuracy: 66, needs_remediation: true },
-    { topic: 'Steady-State Loading Dose Equations', total: 3, correct: 2, accuracy: 66, needs_remediation: true },
+    { topic: 'Kreatinin Klerensi ve Cockcroft-Gault Eşitliği', total: 4, correct: 4, accuracy: 100, needs_remediation: false },
+    { topic: 'Tek Kompartmanlı Eliminasyon Kinetiği', total: 3, correct: 2, accuracy: 66, needs_remediation: true },
+    { topic: 'Kararlı Durum Yükleme Dozu Hesaplamaları', total: 3, correct: 2, accuracy: 66, needs_remediation: true },
   ];
 
   return (
@@ -75,10 +75,10 @@ export const ExamResultsView: React.FC = () => {
           status={isPassed ? 'success' : 'warning'}
           title={
             <span style={{ fontWeight: 800, fontSize: 26, color: '#0F172A' }}>
-              {isPassed ? 'Examination Passed' : 'Needs Further Retrieval Practice'}
+              {isPassed ? 'Sınav Başarıyla Geçildi' : 'Ek Aktif Tekrar ve Eksik Giderme Gerekli'}
             </span>
           }
-          subTitle={`Final Attempt Score: ${scorePct}% (Passing threshold: ${resultsData?.passing_score_pct || 70}%)`}
+          subTitle={`Sınav Başarı Puanı: %${scorePct} (Geçme barajı: %${resultsData?.passing_score_pct || 70})`}
           extra={[
             <Button
               type="primary"
@@ -87,10 +87,10 @@ export const ExamResultsView: React.FC = () => {
               onClick={() => navigate('/app/review')}
               style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED', borderRadius: 8, height: 42 }}
             >
-              Remediate Weak Concepts in Review Queue
+              Zayıf Kavramları Aralıklı Tekrara Ekle
             </Button>,
             <Button key="today" onClick={() => navigate('/app/today')} style={{ borderRadius: 8, height: 42 }}>
-              Back to Today Hub
+              Bugünün Paneline Dön
             </Button>,
           ]}
         />
@@ -98,7 +98,7 @@ export const ExamResultsView: React.FC = () => {
 
       {/* Diagnostics by Topic */}
       <Title level={3} style={{ fontWeight: 800, color: '#0F172A', marginBottom: 16 }}>
-        Topic Diagnostics & Remediation Plan
+        Konu Bazlı Tanı ve Eksik Giderme Planı
       </Title>
 
       <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0', marginBottom: 24 }}>
@@ -108,31 +108,31 @@ export const ExamResultsView: React.FC = () => {
           pagination={false}
           columns={[
             {
-              title: 'Concept / Topic',
+              title: 'Kavram / Konu Başlığı',
               dataIndex: 'topic',
               key: 'topic',
               render: (text: string) => <Text strong style={{ color: '#0F172A' }}>{text}</Text>,
             },
             {
-              title: 'Performance',
+              title: 'Başarı Oranı',
               key: 'performance',
               render: (_: any, r: any) => (
                 <span>
-                  {r.correct} / {r.total} ({r.accuracy}%)
+                  {r.correct} / {r.total} (%{r.accuracy})
                 </span>
               ),
             },
             {
-              title: 'Mastery Status',
+              title: 'Kavrama Düzeyi',
               key: 'status',
               render: (_: any, r: any) => (
                 <Tag color={r.accuracy >= 75 ? 'green' : 'volcano'}>
-                  {r.accuracy >= 75 ? 'Mastered' : 'Needs Practice'}
+                  {r.accuracy >= 75 ? 'Kavrandı' : 'Pratik Gerekli'}
                 </Tag>
               ),
             },
             {
-              title: 'Remediation',
+              title: 'İyileştirme Adımı',
               key: 'remediation',
               render: (_: any, r: any) =>
                 r.needs_remediation ? (
@@ -143,10 +143,10 @@ export const ExamResultsView: React.FC = () => {
                     onClick={() => navigate('/app/review')}
                     style={{ padding: 0, color: '#7C3AED', fontWeight: 600 }}
                   >
-                    Add to Day-1 Review
+                    1. Gün Tekrarına Ekle
                   </Button>
                 ) : (
-                  <Text type="secondary" style={{ fontSize: 12 }}>Consolidated</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>Pekiştirildi</Text>
                 ),
             },
           ]}

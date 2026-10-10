@@ -27,10 +27,10 @@ export const CourseDetailView: React.FC = () => {
         if (res.success && res.data) {
           setCourse(res.data);
         } else {
-          setErrorMsg(res.error || 'Failed to load course details.');
+          setErrorMsg(res.error || 'Ders ayrıntıları yüklenemedi.');
         }
       } catch (e: any) {
-        setErrorMsg(e.message || 'Error fetching course.');
+        setErrorMsg(e.message || 'Ders bilgisi alınırken hata oluştu.');
       } finally {
         setLoading(false);
       }
@@ -48,10 +48,10 @@ export const CourseDetailView: React.FC = () => {
       if (res.success && res.data?.session?.id) {
         navigate(`/app/study/${res.data.session.id}`);
       } else {
-        setErrorMsg(res.error || 'No active study questions found for this topic.');
+        setErrorMsg(res.error || 'Bu konu için henüz aktif çalışma sorusu bulunamadı.');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error launching study session');
+      setErrorMsg(err.message || 'Çalışma oturumu başlatılırken hata oluştu.');
     }
   };
 
@@ -59,7 +59,7 @@ export const CourseDetailView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading syllabus...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Ders izlencesi ve modüller yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -68,8 +68,8 @@ export const CourseDetailView: React.FC = () => {
     return (
       <div style={{ maxWidth: 800, margin: '60px auto', padding: '0 20px' }}>
         <Card bordered style={{ borderRadius: 16, textAlign: 'center' }}>
-          <Alert message={errorMsg || 'Course not found'} type="error" showIcon style={{ marginBottom: 16 }} />
-          <Button onClick={() => navigate('/app/classrooms')}>Back to Classrooms</Button>
+          <Alert message={errorMsg || 'Ders bulunamadı'} type="error" showIcon style={{ marginBottom: 16 }} />
+          <Button onClick={() => navigate('/app/classrooms')}>Sınıflarıma Dön</Button>
         </Card>
       </div>
     );
@@ -83,7 +83,7 @@ export const CourseDetailView: React.FC = () => {
         onClick={() => navigate('/app/classrooms')}
         style={{ padding: 0, marginBottom: 16, color: '#64748B' }}
       >
-        Back to Classrooms
+        Sınıflarıma Dön
       </Button>
 
       {/* Header */}
@@ -98,12 +98,12 @@ export const CourseDetailView: React.FC = () => {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <Tag color="blue" style={{ marginBottom: 8 }}>{course.code || 'COURSE'}</Tag>
+            <Tag color="blue" style={{ marginBottom: 8 }}>{course.code || 'DERS'}</Tag>
             <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
               {course.title}
             </Title>
             <Paragraph style={{ color: '#64748B', marginTop: 8, maxWidth: 640 }}>
-              {course.description || 'Core academic curriculum with active recall practice.'}
+              {course.description || 'Aktif hatırlama ve pratik odaklı akademik müfredat.'}
             </Paragraph>
           </div>
           <Button
@@ -113,21 +113,21 @@ export const CourseDetailView: React.FC = () => {
             onClick={() => handleStudyConcept()}
             style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 44, fontWeight: 600 }}
           >
-            Start Course Study
+            Ders Pratiğini Başlat
           </Button>
         </div>
       </Card>
 
       {/* Modules & Concepts */}
       <Title level={3} style={{ fontWeight: 700, color: '#0F172A', marginBottom: 16 }}>
-        Syllabus Modules & Concepts
+        Müfredat Modülleri & Temel Kavramlar
       </Title>
 
       {(!course.modules || course.modules.length === 0) ? (
         <Card bordered style={{ borderRadius: 12, textAlign: 'center', padding: '32px 0' }}>
           <FileTextOutlined style={{ fontSize: 32, color: '#94A3B8', marginBottom: 8 }} />
           <Paragraph style={{ color: '#64748B' }}>
-            No structured modules have been uploaded yet by the instructor.
+            Eğitmen tarafından henüz yapılandırılmış bir modül eklenmemiştir.
           </Paragraph>
         </Card>
       ) : (
@@ -139,7 +139,7 @@ export const CourseDetailView: React.FC = () => {
               style={{ borderRadius: 14, borderColor: '#E2E8F0' }}
               title={
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Tag style={{ borderRadius: 4, fontWeight: 700 }}>Module {idx + 1}</Tag>
+                  <Tag style={{ borderRadius: 4, fontWeight: 700 }}>Modül {idx + 1}</Tag>
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A' }}>{module.title}</span>
                 </div>
               }
@@ -173,11 +173,11 @@ export const CourseDetailView: React.FC = () => {
                               {concept.name}
                             </Text>
                             <Tag color="green" style={{ borderRadius: 4, fontSize: 11 }}>
-                              Target 85%
+                              Hedef %85
                             </Tag>
                           </div>
                           <Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 12, color: '#64748B', margin: '0 0 12px 0' }}>
-                            {concept.description || 'Key scientific concept for retrieval.'}
+                            {concept.description || 'Aktif hatırlama pratiği için temel kavram.'}
                           </Paragraph>
                         </div>
                         <Button
@@ -188,7 +188,7 @@ export const CourseDetailView: React.FC = () => {
                           onClick={() => handleStudyConcept(concept.id)}
                           style={{ borderRadius: 6, width: '100%', borderColor: '#2563EB', color: '#2563EB' }}
                         >
-                          Practice Concept
+                          Kavramı Çalış
                         </Button>
                       </Card>
                     </Col>
@@ -196,7 +196,7 @@ export const CourseDetailView: React.FC = () => {
                 </Row>
               ) : (
                 <div style={{ fontStyle: 'italic', color: '#94A3B8', fontSize: 13 }}>
-                  Concepts for this module are currently undergoing instructor review.
+                  Bu modüle ait kavramlar şu anda eğitmen inceleme ve onay aşamasındadır.
                 </div>
               )}
             </Card>

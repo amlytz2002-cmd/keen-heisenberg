@@ -79,7 +79,7 @@ export const TodayView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Preparing your daily study plan...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Günlük çalışma planınız hazırlanıyor...</Paragraph>
       </div>
     );
   }
@@ -89,16 +89,16 @@ export const TodayView: React.FC = () => {
       {/* Greeting & Daily Target Header */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <Tag color="blue" style={{ borderRadius: 12 }}>Daily Target: ~25 Minutes</Tag>
+          <Tag color="blue" style={{ borderRadius: 12 }}>Günün Hedefi: ~25 Dakika</Tag>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+            {new Date().toLocaleDateString('tr-TR', { weekday: 'long', month: 'short', day: 'numeric' })}
           </Text>
         </div>
         <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-          Good day, {profile?.full_name?.split(' ')[0] || 'Scholar'}.
+          İyi çalışmalar, {profile?.full_name?.split(' ')[0] || 'Değerli Öğrencimiz'}.
         </Title>
         <Text style={{ fontSize: 15, color: '#64748B' }}>
-          Here is your recommended active retrieval sequence for today.
+          Bugün için hazırlanan aktif hatırlama ve pratik programınız:
         </Text>
       </div>
 
@@ -121,14 +121,14 @@ export const TodayView: React.FC = () => {
             <Row align="middle" gutter={[20, 20]}>
               <Col xs={24} sm={16}>
                 <Tag color="cyan" style={{ borderRadius: 8, fontWeight: 600, marginBottom: 12 }}>
-                  <ClockCircleOutlined style={{ marginRight: 4 }} /> Focused Active Session
+                  <ClockCircleOutlined style={{ marginRight: 4 }} /> Odaklı Aktif Oturum
                 </Tag>
                 <Title level={3} style={{ color: '#FFFFFF', margin: '0 0 8px 0', fontWeight: 700 }}>
-                  {recommendedConcept ? recommendedConcept.name : 'Today’s Retrieval Practice'}
+                  {recommendedConcept ? recommendedConcept.name : 'Günün Aktif Hatırlama Pratiği'}
                 </Title>
                 <Paragraph style={{ color: '#94A3B8', fontSize: 14, margin: '0 0 16px 0', lineHeight: 1.6 }}>
                   {recommendedConcept?.description ||
-                    'Review key concepts with closed-book retrieval questions and graduated Socratic guidance.'}
+                    'Yetkili ders materyallerine dayalı kitapsız sorular ve 3 kademeli Sokratik yönlendirmeyle kavramları pekiştirin.'}
                 </Paragraph>
                 <Button
                   type="primary"
@@ -143,7 +143,7 @@ export const TodayView: React.FC = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Start ~25 Min Study Session
+                  ~25 Dk Çalışma Oturumunu Başlat
                 </Button>
               </Col>
               <Col xs={24} sm={8} style={{ textAlign: 'center' }}>
@@ -156,12 +156,12 @@ export const TodayView: React.FC = () => {
                   }}
                 >
                   <Text style={{ color: '#94A3B8', fontSize: 12, display: 'block', textTransform: 'uppercase' }}>
-                    Target Mastery
+                    Hedef Kavrama
                   </Text>
                   <div style={{ fontSize: 36, fontWeight: 800, color: '#38BDF8', margin: '4px 0' }}>
                     {recommendedConcept?.mastery_score ? `${recommendedConcept.mastery_score}%` : '85%'}
                   </div>
-                  <Text style={{ color: '#94A3B8', fontSize: 12 }}>Retention threshold</Text>
+                  <Text style={{ color: '#94A3B8', fontSize: 12 }}>Kalıcılık eşiği</Text>
                 </div>
               </Col>
             </Row>
@@ -171,10 +171,10 @@ export const TodayView: React.FC = () => {
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <Title level={4} style={{ margin: 0, color: '#0F172A' }}>
-                Active Courses
+                Kayıtlı Derslerim
               </Title>
               <Button type="link" onClick={() => navigate('/app/classrooms')} style={{ padding: 0 }}>
-                View All <RightOutlined style={{ fontSize: 11 }} />
+                Tümünü Gör <RightOutlined style={{ fontSize: 11 }} />
               </Button>
             </div>
 
@@ -182,14 +182,14 @@ export const TodayView: React.FC = () => {
               <Card bordered style={{ borderRadius: 12, textAlign: 'center', padding: '24px 0' }}>
                 <BookOutlined style={{ fontSize: 32, color: '#94A3B8', marginBottom: 8 }} />
                 <Paragraph style={{ color: '#64748B', margin: 0 }}>
-                  You are not yet enrolled in any courses.
+                  Henüz kayıtlı olduğunuz bir ders bulunmuyor.
                 </Paragraph>
                 <Button
                   type="primary"
                   onClick={() => navigate('/app/classrooms')}
                   style={{ marginTop: 12, backgroundColor: '#2563EB', borderRadius: 6 }}
                 >
-                  Browse or Join Classrooms
+                  Sınıflara Göz At veya Katıl
                 </Button>
               </Card>
             ) : (
@@ -203,16 +203,16 @@ export const TodayView: React.FC = () => {
                       onClick={() => navigate(`/app/courses/${c.id}`)}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <Tag color="geekblue">{c.code || 'COURSE'}</Tag>
+                        <Tag color="geekblue">{c.code || 'DERS'}</Tag>
                         <Text type="secondary" style={{ fontSize: 12 }}>
-                          {c.modules?.length || 0} Modules
+                          {c.modules?.length || 0} Modül
                         </Text>
                       </div>
                       <Title level={5} style={{ margin: '4px 0 8px 0', fontSize: 16 }}>
                         {c.title}
                       </Title>
                       <Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
-                        {c.description || 'Structured academic retrieval module.'}
+                        {c.description || 'Yapılandırılmış akademik pratik modülü.'}
                       </Paragraph>
                     </Card>
                   </Col>
@@ -237,14 +237,14 @@ export const TodayView: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <HistoryOutlined style={{ fontSize: 18, color: '#7C3AED' }} />
-                <Text strong style={{ fontSize: 16 }}>Spaced Reviews</Text>
+                <Text strong style={{ fontSize: 16 }}>Aralıklı Tekrarlar</Text>
               </div>
               <Tag color={reviewsDue > 0 ? 'red' : 'green'}>
-                {reviewsDue > 0 ? `${reviewsDue} Due` : 'Caught Up'}
+                {reviewsDue > 0 ? `${reviewsDue} Bekliyor` : 'Tamamlandı'}
               </Tag>
             </div>
             <Paragraph style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
-              Concepts scheduled at 1, 3, 7, and 14-day intervals to consolidate memory before forgetting occurs.
+              Unutma gerçekleşmeden önce bilginin pekişmesi için 1, 3, 7 ve 14 günlük aralıklarla planlanan kavramlar.
             </Paragraph>
             <Button
               block
@@ -258,7 +258,7 @@ export const TodayView: React.FC = () => {
                 fontWeight: 600,
               }}
             >
-              {reviewsDue > 0 ? `Review ${reviewsDue} Due Concepts` : 'All Caught Up Today'}
+              {reviewsDue > 0 ? `${reviewsDue} Günü Gelen Kavramı Tekrar Et` : 'Bugünkü Tüm Tekrarlar Tamamlandı'}
             </Button>
           </Card>
 
@@ -274,13 +274,13 @@ export const TodayView: React.FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <TrophyOutlined style={{ fontSize: 18, color: '#D97706' }} />
-              <Text strong style={{ fontSize: 16 }}>Timed Mock Exams</Text>
+              <Text strong style={{ fontSize: 16 }}>Süreli Deneme Sınavları</Text>
             </div>
             <Paragraph style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
-              Take server-enforced timed exams with instant question analysis and personalized concept remediation.
+              Sunucu süre kontrollü deneme sınavlarına katılın; anlık soru analizi ve kişiselleştirilmiş eksik giderme raporu alın.
             </Paragraph>
             <Button block onClick={() => navigate('/app/exams')} style={{ borderRadius: 8 }}>
-              Open Mock Exam Center
+              Sınav Merkezine Git
             </Button>
           </Card>
 
@@ -290,12 +290,12 @@ export const TodayView: React.FC = () => {
             style={{ borderRadius: 14, borderColor: '#E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <Text strong>Overall Concept Mastery</Text>
+              <Text strong>Genel Kavram Hakimiyeti</Text>
               <Text strong style={{ color: '#2563EB' }}>{overallMastery}%</Text>
             </div>
             <Progress percent={overallMastery} strokeColor="#2563EB" showInfo={false} />
             <Text type="secondary" style={{ fontSize: 12, marginTop: 8, display: 'block' }}>
-              Computed from demonstrated retrieval accuracy and hint independence.
+              Aktif hatırlama doğruluğu ve ipucu bağımsızlığına göre hesaplanmıştır.
             </Text>
           </Card>
         </Col>

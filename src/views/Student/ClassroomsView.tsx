@@ -49,10 +49,10 @@ export const ClassroomsView: React.FC = () => {
         setInviteToken('');
         await fetchClassrooms();
       } else {
-        setInviteError(res.error || 'Failed to join classroom with this token.');
+        setInviteError(res.error || 'Bu davet kodu ile sınıfa katılınamadı.');
       }
     } catch (err: any) {
-      setInviteError(err.message || 'Error redeeming token');
+      setInviteError(err.message || 'Davet kodu kullanılırken hata oluştu.');
     } finally {
       setSubmittingToken(false);
     }
@@ -62,7 +62,7 @@ export const ClassroomsView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading your classrooms...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Kayıtlı sınıflarınız yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -81,10 +81,10 @@ export const ClassroomsView: React.FC = () => {
       >
         <div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-            Academic Classrooms & Courses
+            Akademik Sınıflar & Dersler
           </Title>
           <Text style={{ fontSize: 15, color: '#64748B' }}>
-            Enrolled classes, structured learning modules, and course materials.
+            Kayıtlı olduğunuz sınıflar, yapılandırılmış ders modülleri ve eğitim materyalleri.
           </Text>
         </div>
         <Button
@@ -93,7 +93,7 @@ export const ClassroomsView: React.FC = () => {
           onClick={() => setInviteModalOpen(true)}
           style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
-          Join Classroom
+          Sınıfa Katıl
         </Button>
       </div>
 
@@ -102,9 +102,9 @@ export const ClassroomsView: React.FC = () => {
           <Empty
             description={
               <div>
-                <Title level={4} style={{ color: '#334155' }}>No Classrooms Joined</Title>
+                <Title level={4} style={{ color: '#334155' }}>Henüz Bir Sınıfa Kayıtlı Değilsiniz</Title>
                 <Paragraph style={{ color: '#64748B' }}>
-                  You have not been added to any academic classrooms yet. Ask your instructor for an invite code.
+                  Henüz herhangi bir akademik sınıfa eklenmediniz. Eğitmeninizden sınıf davet bağlantısı veya kodu talep edebilirsiniz.
                 </Paragraph>
               </div>
             }
@@ -114,7 +114,7 @@ export const ClassroomsView: React.FC = () => {
               onClick={() => setInviteModalOpen(true)}
               style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
             >
-              Enter Invitation Code
+              Davet Kodu Gir
             </Button>
           </Empty>
         </Card>
@@ -137,7 +137,7 @@ export const ClassroomsView: React.FC = () => {
               }
               extra={
                 <Tag color="blue" style={{ borderRadius: 6 }}>
-                  {cr.courses?.length || 0} Courses
+                  {cr.courses?.length || 0} Ders
                 </Tag>
               }
             >
@@ -163,14 +163,14 @@ export const ClassroomsView: React.FC = () => {
                         onClick={() => navigate(`/app/courses/${course.id}`)}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <Tag color="geekblue">{course.code || 'COURSE'}</Tag>
+                          <Tag color="geekblue">{course.code || 'DERS'}</Tag>
                           <RightOutlined style={{ fontSize: 12, color: '#94A3B8' }} />
                         </div>
                         <Title level={5} style={{ margin: '4px 0 8px 0', fontSize: 16, color: '#0F172A' }}>
                           {course.title}
                         </Title>
                         <Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
-                          {course.description || 'Structured retrieval syllabus.'}
+                          {course.description || 'Yapılandırılmış akademik pratik müfredatı.'}
                         </Paragraph>
                       </Card>
                     </Col>
@@ -178,7 +178,7 @@ export const ClassroomsView: React.FC = () => {
                 </Row>
               ) : (
                 <div style={{ padding: '16px 0', color: '#94A3B8', fontStyle: 'italic' }}>
-                  No published courses in this classroom yet.
+                  Bu sınıfta henüz yayınlanmış bir ders bulunmamaktadır.
                 </div>
               )}
             </Card>
@@ -188,7 +188,7 @@ export const ClassroomsView: React.FC = () => {
 
       {/* Join Classroom Modal */}
       <Modal
-        title="Join a Classroom"
+        title="Sınıfa Katıl"
         open={inviteModalOpen}
         onCancel={() => {
           setInviteModalOpen(false);
@@ -196,7 +196,7 @@ export const ClassroomsView: React.FC = () => {
         }}
         footer={[
           <Button key="cancel" onClick={() => setInviteModalOpen(false)}>
-            Cancel
+            Vazgeç
           </Button>,
           <Button
             key="submit"
@@ -205,19 +205,19 @@ export const ClassroomsView: React.FC = () => {
             onClick={handleRedeemInvite}
             style={{ backgroundColor: '#2563EB' }}
           >
-            Redeem & Join
+            Kodu Kullan ve Katıl
           </Button>,
         ]}
       >
         <div style={{ padding: '12px 0' }}>
           <Paragraph style={{ color: '#64748B' }}>
-            Paste the invitation token or URL provided by your course instructor:
+            Ders eğitmeniniz tarafından paylaşılan davet kodunu veya bağlantısını yapıştırın:
           </Paragraph>
           {inviteError && (
             <Alert message={inviteError} type="error" showIcon style={{ marginBottom: 16, borderRadius: 8 }} />
           )}
           <Input
-            placeholder="e.g. inv_4f89ab... or https://cenna.live/invite/..."
+            placeholder="Örn: inv_4f89ab... veya https://cenna.live/invite/..."
             value={inviteToken}
             onChange={(e) => setInviteToken(e.target.value)}
             size="large"

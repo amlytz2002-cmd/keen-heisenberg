@@ -143,7 +143,7 @@ export const StudySessionView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Initializing retrieval session...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Aktif hatırlama oturumu başlatılıyor...</Paragraph>
       </div>
     );
   }
@@ -153,34 +153,49 @@ export const StudySessionView: React.FC = () => {
       <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 20px' }}>
         <Card bordered style={{ borderRadius: 16, textAlign: 'center' }}>
           <CheckCircleOutlined style={{ fontSize: 48, color: '#059669', marginBottom: 16 }} />
-          <Title level={3}>Session Finished</Title>
+          <Title level={3}>Çalışma Oturumu Tamamlandı</Title>
           <Paragraph style={{ color: '#64748B' }}>
-            You have completed all scheduled retrieval questions for this concept!
+            Bu kavrama ait planlanan tüm aktif hatırlama sorularını başarıyla tamamladınız!
           </Paragraph>
           <Button
             type="primary"
             onClick={() => navigate('/app/today')}
             style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
           >
-            Return to Today
+            Bugünün Paneline Dön
           </Button>
         </Card>
       </div>
     );
   }
 
+  const formatQuestionType = (type: string) => {
+    switch (type) {
+      case 'single_choice':
+        return 'TEK SEÇENEKLİ';
+      case 'multiple_choice':
+        return 'ÇOKTAN SEÇMELİ';
+      case 'numeric':
+        return 'KLİNİK HESAPLAMA';
+      case 'short_answer':
+        return 'KISA CEVAP';
+      default:
+        return 'SORU';
+    }
+  };
+
   return (
     <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 16px 64px' }}>
       {/* Session Progress Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
-          <Tag color="blue">Question {currentQuestionIndex + 1} of {questions.length}</Tag>
+          <Tag color="blue">Soru {currentQuestionIndex + 1} / {questions.length}</Tag>
           <Text strong style={{ marginLeft: 8, color: '#334155' }}>
-            {concept?.name || 'Active Concept'}
+            {concept?.name || 'Aktif Kavram'}
           </Text>
         </div>
         <Button size="small" onClick={() => navigate('/app/today')}>
-          Exit Session
+          Oturumdan Çık
         </Button>
       </div>
 
@@ -205,9 +220,9 @@ export const StudySessionView: React.FC = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
             <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
-              Concept: {concept.name}
+              Kavram: {concept.name}
             </span>
-            <Tag color="cyan">Target 85%</Tag>
+            <Tag color="cyan">Hedef %85</Tag>
           </div>
           <Paragraph style={{ fontSize: 13, color: '#475569', margin: '0 0 8px 0', lineHeight: 1.6 }}>
             {concept.description}
@@ -216,7 +231,7 @@ export const StudySessionView: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
               <FileTextOutlined />
               <span>
-                Source: <strong>{concept.sources[0]?.resource_title || 'Course Textbook'}</strong> (Page {concept.sources[0]?.page_number || '1'}, Paragraph {concept.sources[0]?.paragraph_index || '1'})
+                Kaynak: <strong>{concept.sources[0]?.resource_title || 'Ders Kitabı'}</strong> (Sayfa {concept.sources[0]?.page_number || '1'}, Paragraf {concept.sources[0]?.paragraph_index || '1'})
               </span>
             </div>
           )}
@@ -235,15 +250,15 @@ export const StudySessionView: React.FC = () => {
         bodyStyle={{ padding: 28 }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-          <Tag color="purple" style={{ textTransform: 'uppercase', borderRadius: 4 }}>
-            {activeQuestion.question_type?.replace('_', ' ') || 'QUESTION'}
+          <Tag color="purple" style={{ borderRadius: 4 }}>
+            {formatQuestionType(activeQuestion.question_type)}
           </Tag>
           <Button
             icon={<BulbOutlined style={{ color: '#D97706' }} />}
             onClick={openHintModal}
             style={{ borderRadius: 6, borderColor: '#FDE68A', backgroundColor: '#FEF3C7', color: '#92400E' }}
           >
-            Socratic Hint ({hintsUsedCount}/3)
+            Sokratik İpucu ({hintsUsedCount}/3)
           </Button>
         </div>
 
@@ -307,7 +322,7 @@ export const StudySessionView: React.FC = () => {
                 <Input
                   type="number"
                   step="any"
-                  placeholder="Enter numeric calculation result"
+                  placeholder="Sayısal hesaplama sonucunu giriniz"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   size="large"
@@ -319,7 +334,7 @@ export const StudySessionView: React.FC = () => {
             {(activeQuestion.question_type === 'short_answer' || !activeQuestion.options) && (
               <Input.TextArea
                 rows={3}
-                placeholder="Type your answer concisely..."
+                placeholder="Cevabınızı kısaca yazınız..."
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 style={{ borderRadius: 8 }}
@@ -341,14 +356,14 @@ export const StudySessionView: React.FC = () => {
                 fontWeight: 600,
               }}
             >
-              Submit Answer
+              Cevabı Gönder
             </Button>
           </div>
         ) : (
           /* Answer Result Feedback */
           <div>
             <Alert
-              message={answerResult.is_correct ? 'Correct! Well Done.' : 'Incorrect Response'}
+              message={answerResult.is_correct ? 'Tebrikler! Doğru Cevap.' : 'Yanlış Cevap'}
               description={
                 <div>
                   <Paragraph style={{ margin: '8px 0 12px 0', fontSize: 14, color: '#334155' }}>
@@ -356,11 +371,11 @@ export const StudySessionView: React.FC = () => {
                   </Paragraph>
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13 }}>
                     <Tag color={answerResult.is_correct ? 'green' : 'volcano'}>
-                      Mastery: {answerResult.mastery_score || 75}%
+                      Kavrama Skoru: %{answerResult.mastery_score || 75}
                     </Tag>
                     {answerResult.next_review_days && (
                       <Tag color="purple">
-                        Next Review in {answerResult.next_review_days} {answerResult.next_review_days === 1 ? 'day' : 'days'}
+                        Sonraki Tekrar: {answerResult.next_review_days} gün sonra
                       </Tag>
                     )}
                   </div>
@@ -378,7 +393,7 @@ export const StudySessionView: React.FC = () => {
               onClick={handleNextQuestion}
               style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 44 }}
             >
-              {currentQuestionIndex + 1 < questions.length ? 'Continue to Next Question' : 'Finish Session'}
+              {currentQuestionIndex + 1 < questions.length ? 'Sonraki Soruya Geç' : 'Oturumu Tamamla'}
             </Button>
           </div>
         )}
@@ -389,14 +404,14 @@ export const StudySessionView: React.FC = () => {
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <BulbOutlined style={{ color: '#D97706' }} />
-            <span>Socratic Hint Progression Ladder</span>
+            <span>3 Kademeli Sokratik İpucu Merdiveni</span>
           </div>
         }
         open={hintModalOpen}
         onCancel={() => setHintModalOpen(false)}
         footer={[
           <Button key="close" onClick={() => setHintModalOpen(false)}>
-            Close
+            Kapat
           </Button>,
           currentHintStage < 3 && (
             <Button
@@ -406,14 +421,14 @@ export const StudySessionView: React.FC = () => {
               onClick={() => handleRequestHint(currentHintStage + 1)}
               style={{ backgroundColor: '#D97706', borderColor: '#D97706' }}
             >
-              Unlock Stage {currentHintStage + 1} Hint
+              {currentHintStage + 1}. Kademe İpucunu Aç
             </Button>
           ),
         ]}
       >
         <div style={{ padding: '8px 0' }}>
           <Paragraph style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
-            Graduated hints provide guidance without disclosing the final answer, reinforcing active retrieval.
+            Kademeli ipuçları nihai cevabı ifşa etmeden zihinsel yönlendirme sağlar ve aktif geri çağırmayı pekiştirir.
           </Paragraph>
 
           <Space direction="vertical" style={{ width: '100%' }} size="middle">
@@ -428,10 +443,10 @@ export const StudySessionView: React.FC = () => {
               }}
             >
               <Text strong style={{ color: '#92400E' }}>
-                Stage 1: Orientation (Principle)
+                1. Kademe: Yönlendirme ve Temel İlke
               </Text>
               <Paragraph style={{ margin: '6px 0 0 0', fontSize: 13, color: '#78350F' }}>
-                {hintTexts[1] || 'Foundational formula or physiological principle needed to approach this item.'}
+                {hintTexts[1] || 'Konunun temel farmakolojik veya klinik ilkesini göz önüne getirin; kaynak belgede belirtilen kuralları hatırlayın.'}
               </Paragraph>
             </Card>
 
@@ -447,15 +462,15 @@ export const StudySessionView: React.FC = () => {
                 }}
               >
                 <Text strong style={{ color: '#92400E' }}>
-                  Stage 2: Reasoning (Relationships)
+                  2. Kademe: Akıl Yürütme ve Mantıksal İlişki
                 </Text>
                 <Paragraph style={{ margin: '6px 0 0 0', fontSize: 13, color: '#78350F' }}>
-                  {hintTexts[2] || 'How the known parameters influence each other and eliminate incorrect paths.'}
+                  {hintTexts[2] || 'Soruyu ara adımlara bölün. Verilen parametrelerden çıkarılacak ilk mantıksal sonuç nedir?'}
                 </Paragraph>
               </Card>
             ) : (
               <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
-                Stage 2 (Reasoning) is locked.
+                2. Kademe (Akıl Yürütme) henüz açılmadı.
               </div>
             )}
 
@@ -471,15 +486,15 @@ export const StudySessionView: React.FC = () => {
                 }}
               >
                 <Text strong style={{ color: '#92400E' }}>
-                  Stage 3: Application (Substitution)
+                  3. Kademe: Uygulama ve Çözüm Adımı
                 </Text>
                 <Paragraph style={{ margin: '6px 0 0 0', fontSize: 13, color: '#78350F' }}>
-                  {hintTexts[3] || 'Exact step-by-step substitution instructions.'}
+                  {hintTexts[3] || 'Temel klinik sınırlamalar veya formül değişkenleriyle çelişen seçenekleri eleyerek çözüme ulaşın.'}
                 </Paragraph>
               </Card>
             ) : (
               <div style={{ fontSize: 12, color: '#94A3B8', fontStyle: 'italic' }}>
-                Stage 3 (Application) is locked.
+                3. Kademe (Uygulama) henüz açılmadı.
               </div>
             )}
           </Space>

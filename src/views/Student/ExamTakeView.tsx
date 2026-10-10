@@ -69,10 +69,10 @@ export const ExamTakeView: React.FC = () => {
             setUserAnswers(res.data.existing_answers);
           }
         } else {
-          setExamOverMessage(res.error || 'Failed to initialize exam.');
+          setExamOverMessage(res.error || 'Sınav oturumu başlatılamadı.');
         }
       } catch (err: any) {
-        setExamOverMessage(err.message || 'Error connecting to exam server');
+        setExamOverMessage(err.message || 'Sınav sunucusuna bağlanırken hata oluştu.');
       } finally {
         setLoading(false);
       }
@@ -157,10 +157,10 @@ export const ExamTakeView: React.FC = () => {
       if (res.success && res.data) {
         navigate(`/app/exam-attempts/${attemptId}/results`);
       } else {
-        setExamOverMessage(res.error || 'Failed to submit exam.');
+        setExamOverMessage(res.error || 'Sınav teslim edilirken hata oluştu.');
       }
     } catch (err: any) {
-      setExamOverMessage(err.message || 'Error submitting exam');
+      setExamOverMessage(err.message || 'Sınav gönderilirken hata oluştu.');
     } finally {
       setIsSubmitting(false);
       setSubmitConfirmOpen(false);
@@ -182,7 +182,7 @@ export const ExamTakeView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Connecting to secure exam engine...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Güvenli sınav motoruna bağlanılıyor...</Paragraph>
       </div>
     );
   }
@@ -193,7 +193,7 @@ export const ExamTakeView: React.FC = () => {
         <Card bordered style={{ borderRadius: 16, textAlign: 'center' }}>
           <Alert message={examOverMessage} type="error" showIcon style={{ marginBottom: 16 }} />
           <Button type="primary" onClick={() => navigate('/app/exams')}>
-            Return to Exam Center
+            Sınav Merkezine Dön
           </Button>
         </Card>
       </div>
@@ -203,8 +203,8 @@ export const ExamTakeView: React.FC = () => {
   if (!currentQuestion) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <Paragraph>No questions available for this exam.</Paragraph>
-        <Button onClick={() => navigate('/app/exams')}>Back</Button>
+        <Paragraph>Bu sınav için soru bulunamadı.</Paragraph>
+        <Button onClick={() => navigate('/app/exams')}>Geri Dön</Button>
       </div>
     );
   }
@@ -229,9 +229,9 @@ export const ExamTakeView: React.FC = () => {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <Tag color="blue">{examData?.title || 'Academic Exam'}</Tag>
+            <Tag color="blue">{examData?.title || 'Akademik Sınav'}</Tag>
             <div style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
-              Question {currentIndex + 1} of {questions.length} · {answeredCount} Answered
+              Soru {currentIndex + 1} / {questions.length} · {answeredCount} Cevaplandı
             </div>
           </div>
 
@@ -239,7 +239,7 @@ export const ExamTakeView: React.FC = () => {
             {/* Autosave status indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
               <SaveOutlined />
-              <span>{isAutosaving ? 'Saving answers...' : `Saved at ${lastSavedTime.toLocaleTimeString()}`}</span>
+              <span>{isAutosaving ? 'Cevaplar kaydediliyor...' : `Otomatik kayıt: ${lastSavedTime.toLocaleTimeString('tr-TR')}`}</span>
             </div>
 
             {/* Countdown Badge */}
@@ -277,7 +277,7 @@ export const ExamTakeView: React.FC = () => {
             bodyStyle={{ padding: 28 }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <Tag color="cyan">Question #{currentIndex + 1}</Tag>
+              <Tag color="cyan">Soru #{currentIndex + 1}</Tag>
               <Button
                 type={flaggedQuestions[currentQuestion.id] ? 'primary' : 'default'}
                 icon={<FlagOutlined />}
@@ -288,7 +288,7 @@ export const ExamTakeView: React.FC = () => {
                   borderColor: flaggedQuestions[currentQuestion.id] ? '#D97706' : undefined,
                 }}
               >
-                {flaggedQuestions[currentQuestion.id] ? 'Flagged for Review' : 'Flag Question'}
+                {flaggedQuestions[currentQuestion.id] ? 'Gözden Geçirmek İçin İşaretlendi' : 'Soruyu İşaretle'}
               </Button>
             </div>
 
@@ -350,7 +350,7 @@ export const ExamTakeView: React.FC = () => {
                 <Input
                   type="number"
                   step="any"
-                  placeholder="Enter numeric response"
+                  placeholder="Sayısal cevap giriniz"
                   value={userAnswers[currentQuestion.id] || ''}
                   onChange={(e) => handleAnswerSelect(e.target.value)}
                   size="large"
@@ -362,7 +362,7 @@ export const ExamTakeView: React.FC = () => {
             {currentQuestion.question_type === 'short_answer' && (
               <Input.TextArea
                 rows={4}
-                placeholder="Type your response..."
+                placeholder="Cevabınızı buraya yazınız..."
                 value={userAnswers[currentQuestion.id] || ''}
                 onChange={(e) => handleAnswerSelect(e.target.value)}
                 style={{ borderRadius: 8 }}
@@ -376,7 +376,7 @@ export const ExamTakeView: React.FC = () => {
                 onClick={() => setCurrentIndex((idx) => idx - 1)}
                 style={{ borderRadius: 8 }}
               >
-                Previous
+                Önceki Soru
               </Button>
               <Space>
                 {currentIndex + 1 < questions.length ? (
@@ -386,7 +386,7 @@ export const ExamTakeView: React.FC = () => {
                     onClick={() => setCurrentIndex((idx) => idx + 1)}
                     style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
                   >
-                    Next Question
+                    Sonraki Soru
                   </Button>
                 ) : (
                   <Button
@@ -394,7 +394,7 @@ export const ExamTakeView: React.FC = () => {
                     onClick={() => setSubmitConfirmOpen(true)}
                     style={{ backgroundColor: '#059669', borderColor: '#059669', borderRadius: 8 }}
                   >
-                    Review & Submit Exam
+                    Sınavı İncele ve Bitir
                   </Button>
                 )}
               </Space>
@@ -407,7 +407,7 @@ export const ExamTakeView: React.FC = () => {
           <Card
             bordered
             style={{ borderRadius: 16, borderColor: '#E2E8F0' }}
-            title="Question Palette"
+            title="Soru Paleti"
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 20 }}>
               {questions.map((q: any, i: number) => {
@@ -473,15 +473,15 @@ export const ExamTakeView: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: '#64748B' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: '#EFF6FF', border: '1px solid #93C5FD' }} />
-                <span>Answered ({answeredCount})</span>
+                <span>Cevaplanan ({answeredCount})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: '#FEF3C7', border: '1px solid #FCD34D' }} />
-                <span>Flagged for review ({Object.values(flaggedQuestions).filter(Boolean).length})</span>
+                <span>İşaretlenen ({Object.values(flaggedQuestions).filter(Boolean).length})</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1' }} />
-                <span>Unanswered ({questions.length - answeredCount})</span>
+                <span>Boş Bırakılan ({questions.length - answeredCount})</span>
               </div>
             </div>
 
@@ -494,7 +494,7 @@ export const ExamTakeView: React.FC = () => {
               onClick={() => setSubmitConfirmOpen(true)}
               style={{ backgroundColor: '#059669', borderColor: '#059669', borderRadius: 8, fontWeight: 600 }}
             >
-              Submit Exam Now
+              Sınavı Şimdi Teslim Et
             </Button>
           </Card>
         </Col>
@@ -502,12 +502,12 @@ export const ExamTakeView: React.FC = () => {
 
       {/* Submit Confirmation Modal */}
       <Modal
-        title="Confirm Exam Submission"
+        title="Sınav Teslim Onayı"
         open={submitConfirmOpen}
         onCancel={() => setSubmitConfirmOpen(false)}
         footer={[
           <Button key="cancel" onClick={() => setSubmitConfirmOpen(false)}>
-            Back to Questions
+            Sorulara Dön
           </Button>,
           <Button
             key="submit"
@@ -516,23 +516,23 @@ export const ExamTakeView: React.FC = () => {
             onClick={() => handleFinalSubmit(false)}
             style={{ backgroundColor: '#059669', borderColor: '#059669' }}
           >
-            Confirm & Grade Attempt
+            Onayla ve Sınavı Tamamla
           </Button>,
         ]}
       >
         <div style={{ padding: '8px 0' }}>
           <Paragraph>
-            Are you sure you want to finalize and submit your exam?
+            Sınavınızı tamamlayıp puanlama için göndermek istediğinizden emin misiniz?
           </Paragraph>
           <div style={{ padding: '12px', backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0' }}>
-            <div><strong>Questions Answered:</strong> {answeredCount} of {questions.length}</div>
-            <div><strong>Unanswered Questions:</strong> {questions.length - answeredCount}</div>
-            <div><strong>Flagged Questions:</strong> {Object.values(flaggedQuestions).filter(Boolean).length}</div>
+            <div><strong>Cevaplanan Sorular:</strong> {answeredCount} / {questions.length}</div>
+            <div><strong>Boş Bırakılan Sorular:</strong> {questions.length - answeredCount}</div>
+            <div><strong>Gözden Geçirilecekler:</strong> {Object.values(flaggedQuestions).filter(Boolean).length}</div>
           </div>
           {questions.length - answeredCount > 0 && (
             <Alert
-              message="Unanswered Questions Warning"
-              description="You have unanswered questions. Any unanswered questions will receive zero points."
+              message="Boş Soru Uyarısı"
+              description="Boş bıraktığınız sorular bulunmaktadır. Cevaplanmayan her soru 0 puan olarak değerlendirilecektir."
               type="warning"
               showIcon
               style={{ marginTop: 12, borderRadius: 6 }}

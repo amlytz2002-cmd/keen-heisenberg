@@ -48,10 +48,10 @@ export const ExamsListView: React.FC = () => {
         setConfirmModalOpen(false);
         navigate(`/app/exams/${selectedExam.id}/take?attemptId=${res.data.attempt_id}`);
       } else {
-        setErrorMsg(res.error || 'Failed to initialize exam attempt.');
+        setErrorMsg(res.error || 'Sınav oturumu başlatılamadı.');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error starting exam');
+      setErrorMsg(err.message || 'Sınav başlatılırken hata oluştu.');
     } finally {
       setStarting(false);
     }
@@ -59,7 +59,7 @@ export const ExamsListView: React.FC = () => {
 
   const columns = [
     {
-      title: 'Exam Title & Details',
+      title: 'Sınav Başlığı ve Açıklama',
       key: 'title',
       render: (_: any, record: any) => (
         <div>
@@ -67,29 +67,29 @@ export const ExamsListView: React.FC = () => {
             {record.title}
           </Text>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            {record.description || 'Comprehensive clinical retrieval evaluation.'}
+            {record.description || 'Kapsamlı klinik aktif hatırlama ve değerlendirme sınavı.'}
           </Text>
         </div>
       ),
     },
     {
-      title: 'Duration',
+      title: 'Süre',
       key: 'duration',
       render: (_: any, record: any) => (
         <Tag icon={<ClockCircleOutlined />} color="blue">
-          {record.duration_minutes} Minutes
+          {record.duration_minutes} Dakika
         </Tag>
       ),
     },
     {
-      title: 'Passing Score',
+      title: 'Geçme Notu',
       key: 'passing',
       render: (_: any, record: any) => (
-        <Tag color="geekblue">{record.passing_score_pct || 70}%</Tag>
+        <Tag color="geekblue">%{record.passing_score_pct || 70}</Tag>
       ),
     },
     {
-      title: 'Action',
+      title: 'İşlem',
       key: 'action',
       render: (_: any, record: any) => (
         <Button
@@ -101,7 +101,7 @@ export const ExamsListView: React.FC = () => {
           }}
           style={{ backgroundColor: '#2563EB', borderRadius: 6 }}
         >
-          Take Exam
+          Sınava Gir
         </Button>
       ),
     },
@@ -111,7 +111,7 @@ export const ExamsListView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Loading mock exams...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Deneme sınavları yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -120,10 +120,10 @@ export const ExamsListView: React.FC = () => {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ marginBottom: 28 }}>
         <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
-          Timed Mock Exams
+          Süreli Deneme Sınavları
         </Title>
         <Text style={{ fontSize: 15, color: '#64748B' }}>
-          Simulate official academic examination conditions with server-enforced countdowns and concept analysis.
+          Sunucu kontrollü geri sayım ve ayrıntılı kavram analiziyle resmi sınav koşullarını deneyimleyin.
         </Text>
       </div>
 
@@ -131,9 +131,9 @@ export const ExamsListView: React.FC = () => {
         {exams.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
             <TrophyOutlined style={{ fontSize: 44, color: '#94A3B8', marginBottom: 12 }} />
-            <Title level={4} style={{ color: '#0F172A' }}>No Active Exams Available</Title>
+            <Title level={4} style={{ color: '#0F172A' }}>Aktif Deneme Sınavı Bulunmuyor</Title>
             <Paragraph style={{ color: '#64748B' }}>
-              Your instructors have not scheduled mock exams for your enrolled courses yet.
+              Kayıtlı olduğunuz derslerde henüz planlanmış bir deneme sınavı bulunmamaktadır.
             </Paragraph>
           </div>
         ) : (
@@ -151,7 +151,7 @@ export const ExamsListView: React.FC = () => {
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ExclamationCircleOutlined style={{ color: '#DC2626' }} />
-            <span>Timed Exam Rules & Server Enforcement</span>
+            <span>Süreli Sınav Kuralları & Sunucu Süre Kontrolü</span>
           </div>
         }
         open={confirmModalOpen}
@@ -161,7 +161,7 @@ export const ExamsListView: React.FC = () => {
         }}
         footer={[
           <Button key="cancel" onClick={() => setConfirmModalOpen(false)}>
-            Cancel
+            Vazgeç
           </Button>,
           <Button
             key="start"
@@ -170,7 +170,7 @@ export const ExamsListView: React.FC = () => {
             onClick={handleStartExam}
             style={{ backgroundColor: '#DC2626', borderColor: '#DC2626' }}
           >
-            Start Exam Now
+            Sınavı Şimdi Başlat
           </Button>,
         ]}
       >
@@ -179,11 +179,11 @@ export const ExamsListView: React.FC = () => {
             <Alert message={errorMsg} type="error" showIcon style={{ marginBottom: 16, borderRadius: 8 }} />
           )}
           <Paragraph>
-            You are about to start <strong>{selectedExam?.title}</strong>.
+            <strong>{selectedExam?.title}</strong> sınavını başlatmak üzeresiniz.
           </Paragraph>
           <Alert
-            message="Server-Enforced Timer Notice"
-            description={`Once you click 'Start Exam Now', your timer of ${selectedExam?.duration_minutes} minutes will begin running immediately on the server. Closing your browser will NOT pause the timer. Unsubmitted answers are auto-saved periodically.`}
+            message="Sunucu Tarafı Süre Sayacı Bildirimi"
+            description={`'Sınavı Şimdi Başlat' butonuna tıkladığınız anda, ${selectedExam?.duration_minutes} dakikalık süreniz doğrudan sunucu tarafında işlemeye başlayacaktır. Tarayıcıyı kapatmanız süreyi DURDURMAZ. Cevaplarınız belirli aralıklarla otomatik olarak kaydedilir.`}
             type="warning"
             showIcon
             style={{ borderRadius: 8 }}
