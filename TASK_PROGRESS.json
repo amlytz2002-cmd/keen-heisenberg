@@ -16,9 +16,9 @@
   },
   "metrics": {
     "typecheck_errors": 0,
-    "automated_tests_passed": "290 / 290 (100% PASS)",
-    "test_suites_passed": "12 / 12 (100% PASS)",
-    "production_build": "dist/ verified (371 kB index, 1.07 MB antd, 26 kB icons)",
+    "automated_tests_passed": "348 / 348 (100% PASS)",
+    "test_suites_passed": "16 / 16 (100% PASS)",
+    "production_build": "dist/ verified (378 kB index, 1.07 MB antd, 26 kB icons)",
     "database_tables": 27,
     "rls_policies_active": "100% active on all 27 tables",
     "storage_buckets": "course-resources (50MB private), user-avatars (5MB private)",
@@ -26,8 +26,8 @@
     "live_deployment": {
       "status": "DEPLOYED_AND_VERIFIED",
       "custom_domain": "https://cenna.live",
-      "pages_domain": "https://cennalive-pilot.pages.dev",
-      "latest_deployment_url": "https://c34a8492.cennalive-pilot.pages.dev",
+      "pages_domain": "https://pharmiq-app.pages.dev",
+      "latest_deployment_url": "https://da4ce7ee.pharmiq-app.pages.dev",
       "test_accounts": {
         "student": {
           "email": "pilot.student@biruni.edu.tr",
