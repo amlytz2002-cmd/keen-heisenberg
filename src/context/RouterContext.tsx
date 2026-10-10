@@ -16,15 +16,23 @@ const RouterContext = createContext<RouterContextType>({
 
 export const useRouter = () => useContext(RouterContext);
 
+const normalizePath = (rawPath: string): string => {
+  let clean = (rawPath || '/').split('?')[0].trim();
+  if (clean.length > 1 && clean.endsWith('/')) {
+    clean = clean.slice(0, -1);
+  }
+  return clean || '/';
+};
+
 export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [path, setPath] = useState<string>(window.location.pathname || '/');
+  const [path, setPath] = useState<string>(normalizePath(window.location.pathname));
   const [searchParams, setSearchParams] = useState<URLSearchParams>(
     new URLSearchParams(window.location.search)
   );
 
   useEffect(() => {
     const handlePopState = () => {
-      setPath(window.location.pathname || '/');
+      setPath(normalizePath(window.location.pathname));
       setSearchParams(new URLSearchParams(window.location.search));
     };
 
@@ -33,10 +41,11 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const navigate = (to: string) => {
-    if (to === path) return;
+    const [rawPathname, search] = to.split('?');
+    const cleanPath = normalizePath(rawPathname);
+    if (cleanPath === path && !search) return;
     window.history.pushState({}, '', to);
-    const [pathname, search] = to.split('?');
-    setPath(pathname || '/');
+    setPath(cleanPath);
     setSearchParams(new URLSearchParams(search || ''));
     window.scrollTo(0, 0);
   };

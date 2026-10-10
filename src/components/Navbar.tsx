@@ -24,8 +24,8 @@ export const Navbar: React.FC = () => {
   const { path, navigate } = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isInstructor = profile?.roles.includes('instructor') || profile?.primary_role === 'instructor';
-  const isAdmin = profile?.roles.includes('admin') || profile?.primary_role === 'admin';
+  const isInstructor = (Array.isArray(profile?.roles) && profile.roles.includes('instructor')) || profile?.primary_role === 'instructor' || activeRole === 'instructor';
+  const isAdmin = (Array.isArray(profile?.roles) && profile.roles.includes('admin')) || profile?.primary_role === 'admin' || activeRole === 'admin';
 
   const handleRoleToggle = () => {
     const nextRole = activeRole === 'student' ? 'instructor' : 'student';
@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
           <div style={{ fontSize: 12, color: '#64748B' }}>{user?.email}</div>
           <div style={{ marginTop: 4 }}>
             <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-              {activeRole.toUpperCase()}
+              {(activeRole || 'student').toUpperCase()}
             </Tag>
           </div>
         </div>
@@ -319,7 +319,7 @@ export const Navbar: React.FC = () => {
             <span style={{ fontWeight: 800, color: '#0F172A' }}>CENNA.live</span>
             {user && (
               <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-                {activeRole.toUpperCase()}
+                {(activeRole || 'student').toUpperCase()}
               </Tag>
             )}
           </div>

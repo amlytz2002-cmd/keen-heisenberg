@@ -35,21 +35,23 @@ import { InstructorAnalyticsView } from './views/Instructor/InstructorAnalyticsV
 // Admin views
 import { AdminAuditView } from './views/Admin/AdminAuditView';
 
+import { ErrorBoundary } from './components/ErrorBoundary';
+
 const AppRoutes: React.FC = () => {
   const { path } = useRouter();
   const { user, activeRole } = useAuth();
 
   // Route matching logic
   const renderRoute = () => {
-    // 1. Exact Public Routes
+    // 1. Exact Public Routes & Aliases
     if (path === '/' || path === '') return user ? (activeRole === 'instructor' ? <TeachDashboardView /> : <TodayView />) : <LandingView />;
     if (path === '/features') return <FeaturesView />;
     if (path === '/how-it-works') return <HowItWorksView />;
     if (path === '/privacy') return <LegalView initialTab="privacy" />;
     if (path === '/terms') return <LegalView initialTab="terms" />;
-    if (path === '/auth/login') return <AuthView initialMode="login" />;
-    if (path === '/auth/register') return <AuthView initialMode="register" />;
-    if (path === '/auth/forgot-password') return <AuthView initialMode="forgot" />;
+    if (path === '/auth/login' || path === '/login') return <AuthView initialMode="login" />;
+    if (path === '/auth/register' || path === '/register') return <AuthView initialMode="register" />;
+    if (path === '/auth/forgot-password' || path === '/forgot-password') return <AuthView initialMode="forgot" />;
 
     // 2. Invitation redemption pattern: /invite/:token
     if (path.startsWith('/invite/')) return <InviteRedeemView />;
@@ -83,7 +85,11 @@ const AppRoutes: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
       <Navbar />
-      <main style={{ flex: 1 }}>{renderRoute()}</main>
+      <main style={{ flex: 1 }}>
+        <ErrorBoundary>
+          {renderRoute()}
+        </ErrorBoundary>
+      </main>
       <Footer />
     </div>
   );
@@ -91,25 +97,27 @@ const AppRoutes: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#2563EB',
-          colorSuccess: '#059669',
-          colorWarning: '#D97706',
-          colorError: '#DC2626',
-          colorInfo: '#0284C7',
-          borderRadius: 8,
-          fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
-        },
-      }}
-    >
-      <RouterProvider>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
-      </RouterProvider>
-    </ConfigProvider>
+    <ErrorBoundary>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#2563EB',
+            colorSuccess: '#059669',
+            colorWarning: '#D97706',
+            colorError: '#DC2626',
+            colorInfo: '#0284C7',
+            borderRadius: 8,
+            fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
+          },
+        }}
+      >
+        <RouterProvider>
+          <AuthProvider>
+            <AppRoutes />
+          </AuthProvider>
+        </RouterProvider>
+      </ConfigProvider>
+    </ErrorBoundary>
   );
 };
 

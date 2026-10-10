@@ -51,10 +51,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await api.auth.getProfile();
       if (res.success && res.data) {
-        setProfile(res.data);
-        setActiveRole(res.data.primary_role || 'student');
+        const raw: any = res.data;
+        const u = raw.user || raw;
+        const p = u.profile || raw.profile || {};
+        
+        const roles: UserRole[] = Array.isArray(u.roles) && u.roles.length > 0
+          ? u.roles
+          : (Array.isArray(raw.roles) ? raw.roles : ['student']);
+          
+        const primaryRole: UserRole = roles.includes('instructor')
+          ? 'instructor'
+          : (u.primary_role || raw.primary_role || 'student');
+
+        const normalizedProfile: UserProfile = {
+          id: u.id || currentUser.id,
+          email: u.email || currentUser.email || '',
+          full_name: p.display_name || u.full_name || raw.full_name || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+          avatar_url: p.avatar_path || u.avatar_url || raw.avatar_url,
+          primary_role: primaryRole,
+          roles,
+        };
+
+        setProfile(normalizedProfile);
+        setActiveRole(primaryRole);
       } else {
-        // Fallback default profile
         const defaultProfile: UserProfile = {
           id: currentUser.id,
           email: currentUser.email || '',
@@ -67,6 +87,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
+      const fallbackProfile: UserProfile = {
+        id: currentUser.id,
+        email: currentUser.email || '',
+        full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+        primary_role: 'student',
+        roles: ['student'],
+      };
+      setProfile(fallbackProfile);
+      setActiveRole('student');
     }
   };
 
