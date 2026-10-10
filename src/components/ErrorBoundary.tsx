@@ -63,8 +63,8 @@ export class ErrorBoundary extends Component<Props, State> {
         >
           <Result
             status="warning"
-            title="Beklenmeyen Bir Hata Oluştu / Something went wrong"
-            subTitle="Sayfa yüklenirken bir render hatası meydana geldi. Aşağıdaki seçenekleri kullanarak sayfayı yenileyebilir veya sıfırlayabilirsiniz."
+            title="Beklenmeyen Bir Hata Oluştu"
+            subTitle="Sayfa yüklenirken bir sistem uyuşmazlığı meydana geldi. Aşağıdaki seçenekleri kullanarak sayfayı yenileyebilir veya çalışma alanınıza dönebilirsiniz."
             extra={
               <Space direction="vertical" align="center" size="middle">
                 <Space wrap>
@@ -75,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     size="large"
                     style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
                   >
-                    Sayfayı Yenile (Reload)
+                    Sayfayı Yenile
                   </Button>
                   <Button
                     icon={<HomeOutlined />}
@@ -83,7 +83,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     size="large"
                     style={{ borderRadius: 8 }}
                   >
-                    Ana Sayfaya Dön (Home)
+                    Ana Sayfaya Dön
                   </Button>
                   <Button
                     icon={<ClearOutlined />}
@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     danger
                     style={{ borderRadius: 8 }}
                   >
-                    Oturumu Sıfırla (Reset Session)
+                    Oturumu Sıfırla
                   </Button>
                 </Space>
 

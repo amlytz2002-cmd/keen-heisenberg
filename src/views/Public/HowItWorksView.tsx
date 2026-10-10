@@ -17,52 +17,52 @@ export const HowItWorksView: React.FC = () => {
 
   const cycleDetails = [
     {
-      title: '1. Learn (Source Grounding)',
+      title: '1. Öğren (Kaynak Belgeli Kavram Odaklılık)',
       icon: <ReadOutlined />,
       description:
-        'Instead of reading generic internet summaries or unverified AI output, the student studies bite-sized concept cards created directly from the instructor’s uploaded course files. Every definition and formula specifies its document filename, page number, and paragraph coordinates.',
+        'Genel internet özetleri veya doğrulanmamış yapay zekâ metinleri yerine, öğrenci doğrudan ders eğitmeninin sisteme yüklediği yetkili kaynaklardan çıkarılmış odak kavram kartlarıyla çalışır. Her tanım ve formül dosya adı, sayfa numarası ve paragraf koordinatlarıyla belgelenir.',
     },
     {
-      title: '2. Retrieve (Active Recall)',
+      title: '2. Hatırla (Kitapsız Aktif Geri Çağırma)',
       icon: <QuestionCircleOutlined />,
       description:
-        'The student is immediately prompted with closed-book retrieval questions. By testing memory retrieval before looking at answers or notes, cognitive pathways are reinforced through the testing effect (Roediger & Karpicke, 2006).',
+        'Öğrenci kavramı inceledikten hemen sonra notlara bakmadan aktif hatırlama sorularıyla karşılaşır. Bilgiyi bellekten geri çağırma eylemi, test etme etkisi sayesinde nöral yolları derinlemesine pekiştirir (Roediger & Karpicke, 2006).',
     },
     {
-      title: '3. Apply (Socratic Hint Progression)',
+      title: '3. Uygula (3 Kademeli Sokratik İpucu İlerlemesi)',
       icon: <BulbOutlined />,
       description:
-        'When a student feels stuck, they do not get immediate answer leakage. They request graduated Socratic guidance: Stage 1 clarifies the governing principle, Stage 2 reveals intermediate relationships, and Stage 3 outlines specific substitution steps.',
+        'Öğrenci zorlandığında doğru cevap doğrudan verilmez. Bunun yerine kademeli Sokratik rehberlik devreye girer: 1. Kademe temel prensibi hatırlatır, 2. Kademe değişkenler arası mantıksal bağı kurar, 3. Kademe ise somut uygulama adımlarını gösterir.',
     },
     {
-      title: '4. Remediate (Instant Grounded Diagnosis)',
+      title: '4. Eksik Gider (Kaynak Atıflı Anlık Teşhis)',
       icon: <CheckCircleOutlined />,
       description:
-        'Upon answering, the system explains exactly why the chosen option is correct or incorrect, citing the course text. Misconceptions are flagged, and concept mastery is recalculated in real time.',
+        'Cevap verildiğinde sistem seçilen seçeneğin neden doğru veya yanlış olduğunu ders metnine atıfta bulunarak ayrıntılı şekilde açıklar. Kavram yanılgıları hemen işaretlenir ve öğrencinin kavram kavrama skoru gerçek zamanlı güncellenir.',
     },
     {
-      title: '5. Review (Consolidation Schedule)',
+      title: '5. Tekrar Et (Aralıklı Konsolidasyon Takvimi)',
       icon: <HistoryOutlined />,
       description:
-        'Items are automatically added to the spaced repetition review queue. Successful retrievals schedule reviews at 1, 3, 7, and 14-day intervals. If a concept lapses, its interval resets to Day 1 to ensure mastery before high-stakes exams.',
+        'Çözülen sorular aralıklı tekrar kuyruğuna aktarılır. Başarılı hatırlamalar bir sonraki tekrarı 1, 3, 7 ve 14 günlük aralıklara öteler. Bir kavram unutulduğunda, aralık sayacı sınavlar öncesinde tam ustalık sağlamak üzere 1. güne geri alınır.',
     },
   ];
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '60px 20px', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <Tag color="purple">Pedagogical Design</Tag>
+        <Tag color="purple">Pedagojik Tasarım</Tag>
         <Title level={1} style={{ fontSize: 36, fontWeight: 800, marginTop: 12, color: '#0F172A' }}>
-          The Continuous Study Cycle
+          Kesintisiz Öğrenme Döngüsü
         </Title>
         <Paragraph style={{ fontSize: 16, color: '#64748B', maxWidth: 640, margin: '0 auto' }}>
-          Learn → Retrieve → Apply → Remediate → Review: How CENNA.live turns dense course documents into lasting mastery.
+          Öğren → Hatırla → Uygula → Eksik Gider → Tekrar Et: CENNA.live kapsamlı ders belgelerini nasıl kalıcı akademik uzmanlığa dönüştürür?
         </Paragraph>
       </div>
 
       <Alert
-        message="Evidence-Based Learning Guarantee"
-        description="Educational research confirms that active retrieval combined with spaced scheduling and graduated scaffolding dramatically outperforms passive rereading and uncontrolled chatbot exploration."
+        message="Kanıta Dayalı Öğrenme Güvencesi"
+        description="Eğitim bilimleri araştırmaları; aralıklı tekrar ve kademeli iskeleleme (scaffolding) ile birleştirilen aktif hatırlama yönteminin, pasif tekrar okuma ve kontrolsüz sohbet botu etkileşimlerine kıyasla çok daha üstün kalıcılık sağladığını kanıtlamaktadır."
         type="info"
         showIcon
         icon={<SafetyOutlined />}
@@ -117,7 +117,7 @@ export const HowItWorksView: React.FC = () => {
           onClick={() => navigate('/auth/login')}
           style={{ height: 48, padding: '0 32px', borderRadius: 8, backgroundColor: '#2563EB' }}
         >
-          Begin Learning on CENNA.live
+          CENNA.live ile Öğrenmeye Başlayın
         </Button>
       </div>
     </div>

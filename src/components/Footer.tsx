@@ -43,16 +43,16 @@ export const Footer: React.FC = () => {
             <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>CENNA.live</span>
           </div>
           <p style={{ fontSize: 14, lineHeight: 1.6, maxWidth: 300, color: '#94A3B8' }}>
-            AI-powered active retrieval and deliberate practice platform. Continuous cycle: Learn, Retrieve, Apply, Remediate, Review.
+            Eczacılık ve sağlık bilimleri için yapay zekâ destekli aktif hatırlama ve bilinçli pratik platformu. Kesintisiz döngü: Öğren, Hatırla, Uygula, Eksik Gider, Tekrar Et.
           </p>
           <div style={{ fontSize: 12, color: '#64748B', marginTop: 16 }}>
-            © {new Date().getFullYear()} CENNA.live. All rights reserved.
+            © {new Date().getFullYear()} CENNA.live. Tüm hakları saklıdır.
           </div>
         </div>
 
         <div>
           <h4 style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Platform & Pedagogy
+            Platform & Pedagoji
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
             <li>
@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/how-it-works')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                The 5-Stage Learning Cycle
+                5 Aşamalı Öğrenme Döngüsü
               </button>
             </li>
             <li>
@@ -68,7 +68,7 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/features')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                Source-Grounded AI & Provenance
+                Belgeye Dayalı Yapay Zekâ & Kaynak Doğrulama
               </button>
             </li>
             <li>
@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/features')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                Socratic Hint Ladders
+                3 Kademeli Sokratik İpucu Merdiveni
               </button>
             </li>
             <li>
@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/features')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                1-3-7-14 Day Spaced Repetition
+                1-3-7-14 Günlük Aralıklı Tekrar (SRS)
               </button>
             </li>
           </ul>
@@ -92,7 +92,7 @@ export const Footer: React.FC = () => {
 
         <div>
           <h4 style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Security & Governance
+            Güvenlik & Akademik Denetim
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
             <li>
@@ -100,7 +100,7 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/privacy')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                Privacy Policy & RLS Isolation
+                Gizlilik Politikası & RLS İzolasyonu
               </button>
             </li>
             <li>
@@ -108,14 +108,14 @@ export const Footer: React.FC = () => {
                 onClick={() => navigate('/terms')}
                 style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
               >
-                Terms of Service
+                Kullanım Koşulları
               </button>
             </li>
             <li>
-              <span style={{ color: '#64748B' }}>Instructor Publication Gate (Enforced)</span>
+              <span style={{ color: '#64748B' }}>Eğitmen Onay Kapısı (Zorunlu)</span>
             </li>
             <li>
-              <span style={{ color: '#64748B' }}>Server-Side Secrets Protection</span>
+              <span style={{ color: '#64748B' }}>Sunucu Taraflı Anahtar Koruması</span>
             </li>
           </ul>
         </div>

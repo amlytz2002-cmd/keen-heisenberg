@@ -9,9 +9,9 @@ export const LegalView: React.FC<{ initialTab?: 'privacy' | 'terms' }> = ({ init
   return (
     <div style={{ maxWidth: 880, margin: '0 auto', padding: '60px 20px', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <Tag color="geekblue">Compliance & Governance</Tag>
+        <Tag color="geekblue">Uyumluluk & Akademik Yönetişim</Tag>
         <Title level={1} style={{ fontSize: 32, fontWeight: 850, marginTop: 8, color: '#0F172A' }}>
-          CENNA.live Policies & Legal Terms
+          CENNA.live Politikaları ve Kullanım Koşulları
         </Title>
       </div>
 
@@ -22,69 +22,68 @@ export const LegalView: React.FC<{ initialTab?: 'privacy' | 'terms' }> = ({ init
           items={[
             {
               key: 'privacy',
-              label: 'Privacy Policy & Data Isolation',
+              label: 'Gizlilik Politikası & Veri İzolasyonu',
               children: (
                 <div style={{ padding: '16px 0', color: '#334155', lineHeight: 1.7 }}>
-                  <Title level={3} style={{ color: '#0F172A' }}>1. Privacy by Default</Title>
+                  <Title level={3} style={{ color: '#0F172A' }}>1. Varsayılan Olarak Gizlilik</Title>
                   <Paragraph>
-                    CENNA.live prioritizes data privacy and student intellectual isolation. Personal study sessions,
-                    question attempts, hint logs, and exam answers are protected by PostgreSQL Row Level Security (RLS).
-                    Learners can only view their own study progress, and instructors can only review student activity
-                    within classrooms where they have active instructional authority.
+                    CENNA.live, öğrenci verilerinin gizliliğini ve akademik bağımsızlığını en üst düzeyde korur. Kişisel çalışma oturumları,
+                    soru denemeleri, Sokratik ipucu kayıtları ve sınav yanıtları PostgreSQL Satır Düzeyi Güvenlik (RLS) ile korunmaktadır.
+                    Öğrenciler yalnızca kendi akademik ilerlemelerini görebilir; eğitmenler ise yalnızca yetkili oldukları sınıflara kayıtlı
+                    öğrencilerin gelişim verilerini inceleyebilir.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>2. Zero Public Discussion Feeds or Content Leaks</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>2. Kamuya Açık Akış veya Veri Sızıntısı Yoktur</Title>
                   <Paragraph>
-                    Course resources, instructor slides, and student attempts are never posted to public feeds or
-                    unauthenticated forums. All document storage buckets are strictly private and accessible only through
-                    authenticated, time-limited signed URLs or authorized server-side processing pipelines.
+                    Ders kaynakları, eğitmen sunumları ve öğrenci cevapları asla herkese açık forumlarda veya kimlik doğrulaması yapılmamış
+                    alanlarda paylaşılmaz. Tüm belge depolama alanları kesinlikle gizlidir ve yalnızca yetkilendirilmiş, zaman sınırlı imzalı
+                    bağlantılar veya onaylı sunucu taraflı işleme hatları üzerinden erişilebilir.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>3. AI Model Data Protections</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>3. Yapay Zekâ Modeli Veri Güvenliği</Title>
                   <Paragraph>
-                    Uploaded lecture materials processed for concept extraction and question generation are never used
-                    to train public AI foundation models. All model prompts are scrubbed of personal identifiers and
-                    processed via private enterprise edge endpoints.
+                    Kavram çıkarma ve soru üretimi amacıyla işlenen ders belgeleri, hiçbir koşulda genel yapay zekâ temel modellerini eğitmek
+                    için kullanılmaz. Tüm model istemleri kişisel verilerden arındırılır ve özel kurumsal edge uç noktaları üzerinden işlenir.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>4. Auditability & Administrator Restrictions</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>4. Denetlenebilirlik & Yönetici Kısıtlamaları</Title>
                   <Paragraph>
-                    Administrative operations are logged in immutable audit tables. Platform administrators cannot browse
-                    private student content or alter exam results arbitrarily.
+                    Sistem üzerindeki tüm işlemler değiştirilemez denetim kayıtlarında (audit logs) saklanır. Sistem yöneticileri dahi
+                    özel öğrenci yanıtlarını rastgele görüntüleyemez veya sınav sonuçlarını keyfi olarak değiştiremez.
                   </Paragraph>
                 </div>
               ),
             },
             {
               key: 'terms',
-              label: 'Terms of Service',
+              label: 'Kullanım Koşulları',
               children: (
                 <div style={{ padding: '16px 0', color: '#334155', lineHeight: 1.7 }}>
-                  <Title level={3} style={{ color: '#0F172A' }}>1. Academic Integrity & Platform Intent</Title>
+                  <Title level={3} style={{ color: '#0F172A' }}>1. Akademik Dürüstlük & Platform Amacı</Title>
                   <Paragraph>
-                    CENNA.live is an educational mastery and retrieval platform. It is engineered to cultivate genuine
-                    understanding through active recall. Users agree not to misuse platform APIs or attempt to circumvent
-                    timed exam deadlines or question scaffolding.
+                    CENNA.live, aktif hatırlama yoluyla derin ve kalıcı öğrenmeyi sağlamak amacıyla geliştirilmiş bir akademik uzmanlaşma platformudur.
+                    Kullanıcılar, platform API'lerini kötüye kullanmamayı, süreli sınav sayaçlarını atlatmaya veya Sokratik ipucu kademelerini
+                    manipüle etmeye çalışmamayı kabul eder.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>2. No Medical or Clinical Diagnosis</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>2. Tıbbi veya Klinik Teşhis Niteliği Taşımamaktadır</Title>
                   <Paragraph>
-                    CENNA.live provides academic educational practice for pharmacy and health sciences students. It is
-                    explicitly NOT a clinical decision support system, diagnostic tool, or medical treatment advisor.
-                    Users must never rely on platform questions or hints for active patient clinical care.
+                    CENNA.live, eczacılık ve sağlık bilimleri öğrencileri için yalnızca akademik eğitim ve pratik amacıyla sunulmaktadır. Platform;
+                    klinik karar destek sistemi, tanı aracı veya tıbbi tedavi kılavuzu DEĞİLDİR. Soru senaryoları ve ipuçları hiçbir koşulda
+                    gerçek hasta bakımında veya klinik teşhislerde dayanak olarak kullanılamaz.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>3. Instructor Publication Responsibility</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>3. Eğitmen İçerik ve Yayınlama Sorumluluğu</Title>
                   <Paragraph>
-                    AI-generated concepts, questions, and hints are drafts until reviewed and approved by course instructors.
-                    Instructors bear sole responsibility for verifying the accuracy of learning materials before publishing
-                    them to classroom learners.
+                    Yapay zekâ tarafından üretilen kavramlar, sorular ve ipuçları, ders eğitmeni tarafından incelenip onaylanana kadar taslak
+                    niteliğindedir. Ders materyallerinin doğruluğunu ve müfredata uygunluğunu onaylayarak öğrencilere yayınlama sorumluluğu
+                    ilgili dersin eğitmenine aittir.
                   </Paragraph>
 
-                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>4. Pilot Status</Title>
+                  <Title level={3} style={{ color: '#0F172A', marginTop: 24 }}>4. Pilot Sürüm Statüsü</Title>
                   <Paragraph>
-                    This version (v1.0 Pilot) is offered for academic evaluation. Features are subject to refinement based on
-                    pedagogical effectiveness and instructor feedback.
+                    Bu sürüm (v1.0 Pilot), akademik değerlendirme ve pilot eğitim programları kapsamında sunulmaktadır. Platform işlevleri,
+                    pedagojik etki analizleri ve eğitmen geri bildirimleri doğrultusunda sürekli olarak geliştirilmektedir.
                   </Paragraph>
                 </div>
               ),

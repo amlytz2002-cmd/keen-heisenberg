@@ -21,7 +21,7 @@ export const InviteRedeemView: React.FC = () => {
     if (authLoading) return;
     if (!token) {
       setStatus('error');
-      setErrorMessage('Missing invitation token.');
+      setErrorMessage('Geçersiz veya eksik davet bağlantısı.');
       return;
     }
 
@@ -39,7 +39,7 @@ export const InviteRedeemView: React.FC = () => {
         setClassroomData(res.data);
       } else {
         setStatus('error');
-        setErrorMessage(res.error || 'Failed to redeem invitation.');
+        setErrorMessage(res.error || 'Davet kodu doğrulanamadı veya süresi dolmuş.');
       }
     };
 
@@ -50,7 +50,7 @@ export const InviteRedeemView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Verifying classroom invitation...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Sınıf daveti doğrulanıyor...</Paragraph>
       </div>
     );
   }
@@ -60,10 +60,9 @@ export const InviteRedeemView: React.FC = () => {
       <div style={{ maxWidth: 540, margin: '60px auto', padding: '0 20px' }}>
         <Card bordered style={{ borderRadius: 16, textAlign: 'center', borderColor: '#E2E8F0' }}>
           <TeamOutlined style={{ fontSize: 48, color: '#2563EB', marginBottom: 16 }} />
-          <Title level={3}>Classroom Invitation</Title>
+          <Title level={3}>Sınıf Daveti</Title>
           <Paragraph style={{ color: '#64748B' }}>
-            You have received an invitation to join an academic classroom on CENNA.live. Please sign in or register to
-            accept.
+            CENNA.live üzerinde bir akademik sınıfa katılmanız için bir davet aldınız. Katılmak için lütfen giriş yapın veya yeni bir hesap oluşturun.
           </Paragraph>
           <Button
             type="primary"
@@ -71,7 +70,7 @@ export const InviteRedeemView: React.FC = () => {
             onClick={() => navigate('/auth/login')}
             style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 44, padding: '0 28px' }}
           >
-            Sign In to Accept
+            Giriş Yap ve Daveti Kabul Et
           </Button>
         </Card>
       </div>
@@ -84,8 +83,8 @@ export const InviteRedeemView: React.FC = () => {
         <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
           <Result
             status="success"
-            title="Classroom Enrolled Successfully!"
-            subTitle={`You are now an active member of ${classroomData?.name || 'the classroom'}. You can immediately begin studying your assigned courses.`}
+            title="Sınıfa Başarıyla Kaydoldunuz!"
+            subTitle={`${classroomData?.name || 'Sınıfın'} aktif bir üyesi oldunuz. Atanan derslerinizde aktif hatırlama çalışmalarına hemen başlayabilirsiniz.`}
             extra={[
               <Button
                 type="primary"
@@ -93,10 +92,10 @@ export const InviteRedeemView: React.FC = () => {
                 onClick={() => navigate('/app/today')}
                 style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
               >
-                Go to Today's Study Hub
+                Bugünün Çalışma Paneline Git
               </Button>,
               <Button key="classrooms" onClick={() => navigate('/app/classrooms')}>
-                View Classrooms
+                Sınıflarımı Görüntüle
               </Button>,
             ]}
           />
@@ -110,8 +109,8 @@ export const InviteRedeemView: React.FC = () => {
       <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
         <Result
           status="error"
-          title="Invitation Could Not Be Redeemed"
-          subTitle={errorMessage || 'This invitation link may have expired, exceeded its usage limit, or is invalid.'}
+          title="Davet Kodu Kullanılamadı"
+          subTitle={errorMessage || 'Bu davet bağlantısının süresi dolmuş, kullanım sınırına ulaşılmış veya bağlantı geçersiz olabilir.'}
           extra={[
             <Button
               type="primary"
@@ -119,7 +118,7 @@ export const InviteRedeemView: React.FC = () => {
               onClick={() => navigate('/app/classrooms')}
               style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
             >
-              My Classrooms
+              Sınıflarım
             </Button>,
           ]}
         />

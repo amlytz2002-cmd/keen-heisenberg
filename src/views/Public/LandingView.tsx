@@ -32,33 +32,33 @@ export const LandingView: React.FC = () => {
   const steps = [
     {
       step: '1',
-      title: 'Learn',
+      title: 'Öğren',
       icon: <ReadOutlined style={{ fontSize: 24, color: '#2563EB' }} />,
-      desc: 'Digest core concepts grounded in authoritative course documents with page and paragraph citations.',
+      desc: 'Sayfa ve paragraf atıflarıyla yetkili ders belgelerine dayandırılmış temel kavramları özümseyin.',
     },
     {
       step: '2',
-      title: 'Retrieve',
+      title: 'Hatırla',
       icon: <QuestionCircleOutlined style={{ fontSize: 24, color: '#0284C7' }} />,
-      desc: 'Practice closed-book active recall with single-choice, multi-select, and clinical calculation items.',
+      desc: 'Tek seçenekli, çoktan seçmeli ve klinik hesaplama sorularıyla kitapsız aktif hatırlama pratiği yapın.',
     },
     {
       step: '3',
-      title: 'Apply',
+      title: 'Uygula',
       icon: <BulbOutlined style={{ fontSize: 24, color: '#D97706' }} />,
-      desc: 'Use 3-stage Socratic hint ladders (Orientation → Reasoning → Application) before answers are revealed.',
+      desc: 'Cevap açıklanmadan önce 3 kademeli Sokratik ipucu merdiveninden (Yönlendirme → Akıl Yürütme → Uygulama) yararlanın.',
     },
     {
       step: '4',
-      title: 'Remediate',
+      title: 'Eksik Gider',
       icon: <CheckCircleOutlined style={{ fontSize: 24, color: '#059669' }} />,
-      desc: 'Diagnose misconceptions instantly with granular feedback referencing exact source chunks.',
+      desc: 'Kaynak belgenin ilgili bölümüne doğrudan atıf yapan ayrıntılı geri bildirimle kavram yanılgılarınızı anında teşhis edin.',
     },
     {
       step: '5',
-      title: 'Review',
+      title: 'Tekrar Et',
       icon: <HistoryOutlined style={{ fontSize: 24, color: '#7C3AED' }} />,
-      desc: 'Strengthen long-term retention through scientifically scheduled 1, 3, 7, and 14-day spaced reviews.',
+      desc: 'Bilimsel olarak planlanmış 1, 3, 7 ve 14 günlük aralıklı tekrarlarla uzun süreli hafızayı ve klinik kavrayışı güçlendirin.',
     },
   ];
 
@@ -75,7 +75,7 @@ export const LandingView: React.FC = () => {
       >
         <div style={{ maxWidth: 840, margin: '0 auto' }}>
           <Tag color="blue" style={{ padding: '6px 14px', fontSize: 13, borderRadius: 20, fontWeight: 600 }}>
-            <RocketOutlined style={{ marginRight: 6 }} /> CENNA.live Pilot 1.0 — Active Retrieval Engine
+            <RocketOutlined style={{ marginRight: 6 }} /> CENNA.live Pilot 1.0 — Aktif Hatırlama & Bilinçli Pratik Motoru
           </Tag>
           <Title
             level={1}
@@ -89,7 +89,7 @@ export const LandingView: React.FC = () => {
               lineHeight: 1.15,
             }}
           >
-            Deliberate Practice Powered by <span style={{ color: '#2563EB' }}>Verified AI</span>.
+            Kanıta Dayalı Pratik, <span style={{ color: '#2563EB' }}>Doğrulanmış Yapay Zekâ</span>.
           </Title>
           <Paragraph
             style={{
@@ -100,8 +100,8 @@ export const LandingView: React.FC = () => {
               margin: '0 auto 32px',
             }}
           >
-            Move beyond passive rereading. CENNA.live converts authoritative course materials into structured ~25-minute
-            study sessions, graduated Socratic hints, and spaced retrieval queues.
+            Pasif okuma yöntemlerinin ötesine geçin. CENNA.live yetkili ders materyallerinizi yapılandırılmış ~25 dakikalık
+            çalışma oturumlarına, kademeli Sokratik ipuçlarına ve aralıklı tekrar kuyruklarına dönüştürür.
           </Paragraph>
 
           <Space direction="horizontal" size="middle" wrap style={{ justifyContent: 'center' }}>
@@ -120,7 +120,7 @@ export const LandingView: React.FC = () => {
                 boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
               }}
             >
-              {user ? 'Enter Your Learning Hub' : 'Get Started Now'}
+              {user ? 'Öğrenme Panelinize Giriş Yapın' : 'Hemen Başlayın'}
             </Button>
             <Button
               size="large"
@@ -133,7 +133,7 @@ export const LandingView: React.FC = () => {
                 borderRadius: 10,
               }}
             >
-              Pedagogical Framework
+              Pedagojik Çerçeve & Metot
             </Button>
           </Space>
 
@@ -154,37 +154,37 @@ export const LandingView: React.FC = () => {
           >
             <div>
               <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                ~25 Minutes
+                ~25 Dakika
               </Text>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                Target Daily Study Unit
+                Hedef Günlük Çalışma Oturumu
               </Text>
             </div>
             <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
             <div>
               <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                1 · 3 · 7 · 14 Days
+                1 · 3 · 7 · 14 Gün
               </Text>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                Spaced Retention Cycles
+                Aralıklı Tekrar Döngüsü
               </Text>
             </div>
             <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
             <div>
               <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                3-Stage Ladder
+                3 Kademeli Merdiven
               </Text>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                Progressive Socratic Hints
+                İlerleyici Sokratik İpuçları
               </Text>
             </div>
             <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
             <div>
               <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                100% Grounded
+                %100 Kaynağa Dayalı
               </Text>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                Instructor Review Gate
+                Eğitmen Onay Denetimi
               </Text>
             </div>
           </div>
@@ -194,12 +194,12 @@ export const LandingView: React.FC = () => {
       {/* The 5-Stage Learning Cycle */}
       <section style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <Tag color="cyan">Pedagogical Framework</Tag>
+          <Tag color="cyan">Pedagojik Çerçeve</Tag>
           <Title level={2} style={{ fontSize: 32, fontWeight: 800, marginTop: 12, color: '#0F172A' }}>
-            The Continuous Study Cycle
+            Kesintisiz Çalışma Döngüsü
           </Title>
           <Paragraph style={{ fontSize: 16, color: '#64748B', maxWidth: 640, margin: '0 auto' }}>
-            A rigorous scientific model designed to reinforce deep conceptual understanding and long-term memory.
+            Derin kavramsal kavrayışı ve uzun vadeli kalıcılığı pekiştirmek için tasarlanmış bilimsel öğrenme modeli.
           </Paragraph>
         </div>
 
@@ -240,7 +240,7 @@ export const LandingView: React.FC = () => {
                     {item.icon}
                   </div>
                   <Tag style={{ borderRadius: 12, fontWeight: 700, margin: 0 }}>
-                    Step {item.step}
+                    Aşama {item.step}
                   </Tag>
                 </div>
                 <Title level={4} style={{ margin: '0 0 8px 0', fontSize: 18, color: '#0F172A' }}>
@@ -261,32 +261,32 @@ export const LandingView: React.FC = () => {
           <Row gutter={[40, 40]} align="middle">
             <Col xs={24} md={12}>
               <div style={{ paddingRight: 20 }}>
-                <Tag color="blue" style={{ marginBottom: 12 }}>For Students</Tag>
+                <Tag color="blue" style={{ marginBottom: 12 }}>Öğrenciler İçin</Tag>
                 <Title level={2} style={{ fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                  Know Exactly What to Study Today
+                  Bugün Neye Çalışmanız Gerektiğini Net Olarak Bilin
                 </Title>
                 <Paragraph style={{ fontSize: 15, color: '#475569', lineHeight: 1.7 }}>
-                  No more wondering where to begin. Your personalized <strong>Today</strong> dashboard computes due
-                  spaced reviews, targets weak concepts, and provides bite-sized active recall sessions with
-                  graduated hints that build genuine comprehension rather than superficial recognition.
+                  Artık nereden başlayacağınızı düşünerek vakit kaybetmeyin. Kişiselleştirilmiş <strong>Bugün</strong> panonuz,
+                  günü gelen aralıklı tekrarları hesaplar, eksik kaldığınız kavramları hedefler ve yüzeysel tanıma yerine
+                  gerçek kavrayış oluşturan kademeli ipuçlarıyla odaklı çalışma oturumları sunar.
                 </Paragraph>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Active Retrieval:</strong> Questions with real-time feedback and explanation citations.
+                      <strong>Aktif Hatırlama:</strong> Anlık geri bildirim ve kaynak alıntıları içeren nitelikli sorular.
                     </Text>
                   </div>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Socratic Hint Ladder:</strong> Orientation, reasoning, and application hints before answer reveal.
+                      <strong>Sokratik İpucu Merdiveni:</strong> Cevap gösterilmeden önce yönlendirme, akıl yürütme ve uygulama ipuçları.
                     </Text>
                   </div>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Timed Mock Exams:</strong> Strict server-enforced deadlines with post-exam concept remediation.
+                      <strong>Süreli Deneme Sınavları:</strong> Sunucu kontrollü süre takibi ve sınav sonrası ayrıntılı konu analizi.
                     </Text>
                   </div>
                 </div>
@@ -303,25 +303,25 @@ export const LandingView: React.FC = () => {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text strong style={{ color: '#0F172A' }}>Active Concept Card</Text>
-                  <Tag color="green">Mastery: 72%</Tag>
+                  <Text strong style={{ color: '#0F172A' }}>Aktif Kavram Kartı</Text>
+                  <Tag color="green">Kavrama: %72</Tag>
                 </div>
                 <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 8, border: '1px solid #E2E8F0', marginBottom: 12 }}>
                   <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Clinical Pharmacokinetics · Chapter 4
+                    Klinik Farmakokinetik · Bölüm 4
                   </Text>
                   <Title level={4} style={{ margin: '4px 0 8px 0', fontSize: 17, color: '#0F172A' }}>
-                    Creatinine Clearance & Cockcroft-Gault Equation
+                    Kreatinin Klerensi & Cockcroft-Gault Eşitliği
                   </Title>
                   <Text style={{ fontSize: 13, color: '#475569' }}>
-                    "For female patients, multiply the calculated CrCl value by 0.85 to account for lower average muscle mass."
+                    "Kadın hastalarda, ortalama kas kütlesinin daha düşük olması nedeniyle hesaplanan CrCl değeri 0.85 ile çarpılmalıdır."
                   </Text>
                   <div style={{ marginTop: 8, fontSize: 12, color: '#64748B' }}>
-                    Source: <span style={{ textDecoration: 'underline' }}>Pharmacokinetics_Manual.pdf (Page 42, Para 3)</span>
+                    Kaynak: <span style={{ textDecoration: 'underline' }}>Klinik_Farmakokinetik_El_Kitabi.pdf (Sayfa 42, Paragraf 3)</span>
                   </div>
                 </div>
                 <Button block type="primary" onClick={handleStart} style={{ backgroundColor: '#2563EB', borderRadius: 8 }}>
-                  Practice Retrieval Questions
+                  Aktif Hatırlama Sorularını Başlat
                 </Button>
               </Card>
             </Col>
@@ -332,32 +332,32 @@ export const LandingView: React.FC = () => {
           <Row gutter={[40, 40]} align="middle">
             <Col xs={24} md={12} order={2}>
               <div style={{ paddingLeft: 20 }}>
-                <Tag color="purple" style={{ marginBottom: 12 }}>For Instructors</Tag>
+                <Tag color="purple" style={{ marginBottom: 12 }}>Eğitmenler İçin</Tag>
                 <Title level={2} style={{ fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                  Curate, Verify, and Supervise with Ease
+                  Ders Materyallerinizi Güvenle Yönetin ve Denetleyin
                 </Title>
                 <Paragraph style={{ fontSize: 15, color: '#475569', lineHeight: 1.7 }}>
-                  Upload syllabi, slides, and clinical notes. CENNA.live extracts structured concepts and drafts retrieval
-                  questions grounded strictly in your files. With the <strong>Content Review Workspace</strong>, no AI content
-                  ever reaches students without your explicit sign-off.
+                  Ders izlencelerini, sunum slaytlarını ve klinik notlarınızı yükleyin. CENNA.live belgelerinizden yapılandırılmış
+                  kavramları çıkarır ve yalnızca bu kaynaklara dayalı sorular üretir. <strong>İçerik İnceleme & Onay</strong> iş akışıyla,
+                  hiçbir yapay zekâ çıktısı eğitmen onayı olmadan öğrencilere ulaşmaz.
                 </Paragraph>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <FileSearchOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Automated Semantic Chunking:</strong> Every extracted question links to exact source paragraphs.
+                      <strong>Otomatik Anlamsal Bölümleme:</strong> Üretilen her soru kaynak belgedeki doğrudan ilgili paragrafa bağlanır.
                     </Text>
                   </div>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <LockOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Strict Review Gate:</strong> Drafts stay in <code>needs_review</code> until approved and published.
+                      <strong>Sıkı Onay Kapısı:</strong> Taslak içerikler incelenip onaylanana kadar <code>inceleme_bekliyor</code> durumunda tutulur.
                     </Text>
                   </div>
                   <div style={{ display: 'flex', gap: 12 }}>
                     <ClockCircleOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
                     <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Classroom Analytics:</strong> Spot difficult concepts and high-error topics before final exams.
+                      <strong>Sınıf Analitiği:</strong> Sınavlar öncesinde öğrencilerin en çok zorlandığı kavramları ve hata oranlarını tespit edin.
                     </Text>
                   </div>
                 </div>
@@ -374,22 +374,22 @@ export const LandingView: React.FC = () => {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text strong style={{ color: '#0F172A' }}>Instructor Content Review Gate</Text>
-                  <Tag color="orange">Status: Needs Review</Tag>
+                  <Text strong style={{ color: '#0F172A' }}>Eğitmen İçerik Onay Kapısı</Text>
+                  <Tag color="orange">Durum: İnceleme Bekliyor</Tag>
                 </div>
                 <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 8, border: '1px solid #E2E8F0', marginBottom: 12 }}>
                   <Text style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-                    Q: Calculate CrCl for a 65-year-old female (60 kg, Serum Cr 1.2 mg/dL).
+                    Soru: 65 yaşında bir kadın hasta için (60 kg, Serum Cr 1.2 mg/dL) CrCl değerini hesaplayınız.
                   </Text>
                   <div style={{ marginTop: 8, fontSize: 12, color: '#64748B' }}>
-                    Provenance: <Text code>Biopharmaceutics_Lec03.pdf (Chunk #14)</Text>
+                    Kaynak Atfı: <Text code>Biyofarmasotik_Ders03.pdf (Bölüm #14)</Text>
                   </div>
                 </div>
                 <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-                  <Button size="small" danger>Reject</Button>
-                  <Button size="small">Edit</Button>
+                  <Button size="small" danger>Reddet</Button>
+                  <Button size="small">Düzenle</Button>
                   <Button size="small" type="primary" style={{ backgroundColor: '#059669' }}>
-                    Approve & Publish
+                    Onayla ve Yayınla
                   </Button>
                 </Space>
               </Card>
@@ -402,10 +402,10 @@ export const LandingView: React.FC = () => {
       <section style={{ backgroundColor: '#1E293B', color: '#FFFFFF', padding: '60px 20px', textAlign: 'center' }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <Title level={2} style={{ color: '#FFFFFF', fontWeight: 800 }}>
-            Ready for Evidence-Based Study?
+            Kanıta Dayalı Öğrenmeye Hazır mısınız?
           </Title>
           <Paragraph style={{ color: '#94A3B8', fontSize: 16, marginBottom: 28 }}>
-            Join the CENNA.live pilot and experience structured, grounded retrieval practice built for serious academic achievement.
+            CENNA.live pilot uygulamasına katılın ve yüksek akademik başarı için tasarlanmış kaynak odaklı, aktif pratik deneyimini yaşayın.
           </Paragraph>
           <Button
             type="primary"
@@ -420,7 +420,7 @@ export const LandingView: React.FC = () => {
               backgroundColor: '#2563EB',
             }}
           >
-            Launch CENNA.live
+            CENNA.live'a Başlayın
           </Button>
         </div>
       </section>

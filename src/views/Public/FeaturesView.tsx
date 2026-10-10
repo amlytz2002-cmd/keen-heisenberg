@@ -19,51 +19,51 @@ export const FeaturesView: React.FC = () => {
   const features = [
     {
       icon: <FileTextOutlined style={{ fontSize: 28, color: '#2563EB' }} />,
-      title: 'Automated Document Ingestion & Provenance',
-      desc: 'Upload PDFs, Word documents, Markdown files, or lecture notes. CENNA.live splits documents into semantically coherent chunks, extracting core concepts and questions while strictly preserving source page and paragraph coordinates.',
-      tags: ['PDF & DOCX', 'Semantic Chunking', 'Paragraph Provenance'],
+      title: 'Otomatik Belge Ayrıştırma & Kaynak Kanıtı',
+      desc: 'PDF, Word belgeleri, Markdown dosyaları veya ders notlarını yükleyin. CENNA.live belgeleri anlamsal olarak tutarlı bölümlere ayırır; sayfa ve paragraf koordinatlarını eksiksiz koruyarak temel kavramları ve soruları çıkarır.',
+      tags: ['PDF & DOCX', 'Anlamsal Bölümleme', 'Paragraf Kanıtı'],
     },
     {
       icon: <BulbOutlined style={{ fontSize: 28, color: '#D97706' }} />,
-      title: '3-Stage Socratic Hint Ladders',
-      desc: 'Hints graduated through three pedagogical levels: Stage 1 (Orientation: foundational principles), Stage 2 (Reasoning: structural relationships), and Stage 3 (Application: mathematical or clinical step-by-step guidance) before full answer disclosure.',
-      tags: ['Orientation', 'Reasoning', 'Application', 'No Immediate Answers'],
+      title: '3 Kademeli Sokratik İpucu Merdiveni',
+      desc: 'İpuçları üç pedagojik seviyede sunulur: 1. Kademe (Yönlendirme: temel ilkeler), 2. Kademe (Akıl Yürütme: yapısal ilişkiler ve ara adımlar) ve 3. Kademe (Uygulama: adım adım klinik/matematiksel çözüm rehberliği). Doğru cevap öğrenci düşünmeden asla doğrudan verilmez.',
+      tags: ['Yönlendirme', 'Akıl Yürütme', 'Uygulama', 'Cevap Gizliliği'],
     },
     {
       icon: <HistoryOutlined style={{ fontSize: 28, color: '#7C3AED' }} />,
-      title: '1, 3, 7, 14-Day Spaced Repetition Engine',
-      desc: 'Mathematical memory consolidation based on the Ebbinghaus forgetting curve. Successful retrievals advance stability through 1-day, 3-day, 7-day, and 14-day intervals. Incorrect answers trigger an immediate lapse reset to interval 1.',
-      tags: ['Interval Consolidation', 'Lapse Reset', 'Dynamic Mastery 0–100'],
+      title: '1, 3, 7, 14 Günlük Aralıklı Tekrar (SRS) Motoru',
+      desc: 'Ebbinghaus unutma eğrisine dayalı matematiksel bellek konsolidasyonu. Başarılı hatırlamalar kararlılığı 1, 3, 7 ve 14 günlük aralıklarla artırır. Yanlış cevaplar aralık sayacını anında 1. güne sıfırlar.',
+      tags: ['Aralıklı Konsolidasyon', 'Sıfırlama Mekanizması', 'Dinamik Kavrama (0–100)'],
     },
     {
       icon: <ClockCircleOutlined style={{ fontSize: 28, color: '#DC2626' }} />,
-      title: 'Authoritative Timed Mock Exams',
-      desc: 'Server-enforced deadlines calculated at exam start (deadline_at = NOW() + duration). Periodic intermediate answer autosave protects against network dropouts. Once the deadline passes, late submissions are strictly rejected.',
-      tags: ['Server Deadline', 'Autosave', 'Question Palette', 'Topic Remediation'],
+      title: 'Yetkili & Süreli Deneme Sınavları',
+      desc: 'Sınav başlangıcında sunucu tarafında kesin son teslim tarihi atanır (deadline_at = NOW() + süre). Periyodik ara cevap otomatik kaydı olası bağlantı kopmalarına karşı koruma sağlar. Süre dolduğunda geç teslimler kesinlikle reddedilir.',
+      tags: ['Sunucu Süre Kontrolü', 'Otomatik Kayıt', 'Soru Paleti', 'Konu İyileştirme'],
     },
     {
       icon: <SafetyCertificateOutlined style={{ fontSize: 28, color: '#059669' }} />,
-      title: 'Instructor Content Review Workspace',
-      desc: 'Zero hallucinated educational content reaches students automatically. AI-extracted questions and concepts are deposited into a mandatory "Needs Review" state where instructors inspect side-by-side source excerpts, edit, approve, or reject.',
-      tags: ['Anti-Hallucination', 'Side-by-Side Review', 'Publish Gate'],
+      title: 'Eğitmen İçerik İnceleme & Onay Çalışma Alanı',
+      desc: 'Yapay zekâ tarafından üretilen hiçbir içerik denetimsiz olarak öğrencilere ulaşamaz. Çıkarılan sorular ve kavramlar zorunlu bir "İnceleme Bekliyor" aşamasında toplanır; eğitmenler yan yana kaynak metin karşılaştırmasıyla inceler, düzenler, onaylar veya reddeder.',
+      tags: ['Halüsinasyon Engeli', 'Yan Yana İnceleme', 'Yayınlama Onay Kapısı'],
     },
     {
       icon: <DatabaseOutlined style={{ fontSize: 28, color: '#0284C7' }} />,
-      title: 'Enterprise Row Level Security (RLS)',
-      desc: 'PostgreSQL Row Level Security ensures total data isolation between classrooms, organizations, and students. Server secrets remain in Cloudflare Pages edge functions and never enter browser client bundles.',
-      tags: ['PostgreSQL 17 RLS', 'Edge Functions', 'Zero Secret Leaks'],
+      title: 'Kurumsal Satır Düzeyi Güvenlik (RLS)',
+      desc: 'PostgreSQL Satır Düzeyi Güvenlik (RLS) politikaları sınıflar, kurumlar ve öğrenciler arasında tam veri izolasyonu sağlar. Sunucu gizli anahtarları Cloudflare Pages edge işlevlerinde korunur ve tarayıcıya asla sızdırılmaz.',
+      tags: ['PostgreSQL RLS', 'Edge Fonksiyonları', 'Sıfır Anahtar Sızıntısı'],
     },
   ];
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 20px', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
-        <Tag color="blue">Platform Architecture</Tag>
+        <Tag color="blue">Platform Mimarisi</Tag>
         <Title level={1} style={{ fontSize: 36, fontWeight: 800, marginTop: 12, color: '#0F172A' }}>
-          Deeply Integrated Educational Technology
+          Derinlemesine Entegre Eğitim Teknolojisi
         </Title>
         <Paragraph style={{ fontSize: 16, color: '#64748B', maxWidth: 680, margin: '0 auto' }}>
-          Every feature in CENNA.live is built vertically from the database layer to the mobile interface to reinforce real learning.
+          CENNA.live'daki her bir modül, veritabanı katmanından kullanıcı arayüzüne kadar gerçek öğrenmeyi ve klinik kavrayışı pekiştirmek için tasarlanmıştır.
         </Paragraph>
       </div>
 
@@ -126,7 +126,7 @@ export const FeaturesView: React.FC = () => {
           onClick={() => navigate('/auth/login')}
           style={{ height: 48, padding: '0 32px', borderRadius: 8, backgroundColor: '#2563EB' }}
         >
-          Try CENNA.live Now
+          CENNA.live'ı Hemen Deneyin
         </Button>
       </div>
     </div>

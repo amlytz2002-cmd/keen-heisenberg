@@ -42,11 +42,11 @@ export const Navbar: React.FC = () => {
       key: 'user_info',
       label: (
         <div style={{ padding: '4px 0' }}>
-          <div style={{ fontWeight: 600, color: '#0F172A' }}>{profile?.full_name || 'User'}</div>
+          <div style={{ fontWeight: 600, color: '#0F172A' }}>{profile?.full_name || 'Kullanıcı'}</div>
           <div style={{ fontSize: 12, color: '#64748B' }}>{user?.email}</div>
           <div style={{ marginTop: 4 }}>
             <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-              {(activeRole || 'student').toUpperCase()}
+              {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
             </Tag>
           </div>
         </div>
@@ -58,7 +58,7 @@ export const Navbar: React.FC = () => {
           {
             key: 'switch_role',
             icon: <SwapOutlined />,
-            label: activeRole === 'student' ? 'Switch to Instructor View' : 'Switch to Student View',
+            label: activeRole === 'student' ? 'Eğitmen Görünümüne Geç' : 'Öğrenci Görünümüne Geç',
             onClick: handleRoleToggle,
           },
         ]
@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
           {
             key: 'admin_audit',
             icon: <SafetyCertificateOutlined />,
-            label: 'System Audit Logs',
+            label: 'Sistem Denetim Kayıtları',
             onClick: () => navigate('/app/admin/audit'),
           },
         ]
@@ -77,7 +77,7 @@ export const Navbar: React.FC = () => {
       key: 'sign_out',
       icon: <LogoutOutlined />,
       danger: true,
-      label: 'Sign Out',
+      label: 'Çıkış Yap',
       onClick: async () => {
         await signOut();
         navigate('/');
@@ -86,20 +86,20 @@ export const Navbar: React.FC = () => {
   ];
 
   const studentNavItems = [
-    { label: 'Today', path: '/app/today', icon: <CalendarOutlined /> },
-    { label: 'Classrooms', path: '/app/classrooms', icon: <AppstoreOutlined /> },
-    { label: 'Spaced Review', path: '/app/review', icon: <HistoryOutlined /> },
-    { label: 'Timed Exams', path: '/app/exams', icon: <FormOutlined /> },
-    { label: 'Progress', path: '/app/progress', icon: <LineChartOutlined /> },
+    { label: 'Bugün', path: '/app/today', icon: <CalendarOutlined /> },
+    { label: 'Sınıflarım', path: '/app/classrooms', icon: <AppstoreOutlined /> },
+    { label: 'Aralıklı Tekrar', path: '/app/review', icon: <HistoryOutlined /> },
+    { label: 'Süreli Sınavlar', path: '/app/exams', icon: <FormOutlined /> },
+    { label: 'Akademik Gelişim', path: '/app/progress', icon: <LineChartOutlined /> },
   ];
 
   const instructorNavItems = [
-    { label: 'Teach Hub', path: '/app/teach', icon: <BookOutlined /> },
-    { label: 'Classrooms', path: '/app/teach/classrooms', icon: <TeamOutlined /> },
-    { label: 'Courses', path: '/app/teach/courses', icon: <AppstoreOutlined /> },
-    { label: 'Documents', path: '/app/teach/resources', icon: <FileTextOutlined /> },
-    { label: 'Content Review', path: '/app/teach/content-review', icon: <CheckCircleOutlined /> },
-    { label: 'Analytics', path: '/app/teach/analytics', icon: <LineChartOutlined /> },
+    { label: 'Eğitmen Paneli', path: '/app/teach', icon: <BookOutlined /> },
+    { label: 'Sınıf Yönetimi', path: '/app/teach/classrooms', icon: <TeamOutlined /> },
+    { label: 'Dersler', path: '/app/teach/courses', icon: <AppstoreOutlined /> },
+    { label: 'Ders Belgeleri', path: '/app/teach/resources', icon: <FileTextOutlined /> },
+    { label: 'İçerik İnceleme & Onay', path: '/app/teach/content-review', icon: <CheckCircleOutlined /> },
+    { label: 'Analitik', path: '/app/teach/analytics', icon: <LineChartOutlined /> },
   ];
 
   const currentNavItems = activeRole === 'instructor' ? instructorNavItems : studentNavItems;
@@ -208,7 +208,7 @@ export const Navbar: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                Features
+                Özellikler
               </button>
               <button
                 onClick={() => navigate('/how-it-works')}
@@ -223,7 +223,7 @@ export const Navbar: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                Pedagogy & Design
+                Eğitim Metodu & Pedagoji
               </button>
             </>
           )}
@@ -247,7 +247,7 @@ export const Navbar: React.FC = () => {
                   }}
                   className="desktop-nav"
                 >
-                  {activeRole === 'student' ? 'Instructor View' : 'Student View'}
+                  {activeRole === 'student' ? 'Eğitmen Görünümü' : 'Öğrenci Görünümü'}
                 </Button>
               )}
 
@@ -273,7 +273,7 @@ export const Navbar: React.FC = () => {
                       fontWeight: 600,
                     }}
                   >
-                    {profile?.full_name?.split(' ')[0] || 'Account'}
+                    {profile?.full_name?.split(' ')[0] || 'Hesabım'}
                   </span>
                 </Button>
               </Dropdown>
@@ -285,7 +285,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => navigate('/auth/login')}
                 style={{ fontWeight: 600, color: '#334155' }}
               >
-                Sign In
+                Giriş Yap
               </Button>
               <Button
                 type="primary"
@@ -296,7 +296,7 @@ export const Navbar: React.FC = () => {
                   boxShadow: '0 1px 2px rgba(37, 99, 235, 0.2)',
                 }}
               >
-                Get Started
+                Hemen Başla
               </Button>
             </Space>
           )}
@@ -319,7 +319,7 @@ export const Navbar: React.FC = () => {
             <span style={{ fontWeight: 800, color: '#0F172A' }}>CENNA.live</span>
             {user && (
               <Tag color={activeRole === 'instructor' ? 'purple' : 'blue'}>
-                {(activeRole || 'student').toUpperCase()}
+                {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
               </Tag>
             )}
           </div>
@@ -342,7 +342,7 @@ export const Navbar: React.FC = () => {
                       setMobileMenuOpen(false);
                     }}
                   >
-                    Switch to {activeRole === 'student' ? 'Instructor View' : 'Student View'}
+                    {activeRole === 'student' ? 'Eğitmen Görünümüne Geç' : 'Öğrenci Görünümüne Geç'}
                   </Button>
                 </div>
               )}
@@ -380,7 +380,7 @@ export const Navbar: React.FC = () => {
                   navigate('/');
                 }}
               >
-                Sign Out
+                Çıkış Yap
               </Button>
             </>
           ) : (
@@ -394,7 +394,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Home
+                Ana Sayfa
               </Button>
               <Button
                 block
@@ -405,7 +405,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Features
+                Özellikler
               </Button>
               <Button
                 block
@@ -416,7 +416,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Pedagogy & Design
+                Eğitim Metodu & Pedagoji
               </Button>
               <Button
                 block
@@ -427,7 +427,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Privacy & Data
+                Gizlilik & Veri Güvenliği
               </Button>
               <Button
                 block
@@ -438,7 +438,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ textAlign: 'left', height: 44 }}
               >
-                Terms of Service
+                Kullanım Koşulları
               </Button>
 
               <div style={{ margin: '16px 0', borderTop: '1px solid #E2E8F0' }} />
@@ -452,7 +452,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ height: 44 }}
               >
-                Sign In
+                Giriş Yap
               </Button>
               <Button
                 block
@@ -462,7 +462,7 @@ export const Navbar: React.FC = () => {
                 }}
                 style={{ height: 44 }}
               >
-                Get Started
+                Hemen Başla
               </Button>
             </>
           )}

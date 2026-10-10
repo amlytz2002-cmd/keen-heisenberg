@@ -43,7 +43,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
         navigate(activeRole === 'instructor' ? '/app/teach' : '/app/today');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Login failed');
+      setErrorMsg(err.message || 'Giriş işlemi başarısız oldu.');
     } finally {
       setLoading(false);
     }
@@ -79,12 +79,12 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
         });
 
         setSuccessMsg(
-          'Account created successfully! If email confirmation is enabled, please verify your email address. You may now sign in.'
+          'Hesabınız başarıyla oluşturuldu! E-posta doğrulama etkinse lütfen gelen kutunuzu onaylayın. Şimdi giriş yapabilirsiniz.'
         );
         setActiveTab('login');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Registration failed');
+      setErrorMsg(err.message || 'Kayıt işlemi başarısız oldu.');
     } finally {
       setLoading(false);
     }
@@ -102,10 +102,10 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
       if (error) {
         setErrorMsg(error.message);
       } else {
-        setSuccessMsg('Password reset instructions sent. Please check your inbox.');
+        setSuccessMsg('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu kontrol edin.');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Password reset request failed');
+      setErrorMsg(err.message || 'Şifre sıfırlama talebi başarısız oldu.');
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
     if (ok) {
       navigate(role === 'instructor' ? '/app/teach' : '/app/today');
     } else {
-      setErrorMsg(`Failed to authenticate demo ${role}.`);
+      setErrorMsg(`Demo ${role === 'instructor' ? 'eğitmen' : 'öğrenci'} girişi sağlanamadı.`);
     }
   };
 
@@ -164,10 +164,10 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
             C
           </div>
           <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 24, color: '#0F172A' }}>
-            Welcome to CENNA<span style={{ color: '#2563EB' }}>.live</span>
+            CENNA<span style={{ color: '#2563EB' }}>.live</span>'a Hoş Geldiniz
           </Title>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            Active Retrieval & Mastery Platform
+            Aktif Hatırlama ve Bilinçli Pratik Platformu
           </Text>
         </div>
 
@@ -189,28 +189,28 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
           items={[
             {
               key: 'login',
-              label: 'Sign In',
+              label: 'Giriş Yap',
               children: (
                 <Form layout="vertical" onFinish={handleLogin} style={{ marginTop: 8 }}>
                   <Form.Item
                     name="email"
-                    label="Email Address"
-                    rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}
+                    label="Kurumsal E-posta Adresi"
+                    rules={[{ required: true, type: 'email', message: 'Geçerli bir e-posta adresi giriniz' }]}
                   >
-                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="name@university.edu" size="large" />
+                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="ad.soyad@universite.edu.tr" size="large" />
                   </Form.Item>
 
                   <Form.Item
                     name="password"
-                    label="Password"
-                    rules={[{ required: true, message: 'Please enter your password' }]}
+                    label="Şifre"
+                    rules={[{ required: true, message: 'Lütfen şifrenizi giriniz' }]}
                   >
                     <Input.Password prefix={<LockOutlined style={{ color: '#94A3B8' }} />} placeholder="••••••••" size="large" />
                   </Form.Item>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
                     <Button type="link" size="small" onClick={() => setActiveTab('forgot')} style={{ padding: 0 }}>
-                      Forgot password?
+                      Şifrenizi mi unuttunuz?
                     </Button>
                   </div>
 
@@ -222,14 +222,14 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
                     size="large"
                     style={{ backgroundColor: '#2563EB', fontWeight: 600, height: 44, borderRadius: 8 }}
                   >
-                    Sign In
+                    Giriş Yap
                   </Button>
                 </Form>
               ),
             },
             {
               key: 'register',
-              label: 'Register',
+              label: 'Kayıt Ol',
               children: (
                 <Form
                   layout="vertical"
@@ -239,35 +239,35 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
                 >
                   <Form.Item
                     name="fullName"
-                    label="Full Name"
-                    rules={[{ required: true, message: 'Please enter your full name' }]}
+                    label="Ad Soyad / Unvan"
+                    rules={[{ required: true, message: 'Lütfen adınızı ve soyadınızı giriniz' }]}
                   >
-                    <Input prefix={<UserOutlined style={{ color: '#94A3B8' }} />} placeholder="Dr. Jane Smith or Alex Miller" size="large" />
+                    <Input prefix={<UserOutlined style={{ color: '#94A3B8' }} />} placeholder="Prof. Dr. Ahmet Yılmaz veya Ecz. Ayşe Kaya" size="large" />
                   </Form.Item>
 
                   <Form.Item
                     name="email"
-                    label="Email Address"
-                    rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}
+                    label="Kurumsal E-posta Adresi"
+                    rules={[{ required: true, type: 'email', message: 'Geçerli bir e-posta adresi giriniz' }]}
                   >
-                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="name@university.edu" size="large" />
+                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="ad.soyad@universite.edu.tr" size="large" />
                   </Form.Item>
 
                   <Form.Item
                     name="password"
-                    label="Password"
-                    rules={[{ required: true, min: 6, message: 'Password must be at least 6 characters' }]}
+                    label="Şifre"
+                    rules={[{ required: true, min: 6, message: 'Şifre en az 6 karakter olmalıdır' }]}
                   >
                     <Input.Password prefix={<LockOutlined style={{ color: '#94A3B8' }} />} placeholder="••••••••" size="large" />
                   </Form.Item>
 
-                  <Form.Item name="role" label="Account Role" rules={[{ required: true }]}>
+                  <Form.Item name="role" label="Hesap Türü" rules={[{ required: true }]}>
                     <Radio.Group style={{ width: '100%', display: 'flex', gap: 12 }}>
                       <Radio.Button value="student" style={{ flex: 1, textAlign: 'center', height: 40, lineHeight: '38px' }}>
-                        Student
+                        Öğrenci
                       </Radio.Button>
                       <Radio.Button value="instructor" style={{ flex: 1, textAlign: 'center', height: 40, lineHeight: '38px' }}>
-                        Instructor
+                        Eğitmen
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
@@ -280,25 +280,25 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
                     size="large"
                     style={{ backgroundColor: '#2563EB', fontWeight: 600, height: 44, borderRadius: 8, marginTop: 8 }}
                   >
-                    Create Account
+                    Hesap Oluştur
                   </Button>
                 </Form>
               ),
             },
             {
               key: 'forgot',
-              label: 'Reset',
+              label: 'Şifremi Sıfırla',
               children: (
                 <Form layout="vertical" onFinish={handleForgotPassword} style={{ marginTop: 8 }}>
                   <Paragraph style={{ fontSize: 13, color: '#64748B' }}>
-                    Enter your registered email address and we'll send a link to reset your password.
+                    Kayıtlı kurumsal e-posta adresinizi girin. Şifrenizi sıfırlamanız için güvenli bir bağlantı göndereceğiz.
                   </Paragraph>
                   <Form.Item
                     name="email"
-                    label="Email Address"
-                    rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}
+                    label="Kurumsal E-posta Adresi"
+                    rules={[{ required: true, type: 'email', message: 'Geçerli bir e-posta adresi giriniz' }]}
                   >
-                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="name@university.edu" size="large" />
+                    <Input prefix={<MailOutlined style={{ color: '#94A3B8' }} />} placeholder="ad.soyad@universite.edu.tr" size="large" />
                   </Form.Item>
 
                   <Button
@@ -309,11 +309,11 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
                     size="large"
                     style={{ backgroundColor: '#2563EB', fontWeight: 600, height: 44, borderRadius: 8 }}
                   >
-                    Send Reset Link
+                    Sıfırlama Bağlantısı Gönder
                   </Button>
                   <div style={{ textAlign: 'center', marginTop: 12 }}>
                     <Button type="link" size="small" onClick={() => setActiveTab('login')}>
-                      Back to Sign In
+                      Giriş Ekranına Dön
                     </Button>
                   </div>
                 </Form>
@@ -324,7 +324,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
 
         {/* Quick Demo Access Bar */}
         <Divider style={{ margin: '20px 0 16px 0', fontSize: 12, color: '#94A3B8' }}>
-          Instant Pilot Evaluation
+          Hızlı Demo Girişi (Değerlendirme)
         </Divider>
 
         <Space direction="vertical" style={{ width: '100%' }} size="small">
@@ -335,7 +335,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
             loading={loading}
             style={{ borderRadius: 8, height: 38, fontWeight: 500 }}
           >
-            Sign in as Demo Student
+            Demo Öğrenci Olarak Giriş Yap
           </Button>
           <Button
             block
@@ -344,7 +344,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
             loading={loading}
             style={{ borderRadius: 8, height: 38, fontWeight: 500 }}
           >
-            Sign in as Demo Instructor
+            Demo Eğitmen Olarak Giriş Yap
           </Button>
         </Space>
       </Card>
