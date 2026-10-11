@@ -121,7 +121,8 @@ describe('CENNA.live Turkish Transactional Email Service', () => {
         expect.objectContaining({
           idempotency_key: 'sim_test_key',
           status: 'sent',
-        })
+        }),
+        { onConflict: 'idempotency_key' }
       );
     });
 
@@ -182,7 +183,8 @@ describe('CENNA.live Turkish Transactional Email Service', () => {
           idempotency_key: 'live_test_key',
           provider_message_id: 'resend_msg_abc789',
           status: 'sent',
-        })
+        }),
+        { onConflict: 'idempotency_key' }
       );
     });
 
@@ -230,7 +232,8 @@ describe('CENNA.live Turkish Transactional Email Service', () => {
           idempotency_key: 'fail_test_key',
           status: 'failed',
           last_error_code: 'validation_error',
-        })
+        }),
+        { onConflict: 'idempotency_key' }
       );
     });
   });

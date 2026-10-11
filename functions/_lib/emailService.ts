@@ -48,7 +48,7 @@ export async function sendTransactionalEmail(
       email_type: params.emailType,
       provider_message_id: simulatedId,
       status: 'sent',
-    });
+    }, { onConflict: 'idempotency_key' });
 
     return {
       success: true,
@@ -84,7 +84,7 @@ export async function sendTransactionalEmail(
         email_type: params.emailType,
         status: 'failed',
         last_error_code: data.name || 'RESEND_ERROR',
-      });
+      }, { onConflict: 'idempotency_key' });
 
       return {
         success: false,
@@ -99,7 +99,7 @@ export async function sendTransactionalEmail(
       email_type: params.emailType,
       provider_message_id: messageId,
       status: 'sent',
-    });
+    }, { onConflict: 'idempotency_key' });
 
     return {
       success: true,
@@ -112,7 +112,7 @@ export async function sendTransactionalEmail(
       email_type: params.emailType,
       status: 'failed',
       last_error_code: 'NETWORK_EXCEPTION',
-    });
+    }, { onConflict: 'idempotency_key' });
 
     return {
       success: false,
