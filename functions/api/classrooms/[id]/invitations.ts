@@ -1,6 +1,6 @@
 import { handleOptions, jsonResponse, errorResponse } from '../../../_lib/cors';
 import { authenticateUser, getSupabaseUserClient, Env } from '../../../_lib/supabaseServer';
-import { sendTransactionalEmail } from '../../../_lib/emailService';
+import { sendTransactionalEmail, buildClassroomInvitationEmail } from '../../../_lib/emailService';
 
 export async function onRequestOptions() {
   return handleOptions();
@@ -74,11 +74,25 @@ export async function onRequestPost(context: { request: Request; params: { id: s
   let emailDelivery = null;
   const recipientEmail = (body.recipientEmail || body.email || '').toString().trim();
   if (recipientEmail) {
+    const { data: classroom } = await client
+      .from('classrooms')
+      .select('title')
+      .eq('id', params.id)
+      .single();
+
+    const emailContent = buildClassroomInvitationEmail({
+      classroomName: classroom?.title || 'Eczacılık Dönem 3 Sınıfı',
+      inviterName: user.email || 'Ders Sorumlusu',
+      inviteUrl,
+      expiresInDays,
+    });
+
     emailDelivery = await sendTransactionalEmail(
       {
         to: recipientEmail,
-        subject: 'CENNA.live — Sınıf Davetiyesi',
-        html: `<p>Merhaba,</p><p>CENNA.live üzerindeki sınıfa davet edildiniz. Aşağıdaki bağlantıya tıklayarak sınıfa katılabilirsiniz:</p><p><a href="${inviteUrl}">${inviteUrl}</a></p><p>Bu davetiye ${expiresInDays} gün geçerlidir.</p>`,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
         emailType: 'classroom_invitation',
         userId: user.id,
         idempotencyKey: `invite_${invitation.id}_${recipientEmail}`,
