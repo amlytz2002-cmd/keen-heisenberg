@@ -1,5 +1,6 @@
 import { handleOptions, jsonResponse, errorResponse } from '../../../_lib/cors';
 import { authenticateUser, getSupabaseUserClient, Env } from '../../../_lib/supabaseServer';
+import { sendTransactionalEmail } from '../../../_lib/emailService';
 
 export async function onRequestOptions() {
   return handleOptions();
@@ -70,9 +71,28 @@ export async function onRequestPost(context: { request: Request; params: { id: s
   const baseUrl = env.APP_BASE_URL || 'https://cenna.live';
   const inviteUrl = `${baseUrl}/invite/${rawToken}`;
 
+  let emailDelivery = null;
+  const recipientEmail = (body.recipientEmail || body.email || '').toString().trim();
+  if (recipientEmail) {
+    emailDelivery = await sendTransactionalEmail(
+      {
+        to: recipientEmail,
+        subject: 'CENNA.live — Sınıf Davetiyesi',
+        html: `<p>Merhaba,</p><p>CENNA.live üzerindeki sınıfa davet edildiniz. Aşağıdaki bağlantıya tıklayarak sınıfa katılabilirsiniz:</p><p><a href="${inviteUrl}">${inviteUrl}</a></p><p>Bu davetiye ${expiresInDays} gün geçerlidir.</p>`,
+        emailType: 'classroom_invitation',
+        userId: user.id,
+        idempotencyKey: `invite_${invitation.id}_${recipientEmail}`,
+      },
+      client,
+      env.RESEND_API_KEY,
+      env.RESEND_FROM_EMAIL
+    );
+  }
+
   return jsonResponse({
     invitation,
     token: rawToken,
     inviteUrl,
+    emailDelivery,
   }, 201);
 }

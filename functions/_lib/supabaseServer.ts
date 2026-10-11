@@ -14,8 +14,8 @@ export interface Env {
   APP_BASE_URL?: string;
 }
 
-const DEFAULT_SUPABASE_URL = 'https://ibyntbynqkpkkpeoudzv.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlieW50YnlucWtwa2twZW91ZHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMjk5OTUsImV4cCI6MjEwNjYwNTk5NX0.LITBMKrD6mhLiFSMcIk4Yw-0OE1FBjCMYK5a4KKFCM0';
+const DEFAULT_SUPABASE_URL = 'https://ltmtmhmadsrlvuqffdcs.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bXRtaG1hZHNybHZ1cWZmZGNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzE2ODUsImV4cCI6MjEwNzMwNzY4NX0.UzcM8c5bmQ3u-2YmAee5oa3bOIHp7yg2H9gKMKlpF0Q';
 
 export function getSupabaseUserClient(request: Request, env: Env): { client: SupabaseClient<Database>; token: string | null } {
   const url = env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
