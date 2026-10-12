@@ -32,6 +32,7 @@ import { ExamResultsView } from './views/Student/ExamResultsView';
 import { ProgressView } from './views/Student/ProgressView';
 import { SkillTreeView } from './views/Student/SkillTreeView';
 import { InteractiveLessonPlayer } from './views/Student/InteractiveLessonPlayer';
+import { MissionPlayer } from './views/Student/MissionPlayer';
 import { MicrolearningProvider } from './context/MicrolearningContext';
 
 // Instructor views
@@ -51,11 +52,15 @@ const AppRoutes: React.FC = () => {
   const { path } = useRouter();
   const { user, activeRole } = useAuth();
 
-  // Fullscreen interactive lesson player (without standard navbar/footer for zero-distraction immersion)
-  if (path.startsWith('/learn/lesson/')) {
+  // Fullscreen clinical mission player or interactive lesson player (zero-distraction immersion without navbar/footer)
+  if (path.startsWith('/learn/mission') || path.startsWith('/learn/lesson/')) {
+    const isMission =
+      path.startsWith('/learn/mission') ||
+      path.includes('/lesson/mission-');
+
     return (
       <ErrorBoundary>
-        <InteractiveLessonPlayer />
+        {isMission ? <MissionPlayer /> : <InteractiveLessonPlayer />}
       </ErrorBoundary>
     );
   }

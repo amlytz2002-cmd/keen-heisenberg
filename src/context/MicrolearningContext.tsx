@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { UserLessonProgress, UserGamificationState } from '../types/microlearning';
 import { getAllTier1Lessons } from '../data/courses/medicinalChemistryTier1';
+import { getAllMissions } from '../data/courses/medicinalChemistryMissions';
 import { supabase } from '../lib/supabaseClient';
 
-interface MicrolearningContextType {
+export interface MicrolearningContextType {
   userProgress: Record<string, UserLessonProgress>;
   gamification: UserGamificationState;
   isLoading: boolean;
@@ -11,6 +12,11 @@ interface MicrolearningContextType {
   isLessonUnlocked: (lessonId: string) => boolean;
   updateStepProgress: (lessonId: string, stepNumber: number) => Promise<void>;
   completeLesson: (lessonId: string, stars: number, xpReward: number) => Promise<void>;
+  // Mission specific methods (Milestone 3)
+  getMissionProgress: (missionId: string) => UserLessonProgress | undefined;
+  isMissionUnlocked: (missionId: string) => boolean;
+  updateMissionStepProgress: (missionId: string, stepNumber: number) => Promise<void>;
+  completeMission: (missionId: string, stars: number, xpReward: number) => Promise<void>;
   resetProgress: () => void;
 }
 
@@ -25,6 +31,19 @@ const DEFAULT_GAMIFICATION: UserGamificationState = {
 };
 
 const MicrolearningContext = createContext<MicrolearningContextType | undefined>(undefined);
+
+/**
+ * Normalizes between mission-X and les-X IDs for transparent cross-compatibility
+ */
+function getPairedId(id: string): string | null {
+  if (id.startsWith('mission-')) {
+    return id.replace('mission-', 'les-');
+  }
+  if (id.startsWith('les-')) {
+    return id.replace('les-', 'mission-');
+  }
+  return null;
+}
 
 export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userProgress, setUserProgress] = useState<Record<string, UserLessonProgress>>(() => {
@@ -70,17 +89,27 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!progressError && progressRows && progressRows.length > 0 && isMounted) {
           const map: Record<string, UserLessonProgress> = {};
           progressRows.forEach((row: any) => {
-            map[row.lesson_id] = {
+            const progressObj: UserLessonProgress = {
               lessonId: row.lesson_id,
               isCompleted: row.is_completed,
               currentStep: row.current_step,
               starsEarned: row.stars_earned,
               completedAt: row.completed_at,
             };
+            map[row.lesson_id] = progressObj;
+
+            // Also map paired id
+            const paired = getPairedId(row.lesson_id);
+            if (paired && !map[paired]) {
+              map[paired] = { ...progressObj, lessonId: paired };
+            }
           });
+
           setUserProgress((prev) => {
             const merged = { ...prev, ...map };
-            localStorage.setItem(LOCAL_STORAGE_PROGRESS_KEY, JSON.stringify(merged));
+            try {
+              localStorage.setItem(LOCAL_STORAGE_PROGRESS_KEY, JSON.stringify(merged));
+            } catch {}
             return merged;
           });
         }
@@ -100,7 +129,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
             completedLessonsCount: gameRow.completed_lessons_count,
           };
           setGamification(loadedGame);
-          localStorage.setItem(LOCAL_STORAGE_GAMIFICATION_KEY, JSON.stringify(loadedGame));
+          try {
+            localStorage.setItem(LOCAL_STORAGE_GAMIFICATION_KEY, JSON.stringify(loadedGame));
+          } catch {}
         }
       } catch (err) {
         console.warn('[MicrolearningContext] Remote sync fallback to offline localStorage', err);
@@ -117,44 +148,88 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const getLessonProgress = useCallback(
-    (lessonId: string) => {
-      return userProgress[lessonId];
+    (lessonId: string): UserLessonProgress | undefined => {
+      if (userProgress[lessonId]) return userProgress[lessonId];
+      const paired = getPairedId(lessonId);
+      if (paired && userProgress[paired]) return userProgress[paired];
+      return undefined;
+    },
+    [userProgress]
+  );
+
+  const getMissionProgress = useCallback(
+    (missionId: string): UserLessonProgress | undefined => {
+      const canonicalId = missionId.startsWith('mission-') ? missionId : `mission-${missionId}`;
+      if (userProgress[canonicalId]) return userProgress[canonicalId];
+      const paired = getPairedId(canonicalId);
+      if (paired && userProgress[paired]) return userProgress[paired];
+      return undefined;
+    },
+    [userProgress]
+  );
+
+  const isMissionUnlocked = useCallback(
+    (missionId: string): boolean => {
+      const canonicalId = missionId.startsWith('mission-') ? missionId : `mission-${missionId}`;
+      const allMissions = getAllMissions();
+      const index = allMissions.findIndex((m) => m.id === canonicalId || `mission-${m.order}` === canonicalId);
+      if (index <= 0) return true; // First mission is always unlocked
+
+      const prevMission = allMissions[index - 1];
+      const prevProgress =
+        userProgress[prevMission.id] ||
+        (prevMission.order ? userProgress[`mission-${prevMission.order}`] : undefined) ||
+        (prevMission.order ? userProgress[`les-${prevMission.order}`] : undefined);
+
+      return !!prevProgress?.isCompleted;
     },
     [userProgress]
   );
 
   const isLessonUnlocked = useCallback(
     (lessonId: string): boolean => {
+      if (lessonId.startsWith('mission-')) {
+        return isMissionUnlocked(lessonId);
+      }
       const allLessons = getAllTier1Lessons();
       const index = allLessons.findIndex((l) => l.id === lessonId);
       if (index <= 0) return true; // First lesson is always unlocked
 
       const currentLesson = allLessons[index];
       if (currentLesson.prerequisiteLessonId) {
-        return !!userProgress[currentLesson.prerequisiteLessonId]?.isCompleted;
+        const prereq = currentLesson.prerequisiteLessonId;
+        const paired = getPairedId(prereq);
+        return !!userProgress[prereq]?.isCompleted || (paired ? !!userProgress[paired]?.isCompleted : false);
       }
 
       // Default: Previous lesson must be completed
       const previousLesson = allLessons[index - 1];
-      return !!userProgress[previousLesson.id]?.isCompleted;
+      const pairedPrev = getPairedId(previousLesson.id);
+      return !!userProgress[previousLesson.id]?.isCompleted || (pairedPrev ? !!userProgress[pairedPrev]?.isCompleted : false);
     },
-    [userProgress]
+    [userProgress, isMissionUnlocked]
   );
 
   const updateStepProgress = useCallback(
     async (lessonId: string, stepNumber: number) => {
+      const paired = getPairedId(lessonId);
+
       setUserProgress((prev) => {
-        const existing = prev[lessonId];
+        const existing = prev[lessonId] || (paired ? prev[paired] : undefined);
+        const nextRecord: UserLessonProgress = {
+          lessonId,
+          isCompleted: existing?.isCompleted || false,
+          currentStep: Math.max(existing?.currentStep || 0, stepNumber),
+          starsEarned: existing?.starsEarned || 0,
+          completedAt: existing?.completedAt,
+        };
+
         const nextState = {
           ...prev,
-          [lessonId]: {
-            lessonId,
-            isCompleted: existing?.isCompleted || false,
-            currentStep: Math.max(existing?.currentStep || 0, stepNumber),
-            starsEarned: existing?.starsEarned || 0,
-            completedAt: existing?.completedAt,
-          },
+          [lessonId]: nextRecord,
+          ...(paired ? { [paired]: { ...nextRecord, lessonId: paired } } : {}),
         };
+
         try {
           localStorage.setItem(LOCAL_STORAGE_PROGRESS_KEY, JSON.stringify(nextState));
         } catch {}
@@ -182,31 +257,44 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
+  const updateMissionStepProgress = useCallback(
+    async (missionId: string, stepNumber: number) => {
+      const canonicalId = missionId.startsWith('mission-') ? missionId : `mission-${missionId}`;
+      await updateStepProgress(canonicalId, stepNumber);
+    },
+    [updateStepProgress]
+  );
+
   const completeLesson = useCallback(
     async (lessonId: string, stars: number, xpReward: number) => {
       const nowIso = new Date().toISOString();
       const today = nowIso.split('T')[0];
+      const paired = getPairedId(lessonId);
 
-      // Update progress state
+      // 1. Optimistic synchronous update of user progress in memory and localStorage
       setUserProgress((prev) => {
-        const existing = prev[lessonId];
+        const existing = prev[lessonId] || (paired ? prev[paired] : undefined);
+        const nextRecord: UserLessonProgress = {
+          lessonId,
+          isCompleted: true,
+          currentStep: Math.max(existing?.currentStep || 0, 100),
+          starsEarned: Math.max(existing?.starsEarned || 0, stars),
+          completedAt: nowIso,
+        };
+
         const nextState = {
           ...prev,
-          [lessonId]: {
-            lessonId,
-            isCompleted: true,
-            currentStep: Math.max(existing?.currentStep || 0, 100),
-            starsEarned: Math.max(existing?.starsEarned || 0, stars),
-            completedAt: nowIso,
-          },
+          [lessonId]: nextRecord,
+          ...(paired ? { [paired]: { ...nextRecord, lessonId: paired } } : {}),
         };
+
         try {
           localStorage.setItem(LOCAL_STORAGE_PROGRESS_KEY, JSON.stringify(nextState));
         } catch {}
         return nextState;
       });
 
-      // Update gamification (streak & XP)
+      // 2. Optimistic update of gamification (streak & XP)
       setGamification((prev) => {
         const lastDate = prev.lastActiveDate;
         let nextStreak = prev.streak;
@@ -231,7 +319,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
           localStorage.setItem(LOCAL_STORAGE_GAMIFICATION_KEY, JSON.stringify(nextGame));
         } catch {}
 
-        // Async sync to Supabase
+        // 3. Asynchronous background sync to Supabase
         supabase.auth.getUser().then(({ data: { user } }) => {
           if (user) {
             supabase
@@ -269,6 +357,14 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
+  const completeMission = useCallback(
+    async (missionId: string, stars: number, xpReward: number) => {
+      const canonicalId = missionId.startsWith('mission-') ? missionId : `mission-${missionId}`;
+      await completeLesson(canonicalId, stars, xpReward);
+    },
+    [completeLesson]
+  );
+
   const resetProgress = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_PROGRESS_KEY);
     localStorage.removeItem(LOCAL_STORAGE_GAMIFICATION_KEY);
@@ -286,6 +382,10 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         isLessonUnlocked,
         updateStepProgress,
         completeLesson,
+        getMissionProgress,
+        isMissionUnlocked,
+        updateMissionStepProgress,
+        completeMission,
         resetProgress,
       }}
     >

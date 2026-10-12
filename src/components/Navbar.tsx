@@ -15,7 +15,7 @@ import {
   CheckCircleOutlined,
   TeamOutlined,
   AppstoreOutlined,
-  CompassOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from '../context/RouterContext';
@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
   ];
 
   const studentNavItems = [
-    { label: 'Ders Haritası', path: '/learn', icon: <CompassOutlined /> },
+    { label: 'Klinik Laboratuvar', path: '/learn', icon: <ExperimentOutlined /> },
     { label: 'Bugün', path: '/app/today', icon: <CalendarOutlined /> },
     { label: 'Aralıklı Tekrar', path: '/app/review', icon: <HistoryOutlined /> },
     { label: 'Süreli Sınavlar', path: '/app/exams', icon: <FormOutlined /> },
