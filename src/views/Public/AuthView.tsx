@@ -89,7 +89,7 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
         });
 
         setSuccessMsg(
-          'Hesabınız başarıyla oluşturuldu! E-posta doğrulama etkinse lütfen gelen kutunuzu onaylayın. Şimdi giriş yapabilirsiniz.'
+          'Hesabınız başarıyla oluşturuldu ve doğrulandı! Belirlediğiniz şifre ile hemen giriş yapabilirsiniz.'
         );
         setActiveTab('login');
       }
