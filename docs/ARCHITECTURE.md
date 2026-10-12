@@ -154,3 +154,25 @@ To avoid the cognitive trap of premature answer revelation, CENNA.live implement
 - **Stage 3 (Application):** Outlines specific mathematical substitution or step-by-step clinical methodology.
 - **Answer Disclosure:** Occurs only after answer submission.
 - Every hint request is audited in `hint_events` with timestamp, stage, and concept ID.
+
+---
+
+## 7. Cognitive Science Foundations & Retrieval Practice Priority
+
+### 7.1 Empirical Grounding: Latimier et al. (2019)
+- **Primary Finding:** In *npj Science of Learning* (2019), Latimier and colleagues investigated pre-testing vs. post-testing against reading controls over a 7-day retention delay. Post-testing (retrieval practice) yielded a Cohen's $d = 0.74$, more than doubling the effect size of pre-testing ($d = 0.35$).
+- **Architectural Directive:** CENNA.live structures courses around canonical lecture exposition followed immediately by deliberate retrieval practice drills, interactive clinical simulations, and spaced review queues. Pre-testing is reserved solely for optional diagnostic benchmarks.
+
+### 7.2 FSRS Spaced Repetition Algorithm
+- Retrievability curve: $R(t, S) = \left(1 + \frac{19}{81}\frac{t}{S}\right)^{-0.5}$.
+- Hypercorrection triggers ($S = 0$, 24-hour mandatory re-test) on high-confidence mistakes.
+- Multi-day intervals: Day 1, 3, 7, 14, 30.
+
+---
+
+## 8. Transactional Email Architecture (Resend)
+
+- Transactional emails (classroom invites, account verification, password recovery, due review summaries) are generated inside Cloudflare Pages Functions (`functions/_lib/emailService.ts`).
+- All email actions are idempotent and logged to `public.email_events`.
+- In environments without an active `RESEND_API_KEY`, the service runs in safe simulation mode, preventing application disruption while maintaining 100% test coverage.
+
