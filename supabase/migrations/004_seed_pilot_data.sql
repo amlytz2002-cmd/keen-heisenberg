@@ -125,6 +125,30 @@ INSERT INTO auth.users (
 )
 ON CONFLICT (id) DO NOTHING;
 
+-- 1.1 AUTH IDENTITIES (required for GoTrue password verification)
+INSERT INTO auth.identities (
+    id,
+    user_id,
+    identity_data,
+    provider,
+    provider_id,
+    last_sign_in_at,
+    created_at,
+    updated_at
+)
+SELECT
+    gen_random_uuid(),
+    id,
+    jsonb_build_object('sub', id::text, 'email', lower(email)),
+    'email',
+    id::text,
+    NOW(),
+    created_at,
+    updated_at
+FROM auth.users
+WHERE id NOT IN (SELECT user_id FROM auth.identities)
+ON CONFLICT (id) DO NOTHING;
+
 -- Ensure profiles and roles are created/updated
 INSERT INTO public.profiles (
     id, email, display_name, plan, preferred_language, country, university, last_active_at, created_at

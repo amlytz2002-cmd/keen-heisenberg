@@ -67,7 +67,17 @@ export const AuthView: React.FC<{ initialMode?: 'login' | 'register' | 'forgot' 
       });
 
       if (error) {
-        setErrorMsg(error.message);
+        if (
+          error.message.includes('already registered') ||
+          error.message.includes('already been registered') ||
+          error.message.includes('Database error saving new user') ||
+          error.message.includes('unique constraint') ||
+          error.message.includes('users_email_partial_key')
+        ) {
+          setErrorMsg('Bu e-posta adresi ile kayıtlı bir hesap zaten bulunmaktadır. Lütfen giriş yapmayı deneyin.');
+        } else {
+          setErrorMsg(error.message);
+        }
         return;
       }
 

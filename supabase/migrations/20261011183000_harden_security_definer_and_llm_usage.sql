@@ -162,3 +162,34 @@ BEGIN
     WITH CHECK (is_admin(auth.uid()) OR auth.uid() = user_id);
   END IF;
 END $$;
+
+-- 7. Grant trigger execution to internal Supabase Auth service role & sync identities
+GRANT EXECUTE ON FUNCTION public.handle_new_user_autoconfirm() TO supabase_auth_admin, service_role;
+GRANT EXECUTE ON FUNCTION public.handle_new_user_profile() TO supabase_auth_admin, service_role;
+
+UPDATE auth.users 
+SET instance_id = '00000000-0000-0000-0000-000000000000'
+WHERE instance_id IS NULL;
+
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+SELECT
+  gen_random_uuid(),
+  id,
+  jsonb_build_object('sub', id::text, 'email', lower(email)),
+  'email',
+  id::text,
+  NOW(),
+  created_at,
+  updated_at
+FROM auth.users
+WHERE id NOT IN (SELECT user_id FROM auth.identities);
+
