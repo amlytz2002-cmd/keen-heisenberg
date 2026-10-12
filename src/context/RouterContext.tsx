@@ -66,6 +66,10 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const studyMatch = currentPath.match(/^\/app\/study\/([^/]+)/);
     if (studyMatch) params.sessionId = studyMatch[1];
 
+    // Pattern: /learn/lesson/:lessonId
+    const lessonMatch = currentPath.match(/^\/learn\/lesson\/([^/]+)/);
+    if (lessonMatch) params.lessonId = lessonMatch[1];
+
     // Pattern: /app/exams/:id/take
     const examTakeMatch = currentPath.match(/^\/app\/exams\/([^/]+)\/take/);
     if (examTakeMatch) params.id = examTakeMatch[1];

@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      user_lesson_progress: {
+        Row: {
+          id: string
+          user_id: string
+          lesson_id: string
+          is_completed: boolean
+          current_step: number
+          stars_earned: number
+          completed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          lesson_id: string
+          is_completed?: boolean
+          current_step?: number
+          stars_earned?: number
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          lesson_id?: string
+          is_completed?: boolean
+          current_step?: number
+          stars_earned?: number
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_gamification: {
+        Row: {
+          user_id: string
+          streak: number
+          xp: number
+          last_active_date: string
+          completed_lessons_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          streak?: number
+          xp?: number
+          last_active_date?: string
+          completed_lessons_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          streak?: number
+          xp?: number
+          last_active_date?: string
+          completed_lessons_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_generation_runs: {
         Row: {
           completed_at: string | null

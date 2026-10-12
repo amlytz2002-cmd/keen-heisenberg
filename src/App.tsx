@@ -30,6 +30,9 @@ import { ExamsListView } from './views/Student/ExamsListView';
 import { ExamTakeView } from './views/Student/ExamTakeView';
 import { ExamResultsView } from './views/Student/ExamResultsView';
 import { ProgressView } from './views/Student/ProgressView';
+import { SkillTreeView } from './views/Student/SkillTreeView';
+import { InteractiveLessonPlayer } from './views/Student/InteractiveLessonPlayer';
+import { MicrolearningProvider } from './context/MicrolearningContext';
 
 // Instructor views
 import { TeachDashboardView } from './views/Instructor/TeachDashboardView';
@@ -48,10 +51,20 @@ const AppRoutes: React.FC = () => {
   const { path } = useRouter();
   const { user, activeRole } = useAuth();
 
+  // Fullscreen interactive lesson player (without standard navbar/footer for zero-distraction immersion)
+  if (path.startsWith('/learn/lesson/')) {
+    return (
+      <ErrorBoundary>
+        <InteractiveLessonPlayer />
+      </ErrorBoundary>
+    );
+  }
+
   // Route matching logic
   const renderRoute = () => {
     // 1. Exact Public Routes & Aliases
-    if (path === '/' || path === '') return user ? (activeRole === 'instructor' ? <TeachDashboardView /> : <TodayView />) : <LandingView />;
+    if (path === '/' || path === '') return user ? (activeRole === 'instructor' ? <TeachDashboardView /> : <SkillTreeView />) : <LandingView />;
+    if (path === '/learn') return <SkillTreeView />;
     if (path === '/features') return <FeaturesView />;
     if (path === '/how-it-works') return <HowItWorksView />;
     if (path === '/privacy') return <LegalView initialTab="privacy" />;
@@ -86,7 +99,7 @@ const AppRoutes: React.FC = () => {
     if (path === '/app/admin/audit') return <AdminAuditView />;
 
     // 6. Fallback
-    return user ? (activeRole === 'instructor' ? <TeachDashboardView /> : <TodayView />) : <LandingView />;
+    return user ? (activeRole === 'instructor' ? <TeachDashboardView /> : <SkillTreeView />) : <LandingView />;
   };
 
   return (
@@ -121,7 +134,9 @@ export const App: React.FC = () => {
       >
         <RouterProvider>
           <AuthProvider>
-            <AppRoutes />
+            <MicrolearningProvider>
+              <AppRoutes />
+            </MicrolearningProvider>
           </AuthProvider>
         </RouterProvider>
       </ConfigProvider>

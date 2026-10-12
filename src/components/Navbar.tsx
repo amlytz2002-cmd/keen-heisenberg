@@ -15,13 +15,17 @@ import {
   CheckCircleOutlined,
   TeamOutlined,
   AppstoreOutlined,
+  CompassOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from '../context/RouterContext';
+import { useMicrolearning } from '../context/MicrolearningContext';
+import { StreakBadge } from './gamification/StreakBadge';
 
 export const Navbar: React.FC = () => {
   const { user, profile, activeRole, setActiveRole, signOut } = useAuth();
   const { path, navigate } = useRouter();
+  const { gamification } = useMicrolearning();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isInstructor = (Array.isArray(profile?.roles) && profile.roles.includes('instructor')) || profile?.primary_role === 'instructor' || activeRole === 'instructor';
@@ -113,8 +117,8 @@ export const Navbar: React.FC = () => {
   ];
 
   const studentNavItems = [
+    { label: 'Ders Haritası', path: '/learn', icon: <CompassOutlined /> },
     { label: 'Bugün', path: '/app/today', icon: <CalendarOutlined /> },
-    { label: 'Sınıflar', path: '/app/classrooms', icon: <AppstoreOutlined /> },
     { label: 'Aralıklı Tekrar', path: '/app/review', icon: <HistoryOutlined /> },
     { label: 'Süreli Sınavlar', path: '/app/exams', icon: <FormOutlined /> },
     { label: 'Gelişim & İlerleme', path: '/app/progress', icon: <LineChartOutlined /> },
@@ -155,7 +159,7 @@ export const Navbar: React.FC = () => {
       >
         {/* Brand */}
         <div
-          onClick={() => navigate(user ? (activeRole === 'instructor' ? '/app/teach' : '/app/today') : '/')}
+          onClick={() => navigate(user ? (activeRole === 'instructor' ? '/app/teach' : '/learn') : '/')}
           style={{
             cursor: 'pointer',
             display: 'flex',
@@ -277,6 +281,10 @@ export const Navbar: React.FC = () => {
                   {activeRole === 'student' ? 'Eğitmen Görünümü' : 'Öğrenci Görünümü'}
                 </Button>
               )}
+
+              <div className="desktop-nav">
+                <StreakBadge streak={gamification.streak} xp={gamification.xp} />
+              </div>
 
               <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
                 <Button

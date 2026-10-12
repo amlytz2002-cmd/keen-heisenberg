@@ -17,13 +17,14 @@
   - 100% automated test pass rate (348/348 tests across 16 test suites) and 0 TypeScript compilation errors.
   - Seamless edge function error handling with localized user-facing feedback and global Ant Design tr_TR locale.
 
-### Phase 3: Brilliant-Tarzı İnteraktif Medisinal Kimya Mikro-Öğrenme Platformu [Ready for Execution]
-- **Goal:** Transform CENNA.live into a consumer-grade, Brilliant.org-style interactive micro-learning platform for Medicinal Chemistry based on 26 faculty lecture slides (`Desktop/medisinal`). Decommission instructor portal, build visual Skill Tree (`/learn`) and interactive full-screen lesson player (`/learn/lesson/:id`), deliver custom chemical widgets (`MoleculeInspector`, `SarSimulator`, `BondPocketMatcher`, `PhIonizationGauge`), and package Tier 1 (Foundations & SAR: 6 Modules, 21 Micro-Lessons, 100+ interactive cards) with Supabase progress synchronization.
-- **Decision Gate C:**
-  - 100% of Tier 1 modules (6 modules, 21 micro-lessons) playable with instant feedback and zero latency.
+### Phase 3: Brilliant-Tarzı İnteraktif Medisinal Kimya Mikro-Öğrenme Platformu [Complete]
+- **Goal:** Transform CENNA.live into a consumer-grade, Brilliant.org-style interactive micro-learning platform for Medicinal Chemistry based on 26 faculty lecture slides (`Desktop/medisinal`). Decommission instructor portal from primary consumer nav, build visual Skill Tree (`/learn`) and interactive full-screen lesson player (`/learn/lesson/:id`), deliver custom chemical widgets (`MoleculeInspector`, `SarSimulator`, `BondPocketMatcher`, `PhIonizationGauge`), and package Tier 1 (Foundations & SAR: 6 Modules, 21 Micro-Lessons, 100+ interactive cards) with Supabase progress synchronization.
+- **Decision Gate C [PASSED]:**
+  - 100% of Tier 1 modules (6 modules, 21 micro-lessons, 100+ interactive cards) playable with instant feedback and zero latency.
   - Interactive chemical widgets render seamlessly across desktop and mobile.
-  - User progress, stars, and daily streaks persist cleanly in Supabase.
-  - Zero TypeScript errors and 100% vitest pass rate.
+  - User progress, stars, and daily streaks persist cleanly in Supabase (`user_lesson_progress`, `user_gamification`).
+  - Zero TypeScript errors (`npm run typecheck` passes with 0 errors) and 100% test pass rate (368/368 vitest tests passing across 18 test suites).
+  - Production Vite build succeeds cleanly (`dist/` generated).
 
 ### Phase 4: Multi-Course Rollout & Licensure Prep (Post-Gate C)
 - **Goal:** Tier 2 (Autonomic & CVS) and Tier 3 (Chemotherapeutics) rollout, paid Socratic AI preceptor integration, and multi-university scaling.
