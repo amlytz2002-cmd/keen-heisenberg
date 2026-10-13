@@ -1,6 +1,7 @@
 import { handleOptions, jsonResponse, errorResponse } from '../../../_lib/cors';
-import { authenticateUser, getSupabaseUserClient, Env } from '../../../_lib/supabaseServer';
+import { authenticateUser, getSupabaseUserClient, getSupabaseServiceClient, Env } from '../../../_lib/supabaseServer';
 import { sendTransactionalEmail, buildClassroomInvitationEmail } from '../../../_lib/emailService';
+import { checkRateLimit, rateLimitResponse } from '../../../_lib/rateLimit';
 
 export async function onRequestOptions() {
   return handleOptions();
@@ -39,6 +40,16 @@ export async function onRequestPost(context: { request: Request; params: { id: s
   const user = await authenticateUser(request, env);
   if (!user) {
     return errorResponse('UNAUTHORIZED', 'Authentication required', 401);
+  }
+
+  // Rate limiting: max 20 invitations per minute per user
+  const rateLimitResult = checkRateLimit(
+    request,
+    { maxRequests: 20, windowMs: 60_000, keyPrefix: 'create_invite' },
+    user.id
+  );
+  if (!rateLimitResult.allowed) {
+    return rateLimitResponse(rateLimitResult);
   }
 
   const body = (await request.json().catch(() => ({}))) as Record<string, any>;
@@ -87,6 +98,7 @@ export async function onRequestPost(context: { request: Request; params: { id: s
       expiresInDays,
     });
 
+    const serviceClient = getSupabaseServiceClient(env);
     emailDelivery = await sendTransactionalEmail(
       {
         to: recipientEmail,
@@ -97,7 +109,7 @@ export async function onRequestPost(context: { request: Request; params: { id: s
         userId: user.id,
         idempotencyKey: `invite_${invitation.id}_${recipientEmail}`,
       },
-      client,
+      serviceClient,
       env.RESEND_API_KEY,
       env.RESEND_FROM_EMAIL
     );

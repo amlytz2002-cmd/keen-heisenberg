@@ -1,6 +1,7 @@
 import { handleOptions, jsonResponse, errorResponse } from '../../_lib/cors';
-import { Env, getSupabaseServiceClient } from '../../_lib/supabaseServer';
+import { Env, authenticateUser, getSupabaseUserClient, getSupabaseServiceClient } from '../../_lib/supabaseServer';
 import { sendTransactionalEmail, buildTestEmail } from '../../_lib/emailService';
+import { checkRateLimit, rateLimitResponse } from '../../_lib/rateLimit';
 
 export async function onRequestOptions() {
   return handleOptions();
@@ -8,8 +9,37 @@ export async function onRequestOptions() {
 
 export async function onRequestPost(context: { request: Request; env: Env }) {
   const { request, env } = context;
+
+  // 1. Mandatory authentication check
+  const user = await authenticateUser(request, env);
+  if (!user) {
+    return errorResponse('UNAUTHORIZED', 'Test e-postası göndermek için oturum açmalısınız.', 401);
+  }
+
+  // 2. Privilege check: only instructors or administrators may trigger test emails
+  const { client } = getSupabaseUserClient(request, env);
+  const { data: roles } = await client
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
+
+  const isPrivileged = roles?.some((r: any) => r.role === 'admin' || r.role === 'instructor');
+  if (!isPrivileged) {
+    return errorResponse('FORBIDDEN', 'Yalnızca ders sorumlusu veya sistem yöneticileri test e-postası gönderebilir.', 403);
+  }
+
+  // 3. Strict rate limiting: max 5 test emails per 60 seconds per privileged user
+  const rateLimitResult = checkRateLimit(
+    request,
+    { maxRequests: 5, windowMs: 60_000, keyPrefix: 'test_email' },
+    user.id
+  );
+  if (!rateLimitResult.allowed) {
+    return rateLimitResponse(rateLimitResult);
+  }
+
   const body = (await request.json().catch(() => ({}))) as Record<string, any>;
-  const to = (body.to || 'delivered@resend.dev').toString().trim();
+  const to = (body.to || user.email || 'delivered@resend.dev').toString().trim();
 
   // Validate email format
   if (!to.includes('@') || !to.includes('.')) {
@@ -29,6 +59,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       html: emailContent.html,
       text: emailContent.text,
       emailType: 'account_notice',
+      userId: user.id,
       idempotencyKey,
     },
     supabase,

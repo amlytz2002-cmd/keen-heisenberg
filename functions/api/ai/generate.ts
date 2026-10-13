@@ -1,6 +1,7 @@
 import { handleOptions, jsonResponse, errorResponse } from '../../_lib/cors';
 import { authenticateUser, getSupabaseUserClient, getSupabaseServiceClient, Env } from '../../_lib/supabaseServer';
 import { generateGroundedConcepts, generateGroundedQuestions } from '../../_lib/aiService';
+import { checkRateLimit, rateLimitResponse } from '../../_lib/rateLimit';
 
 export async function onRequestOptions() {
   return handleOptions();
@@ -11,6 +12,16 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
   const user = await authenticateUser(request, env);
   if (!user) {
     return errorResponse('UNAUTHORIZED', 'Authentication required', 401);
+  }
+
+  // Rate limiting: max 10 AI generation requests per minute per user
+  const rateLimitResult = checkRateLimit(
+    request,
+    { maxRequests: 10, windowMs: 60_000, keyPrefix: 'ai_generate' },
+    user.id
+  );
+  if (!rateLimitResult.allowed) {
+    return rateLimitResponse(rateLimitResult);
   }
 
   const body = (await request.json().catch(() => ({}))) as Record<string, any>;
