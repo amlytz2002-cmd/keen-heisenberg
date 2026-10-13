@@ -80,8 +80,9 @@ export const MissionPlayer: React.FC = () => {
     setClinicalFeedback('');
   }, [currentStepIndex, mission.id]);
 
-  const currentStep = mission.steps[currentStepIndex] || mission.steps[0];
-  const totalSteps = mission.steps.length;
+  const totalSteps = mission.steps?.length || 1;
+  const safeStepIndex = Math.min(Math.max(0, currentStepIndex), totalSteps - 1);
+  const currentStep = mission.steps?.[safeStepIndex] || mission.steps?.[0];
 
   // Selected tool items resolved from current answer
   const appliedTools = useMemo(() => {
@@ -124,7 +125,7 @@ export const MissionPlayer: React.FC = () => {
       setClinicalFeedback(validation.clinicalExplanation);
 
       // Check if this was the last step
-      if (currentStepIndex >= totalSteps - 1) {
+      if (safeStepIndex >= totalSteps - 1) {
         const calculatedStars = mistakesCount === 0 ? 3 : mistakesCount <= 2 ? 2 : 1;
         completeMission(mission.id, calculatedStars, mission.xpReward);
         setIsVictoryModalOpen(true);
@@ -136,7 +137,7 @@ export const MissionPlayer: React.FC = () => {
       setFeedbackMessage(validation.feedback);
       setClinicalFeedback(validation.clinicalExplanation);
     }
-  }, [currentStep, appliedTools, mission, mistakesCount, currentStepIndex, totalSteps, completeMission]);
+  }, [currentStep, appliedTools, mission, mistakesCount, safeStepIndex, totalSteps, completeMission]);
 
   // Reset action
   const handleReset = useCallback(() => {
@@ -158,16 +159,16 @@ export const MissionPlayer: React.FC = () => {
 
   // Advance to next step
   const handleNextStep = useCallback(async () => {
-    await updateMissionStepProgress(mission.id, currentStepIndex + 1);
+    await updateMissionStepProgress(mission.id, safeStepIndex + 1);
 
-    if (currentStepIndex < totalSteps - 1) {
-      setCurrentStepIndex((prev) => prev + 1);
+    if (safeStepIndex < totalSteps - 1) {
+      setCurrentStepIndex(safeStepIndex + 1);
     } else {
       const calculatedStars = mistakesCount === 0 ? 3 : mistakesCount <= 2 ? 2 : 1;
       await completeMission(mission.id, calculatedStars, mission.xpReward);
       setIsVictoryModalOpen(true);
     }
-  }, [currentStepIndex, totalSteps, mission.id, mistakesCount, completeMission, updateMissionStepProgress]);
+  }, [safeStepIndex, totalSteps, mission.id, mistakesCount, completeMission, updateMissionStepProgress]);
 
   // Calculated stars for debrief
   const starsEarned = useMemo(() => {
@@ -272,14 +273,14 @@ export const MissionPlayer: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 220 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>
-              Kurtarma Adımı {currentStepIndex + 1} / {totalSteps}
+              Kurtarma Adımı {safeStepIndex + 1} / {totalSteps}
             </span>
             <span style={{ fontSize: 11, color: '#38BDF8', fontWeight: 700 }}>
-              {Math.round(((currentStepIndex + 1) / totalSteps) * 100)}%
+              {Math.round(((safeStepIndex + 1) / totalSteps) * 100)}%
             </span>
           </div>
           <Progress
-            percent={Math.round(((currentStepIndex + 1) / totalSteps) * 100)}
+            percent={Math.round(((safeStepIndex + 1) / totalSteps) * 100)}
             showInfo={false}
             strokeColor="#0284C7"
             trailColor="#1E293B"
@@ -489,7 +490,7 @@ export const MissionPlayer: React.FC = () => {
                     fontWeight: 800,
                   }}
                 >
-                  {currentStepIndex + 1}
+                  {safeStepIndex + 1}
                 </span>
                 <h2 style={{ fontSize: 16, fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
                   {currentStep.title || currentStep.prompt || 'Moleküler Tasarım & Kurtarma'}
@@ -794,7 +795,7 @@ export const MissionPlayer: React.FC = () => {
                 <Button
                   type="primary"
                   icon={<ArrowRightOutlined />}
-                  onClick={currentStepIndex < totalSteps - 1 ? handleNextStep : () => setIsVictoryModalOpen(true)}
+                  onClick={safeStepIndex < totalSteps - 1 ? handleNextStep : () => setIsVictoryModalOpen(true)}
                   style={{
                     backgroundColor: '#10B981',
                     borderColor: '#059669',
@@ -806,7 +807,7 @@ export const MissionPlayer: React.FC = () => {
                     boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
                   }}
                 >
-                  {currentStepIndex < totalSteps - 1 ? 'Sonraki Adıma Geç' : 'Zafer Raporunu İncele'}
+                  {safeStepIndex < totalSteps - 1 ? 'Sonraki Adıma Geç' : 'Zafer Raporunu İncele'}
                 </Button>
               ) : (
                 <Button

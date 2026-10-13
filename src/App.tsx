@@ -60,7 +60,7 @@ const AppRoutes: React.FC = () => {
 
     return (
       <ErrorBoundary>
-        {isMission ? <MissionPlayer /> : <InteractiveLessonPlayer key={path} />}
+        {isMission ? <MissionPlayer key={path} /> : <InteractiveLessonPlayer key={path} />}
       </ErrorBoundary>
     );
   }
