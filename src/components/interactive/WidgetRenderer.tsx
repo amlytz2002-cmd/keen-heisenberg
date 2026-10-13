@@ -284,21 +284,71 @@ export const WidgetRenderer: React.FC<WidgetRendererProps> = ({
       );
 
     case 'multiple_choice':
-    default:
-      if (!step.options || step.options.length === 0) {
+    default: {
+      const options = step.options;
+      if (!options || options.length === 0) {
         return null;
       }
 
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {step.options.map((opt: any, idx: number) => {
+        <div
+          role="radiogroup"
+          aria-label={step.title || step.prompt || 'Seçenekler'}
+          style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+        >
+          {options.map((opt: any, idx: number) => {
             const isSelected = currentAnswer === opt.id;
             const letter = String.fromCharCode(65 + idx); // A, B, C, D
+
+            // Roving tabIndex:
+            // When an option is selected, only that option has tabIndex=0.
+            // When no option is selected, the first option (idx === 0) has tabIndex=0.
+            // When disabled, all options have tabIndex=-1.
+            const hasSelection = options.some((o: any) => o.id === currentAnswer);
+            const isFocusable = hasSelection ? isSelected : idx === 0;
+            const tabIndex = disabled ? -1 : (isFocusable ? 0 : -1);
 
             return (
               <div
                 key={opt.id}
-                onClick={() => !disabled && onAnswerChange(opt.id)}
+                role="radio"
+                tabIndex={tabIndex}
+                aria-checked={isSelected}
+                aria-disabled={disabled ? 'true' : undefined}
+                aria-label={`${letter}: ${opt.label}`}
+                onClick={(e) => {
+                  if (disabled) return;
+                  onAnswerChange(opt.id);
+                  e.currentTarget.focus();
+                }}
+                onKeyDown={(e) => {
+                  if (disabled) return;
+                  if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    onAnswerChange(opt.id);
+                  } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const nextIdx = (idx + 1) % options.length;
+                    const nextOpt = options[nextIdx];
+                    if (nextOpt) {
+                      onAnswerChange(nextOpt.id);
+                      const radioGroup = e.currentTarget.parentElement;
+                      const nextRadio = radioGroup?.querySelectorAll<HTMLElement>('[role="radio"]')[nextIdx];
+                      nextRadio?.focus();
+                    }
+                  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const prevIdx = (idx - 1 + options.length) % options.length;
+                    const prevOpt = options[prevIdx];
+                    if (prevOpt) {
+                      onAnswerChange(prevOpt.id);
+                      const radioGroup = e.currentTarget.parentElement;
+                      const prevRadio = radioGroup?.querySelectorAll<HTMLElement>('[role="radio"]')[prevIdx];
+                      prevRadio?.focus();
+                    }
+                  }
+                }}
+                className="cenna-mcq-option"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -314,9 +364,19 @@ export const WidgetRenderer: React.FC<WidgetRendererProps> = ({
                   boxShadow: isSelected
                     ? '0 2px 8px rgba(2, 132, 199, 0.12)'
                     : 'none',
+                  textAlign: 'left',
+                  width: '100%',
+                  fontFamily: 'inherit',
+                  color: 'inherit',
+                  fontSize: 'inherit',
+                  margin: 0,
+                  opacity: 1,
+                  boxSizing: 'border-box',
+                  userSelect: 'none',
                 }}
               >
                 <div
+                  aria-hidden="true"
                   style={{
                     width: 32,
                     height: 32,
@@ -346,7 +406,14 @@ export const WidgetRenderer: React.FC<WidgetRendererProps> = ({
               </div>
             );
           })}
+          <style>{`
+            .cenna-mcq-option:focus-visible {
+              outline: 2px solid #0284C7 !important;
+              outline-offset: 2px !important;
+            }
+          `}</style>
         </div>
       );
+    }
   }
 };
