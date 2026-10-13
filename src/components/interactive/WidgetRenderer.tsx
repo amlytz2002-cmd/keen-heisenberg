@@ -251,9 +251,7 @@ export const WidgetRenderer: React.FC<WidgetRendererProps> = ({
           baseLogP={widgetProps.baseLogP ?? 1.5}
           substituents={widgetProps.substituents || []}
           selectedId={
-            currentAnswer ||
-            widgetProps.defaultId ||
-            widgetProps.substituents?.[0]?.id
+            typeof currentAnswer === 'string' ? currentAnswer : undefined
           }
           onSelectSubstituent={(id) => !disabled && onAnswerChange(id)}
           targetResidueHint={widgetProps.targetResidueHint}

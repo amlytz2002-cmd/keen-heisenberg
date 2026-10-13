@@ -71,8 +71,18 @@ export const InteractiveLessonPlayer: React.FC = () => {
     } else if (currentStep.widgetType === 'bond_matcher') {
       correct = userAnswer === true;
     } else if (currentStep.widgetType === 'ph_gauge') {
-      // Free exploration / interactive check
-      correct = true;
+      const targetPh =
+        typeof currentStep.correctAnswer === 'object' && currentStep.correctAnswer !== null
+          ? currentStep.correctAnswer.ph
+          : currentStep.correctAnswer;
+      const userPh =
+        typeof userAnswer === 'object' && userAnswer !== null
+          ? userAnswer.ph
+          : userAnswer;
+      correct =
+        typeof targetPh === 'number' && typeof userPh === 'number'
+          ? Math.abs(userPh - targetPh) <= 0.15
+          : false;
     } else {
       correct = true;
     }
@@ -236,7 +246,7 @@ export const InteractiveLessonPlayer: React.FC = () => {
     );
   }
 
-  const isCheckDisabled = userAnswer === null && currentStep.widgetType !== 'ph_gauge';
+  const isCheckDisabled = userAnswer === null;
 
   return (
     <div

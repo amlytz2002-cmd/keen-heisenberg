@@ -887,7 +887,6 @@ export const MEDICINAL_CHEMISTRY_TIER_1: CourseModule[] = [
             widgetProps: {
               coreName: 'Fenilpiperazin Çekirdeği',
               baseLogP: 1.2,
-              defaultId: 'sub-cl',
               targetResidueHint: 'Hedef Reseptör Cebi: Hidrofobik Val112 ve Phe200 yan zincirleri',
               substituents: [
                 { id: 'sub-h', label: '-H', name: 'Hidrojen (Referans)', logPDelta: 0.0, affinityPercent: 45, bbbPermeable: false, waterSolubilityRank: 'Yüksek', pedagogicalNote: 'Temel çekirdek, zayıf hidrofobik dolgu.' },

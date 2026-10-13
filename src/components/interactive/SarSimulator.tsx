@@ -16,7 +16,7 @@ export interface SarSimulatorProps {
   coreName: string;
   baseLogP: number;
   substituents: SarSubstituent[];
-  selectedId: string;
+  selectedId?: string;
   onSelectSubstituent: (id: string) => void;
   targetResidueHint?: string;
 }
