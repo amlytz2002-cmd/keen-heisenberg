@@ -40,7 +40,7 @@ export const InteractiveLessonPlayer: React.FC = () => {
     setHintStage(0);
   }, [currentStepIndex, lessonId]);
 
-  if (!lesson) {
+  if (!lesson || !lesson.steps || lesson.steps.length === 0) {
     return (
       <div style={{ maxWidth: 600, margin: '80px auto', textAlign: 'center', padding: 24 }}>
         <h2>Ders Bulunamadı</h2>
@@ -52,8 +52,9 @@ export const InteractiveLessonPlayer: React.FC = () => {
     );
   }
 
-  const currentStep = lesson.steps[currentStepIndex];
   const totalSteps = lesson.steps.length;
+  const safeStepIndex = Math.min(Math.max(0, currentStepIndex), totalSteps - 1);
+  const currentStep = lesson.steps[safeStepIndex];
 
   const handleCheckAnswer = () => {
     if (!currentStep) return;
@@ -85,10 +86,10 @@ export const InteractiveLessonPlayer: React.FC = () => {
   };
 
   const handleContinue = async () => {
-    await updateStepProgress(lesson.id, currentStepIndex + 1);
+    await updateStepProgress(lesson.id, safeStepIndex + 1);
 
-    if (currentStepIndex < totalSteps - 1) {
-      setCurrentStepIndex((prev) => prev + 1);
+    if (safeStepIndex < totalSteps - 1) {
+      setCurrentStepIndex(safeStepIndex + 1);
     } else {
       // Calculate earned stars (3 if <= 1 mistake, 2 if <= 3 mistakes, 1 otherwise)
       const stars = mistakesCount === 0 ? 3 : mistakesCount <= 2 ? 2 : 1;
@@ -282,8 +283,8 @@ export const InteractiveLessonPlayer: React.FC = () => {
         {/* Segmented Progress Bar */}
         <div style={{ flex: 1, display: 'flex', gap: 6, alignItems: 'center' }}>
           {lesson.steps.map((step, idx) => {
-            const isDone = idx < currentStepIndex;
-            const isCurrent = idx === currentStepIndex;
+            const isDone = idx < safeStepIndex;
+            const isCurrent = idx === safeStepIndex;
 
             return (
               <div
@@ -322,7 +323,7 @@ export const InteractiveLessonPlayer: React.FC = () => {
             {currentStep.conceptTag}
           </Tag>
           <span style={{ fontSize: 13, color: '#94A3B8' }}>
-            Adım {currentStepIndex + 1} / {totalSteps}
+            Adım {safeStepIndex + 1} / {totalSteps}
           </span>
         </div>
 
