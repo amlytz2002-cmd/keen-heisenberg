@@ -2945,6 +2945,16 @@ export type Database = {
       }
       is_instructor: { Args: { check_user_id: string }; Returns: boolean }
       start_free_trial: { Args: never; Returns: Json }
+      sync_lesson_progress: {
+        Args: {
+          p_lesson_id: string
+          p_current_step: number
+          p_is_completed: boolean
+          p_stars_earned: number
+          p_completed_at?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

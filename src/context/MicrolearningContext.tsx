@@ -189,47 +189,147 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
           for (const [id, progressRecord] of lessonEntries) {
             if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
             try {
-              const payload: Record<string, any> = {
-                user_id: targetUser,
-                lesson_id: id,
-                current_step: progressRecord.currentStep,
-                updated_at: new Date().toISOString(),
-              };
-              if (progressRecord.isCompleted) {
-                payload.is_completed = true;
-                payload.stars_earned = progressRecord.starsEarned;
-                if (progressRecord.completedAt) {
-                  payload.completed_at = progressRecord.completedAt;
+              if (typeof (supabase as any).rpc === 'function') {
+                const { data, error } = await supabase.rpc('sync_lesson_progress', {
+                  p_lesson_id: id,
+                  p_current_step: progressRecord.currentStep,
+                  p_is_completed: progressRecord.isCompleted,
+                  p_stars_earned: progressRecord.starsEarned,
+                  p_completed_at: progressRecord.completedAt ?? null,
+                });
+
+                if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+
+                if (error) {
+                  hasError = true;
+                  roundErrorCount++;
+                  lastErrorMsg = error.message;
+                } else {
+                  roundProcessedCount++;
+
+                  // Authoritative reconciliation without regressing newer in-flight updates
+                  if (data && typeof data === 'object') {
+                    const serverRow = data as Record<string, any>;
+                    const currentLocal = userProgressRef.current[id];
+                    const reconciledRecord: UserLessonProgress = {
+                      lessonId: id,
+                      currentStep: Math.max(currentLocal?.currentStep || 0, Number(serverRow.current_step || 0)),
+                      starsEarned: Math.max(currentLocal?.starsEarned || 0, Number(serverRow.stars_earned || 0)),
+                      isCompleted: Boolean(currentLocal?.isCompleted || serverRow.is_completed),
+                      completedAt: currentLocal?.completedAt || serverRow.completed_at || null,
+                    };
+
+                    const paired = getPairedId(id);
+                    const currentPaired = paired ? userProgressRef.current[paired] : undefined;
+                    const nextProgState = {
+                      ...userProgressRef.current,
+                      [id]: reconciledRecord,
+                      ...(paired
+                        ? {
+                            [paired]: {
+                              lessonId: paired,
+                              currentStep: Math.max(currentPaired?.currentStep || 0, Number(serverRow.current_step || 0)),
+                              starsEarned: Math.max(currentPaired?.starsEarned || 0, Number(serverRow.stars_earned || 0)),
+                              isCompleted: Boolean(currentPaired?.isCompleted || serverRow.is_completed),
+                              completedAt: currentPaired?.completedAt || serverRow.completed_at || null,
+                            },
+                          }
+                        : {}),
+                    };
+                    userProgressRef.current = nextProgState;
+                    setUserProgress(nextProgState);
+                    try {
+                      localStorage.setItem(getProgressStorageKey(targetUser), JSON.stringify(nextProgState));
+                    } catch {}
+
+                    if (progressRecord.isCompleted || serverRow.is_completed) {
+                      const currentGame = gamificationRef.current;
+                      const reconciledGame: UserGamificationState = {
+                        streak: Math.max(currentGame.streak, Number(serverRow.streak || 0)),
+                        xp: Math.max(currentGame.xp, Number(serverRow.xp || 0)),
+                        completedLessonsCount: Math.max(
+                          currentGame.completedLessonsCount,
+                          Number(serverRow.completed_lessons_count || 0)
+                        ),
+                        lastActiveDate: serverRow.last_active_date || currentGame.lastActiveDate,
+                      };
+                      gamificationRef.current = reconciledGame;
+                      setGamification(reconciledGame);
+                      try {
+                        localStorage.setItem(getGamificationStorageKey(targetUser), JSON.stringify(reconciledGame));
+                      } catch {}
+                    }
+                  }
+
+                  // Concurrency-safe deletion: Only remove if the queued entry has not been updated in the meantime
+                  const currentPending = pendingSyncRef.current;
+                  const queued = currentPending.lessons[id];
+                  if (
+                    queued &&
+                    queued.currentStep <= progressRecord.currentStep &&
+                    queued.isCompleted === progressRecord.isCompleted &&
+                    queued.starsEarned <= progressRecord.starsEarned
+                  ) {
+                    const updatedLessons = { ...currentPending.lessons };
+                    delete updatedLessons[id];
+                    const remainingHasCompleted = Object.values(updatedLessons).some((l) => l.isCompleted);
+                    const shouldClearGame =
+                      progressRecord.isCompleted &&
+                      !remainingHasCompleted &&
+                      gamificationRef.current.xp <= Number((data as any)?.xp || 0) &&
+                      gamificationRef.current.completedLessonsCount <=
+                        Number((data as any)?.completed_lessons_count || 0);
+
+                    persistPendingSync(targetUser, {
+                      ...currentPending,
+                      lessons: updatedLessons,
+                      gamificationPending: shouldClearGame ? false : currentPending.gamificationPending,
+                    });
+                  }
                 }
-              }
-
-              const { error } = await supabase
-                .from('user_lesson_progress')
-                .upsert(payload, { onConflict: 'user_id,lesson_id' });
-
-              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-
-              if (error) {
-                hasError = true;
-                roundErrorCount++;
-                lastErrorMsg = error.message;
               } else {
-                roundProcessedCount++;
-                // Concurrency-safe deletion: Only remove if the queued entry has not been updated in the meantime
-                const currentPending = pendingSyncRef.current;
-                const queued = currentPending.lessons[id];
-                if (
-                  queued &&
-                  queued.currentStep <= progressRecord.currentStep &&
-                  queued.isCompleted === progressRecord.isCompleted &&
-                  queued.starsEarned <= progressRecord.starsEarned
-                ) {
-                  const updatedLessons = { ...currentPending.lessons };
-                  delete updatedLessons[id];
-                  persistPendingSync(targetUser, {
-                    ...currentPending,
-                    lessons: updatedLessons,
-                  });
+                // Direct upsert fallback when rpc is unavailable in test mocks or legacy clients
+                const payload: Record<string, any> = {
+                  user_id: targetUser,
+                  lesson_id: id,
+                  current_step: progressRecord.currentStep,
+                  updated_at: new Date().toISOString(),
+                };
+                if (progressRecord.isCompleted) {
+                  payload.is_completed = true;
+                  payload.stars_earned = progressRecord.starsEarned;
+                  if (progressRecord.completedAt) {
+                    payload.completed_at = progressRecord.completedAt;
+                  }
+                }
+
+                const { error } = await supabase
+                  .from('user_lesson_progress')
+                  .upsert(payload, { onConflict: 'user_id,lesson_id' });
+
+                if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+
+                if (error) {
+                  hasError = true;
+                  roundErrorCount++;
+                  lastErrorMsg = error.message;
+                } else {
+                  roundProcessedCount++;
+                  const currentPending = pendingSyncRef.current;
+                  const queued = currentPending.lessons[id];
+                  if (
+                    queued &&
+                    queued.currentStep <= progressRecord.currentStep &&
+                    queued.isCompleted === progressRecord.isCompleted &&
+                    queued.starsEarned <= progressRecord.starsEarned
+                  ) {
+                    const updatedLessons = { ...currentPending.lessons };
+                    delete updatedLessons[id];
+                    persistPendingSync(targetUser, {
+                      ...currentPending,
+                      lessons: updatedLessons,
+                    });
+                  }
                 }
               }
             } catch (err: any) {
