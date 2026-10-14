@@ -13,7 +13,217 @@ import { StreakBadge } from '../../components/gamification/StreakBadge';
 
 export const SkillTreeView: React.FC = () => {
   const { navigate } = useRouter();
-  const { userProgress, isLessonUnlocked, gamification } = useMicrolearning();
+  const { userProgress, isLessonUnlocked, gamification, isLoading } = useMicrolearning();
+
+  if (isLoading) {
+    return (
+      <div
+        role="status"
+        aria-busy="true"
+        aria-label="Ders haritası ve öğrenci ilerlemesi yükleniyor..."
+        style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: 80 }}
+      >
+        {/* Screen reader live announcement */}
+        <span
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            border: 0,
+          }}
+        >
+          Ders haritası ve öğrenci ilerlemesi yükleniyor...
+        </span>
+
+        {/* Hero Header Skeleton */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            color: '#FFFFFF',
+            padding: '40px 24px 36px 24px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <div style={{ maxWidth: 880, margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div
+                style={{
+                  width: 220,
+                  height: 28,
+                  borderRadius: 12,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                }}
+              />
+              <div
+                style={{
+                  width: 140,
+                  height: 28,
+                  borderRadius: 20,
+                  background: 'rgba(255, 255, 255, 0.1)',
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                width: 380,
+                maxWidth: '85%',
+                height: 36,
+                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.15)',
+                marginBottom: 14,
+              }}
+            />
+            <div
+              style={{
+                width: 520,
+                maxWidth: '95%',
+                height: 18,
+                borderRadius: 6,
+                background: 'rgba(255, 255, 255, 0.08)',
+                marginBottom: 24,
+              }}
+            />
+
+            {/* Quick Stats & Progress Bar Skeleton */}
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 18,
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '18px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: 260,
+                    maxWidth: '70%',
+                    height: 16,
+                    borderRadius: 6,
+                    background: 'rgba(255, 255, 255, 0.12)',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 42,
+                    height: 18,
+                    borderRadius: 6,
+                    background: 'rgba(255, 255, 255, 0.15)',
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  height: 10,
+                  borderRadius: 5,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Main Skill Path Container Skeleton */}
+        <div style={{ maxWidth: 880, margin: '-20px auto 0 auto', padding: '0 20px' }}>
+          {/* Continue Next Lesson Card Skeleton */}
+          <div
+            style={{
+              borderRadius: 20,
+              boxShadow: '0 10px 25px -5px rgba(2, 132, 199, 0.15)',
+              border: '2px solid rgba(2, 132, 199, 0.25)',
+              marginBottom: 36,
+              background: '#FFFFFF',
+              padding: 24,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 16,
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ width: 130, height: 22, borderRadius: 8, background: '#E2E8F0' }} />
+              <div style={{ width: 280, maxWidth: '80%', height: 24, borderRadius: 8, background: '#CBD5E1' }} />
+              <div style={{ width: 340, maxWidth: '95%', height: 16, borderRadius: 6, background: '#F1F5F9' }} />
+            </div>
+            <div style={{ width: 140, height: 48, borderRadius: 14, background: '#E2E8F0' }} />
+          </div>
+
+          {/* Module Roadmap Skeletons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+            {[1, 2].map((modIndex) => (
+              <div key={modIndex} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Module Header Skeleton */}
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: 18,
+                    padding: '20px 24px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <div style={{ width: 70, height: 16, borderRadius: 6, background: '#E2E8F0' }} />
+                      <div style={{ width: 120, height: 16, borderRadius: 6, background: '#E2E8F0' }} />
+                    </div>
+                    <div style={{ width: 240, maxWidth: '70%', height: 22, borderRadius: 8, background: '#CBD5E1' }} />
+                    <div style={{ width: 360, maxWidth: '90%', height: 14, borderRadius: 6, background: '#F1F5F9' }} />
+                  </div>
+                </div>
+
+                {/* Lesson Nodes Skeleton */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingLeft: 12 }}>
+                  {[1, 2, 3].map((nodeIndex) => (
+                    <div
+                      key={nodeIndex}
+                      style={{
+                        background: '#FFFFFF',
+                        borderRadius: 16,
+                        border: '1.5px solid #F1F5F9',
+                        padding: '16px 20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          background: '#F1F5F9',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ width: 200, maxWidth: '60%', height: 18, borderRadius: 6, background: '#E2E8F0' }} />
+                        <div style={{ width: 260, maxWidth: '80%', height: 14, borderRadius: 6, background: '#F1F5F9' }} />
+                      </div>
+                      <div style={{ width: 64, height: 24, borderRadius: 8, background: '#F1F5F9' }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const allLessons = getAllTier1Lessons();
   const totalLessons = allLessons.length;
@@ -111,7 +321,7 @@ export const SkillTreeView: React.FC = () => {
               marginBottom: 36,
               background: '#FFFFFF',
             }}
-            bodyStyle={{ padding: 24 }}
+            styles={{ body: { padding: 24 } }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
               <div>
