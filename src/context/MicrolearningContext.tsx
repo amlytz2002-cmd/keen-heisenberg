@@ -234,6 +234,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
                     user_id: userId,
                     lesson_id: item.lessonId,
                     is_completed: item.isCompleted,
+                    current_step: item.currentStep,
                     stars_earned: item.starsEarned,
                     completed_at: item.completedAt || new Date().toISOString(),
                     updated_at: new Date().toISOString(),
@@ -373,13 +374,23 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Background sync to Supabase for the authenticated user
       try {
+        const payload: Record<string, any> = {
+          user_id: activeUser,
+          lesson_id: lessonId,
+          current_step: nextRecord.currentStep,
+          updated_at: new Date().toISOString(),
+        };
+
+        if (nextRecord.isCompleted) {
+          payload.is_completed = true;
+          payload.stars_earned = nextRecord.starsEarned;
+          if (nextRecord.completedAt) {
+            payload.completed_at = nextRecord.completedAt;
+          }
+        }
+
         await supabase.from('user_lesson_progress').upsert(
-          {
-            user_id: activeUser,
-            lesson_id: lessonId,
-            current_step: stepNumber,
-            updated_at: new Date().toISOString(),
-          },
+          payload,
           { onConflict: 'user_id,lesson_id' }
         );
       } catch {
@@ -474,8 +485,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
               user_id: activeUser,
               lesson_id: lessonId,
               is_completed: true,
+              current_step: nextRecord.currentStep,
               stars_earned: nextRecord.starsEarned,
-              completed_at: nextRecord.completedAt,
+              completed_at: nextRecord.completedAt || nowIso,
               updated_at: nowIso,
             },
             { onConflict: 'user_id,lesson_id' }
