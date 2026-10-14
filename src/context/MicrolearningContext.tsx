@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { message } from 'antd';
 import { UserLessonProgress, UserGamificationState } from '../types/microlearning';
 import { getAllTier1Lessons } from '../data/courses/medicinalChemistryTier1';
 import { getAllMissions } from '../data/courses/medicinalChemistryMissions';
@@ -9,6 +10,7 @@ export interface MicrolearningContextType {
   userProgress: Record<string, UserLessonProgress>;
   gamification: UserGamificationState;
   isLoading: boolean;
+  syncError: string | null;
   getLessonProgress: (lessonId: string) => UserLessonProgress | undefined;
   isLessonUnlocked: (lessonId: string) => boolean;
   updateStepProgress: (lessonId: string, stepNumber: number) => Promise<void>;
@@ -84,6 +86,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userProgress, setUserProgress] = useState<Record<string, UserLessonProgress>>({});
   const [gamification, setGamification] = useState<UserGamificationState>(DEFAULT_GAMIFICATION);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   // Synchronous refs to guarantee atomic state computation across concurrent ticks
   const userProgressRef = useRef<Record<string, UserLessonProgress>>({});
@@ -96,6 +99,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Reload progress when authentication identity changes
   useEffect(() => {
+    setSyncError(null);
     if (authLoading) {
       loadedUserIdRef.current = undefined;
       setIsLoading(true);
@@ -226,8 +230,10 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         // Sync any in-flight completed lessons to Supabase now that remote loading is complete
         if (inFlightCompletions.length > 0) {
           try {
+            let hasError = false;
+            let lastErrMsg = '';
             for (const item of inFlightCompletions) {
-              await supabase
+              const { error: itemError } = await supabase
                 .from('user_lesson_progress')
                 .upsert(
                   {
@@ -241,9 +247,13 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
                   },
                   { onConflict: 'user_id,lesson_id' }
                 );
+              if (itemError) {
+                hasError = true;
+                lastErrMsg = itemError.message;
+              }
             }
 
-            await supabase
+            const { error: gameError } = await supabase
               .from('user_gamification')
               .upsert({
                 user_id: userId,
@@ -253,8 +263,18 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
                 completed_lessons_count: mergedGamification.completedLessonsCount,
                 updated_at: new Date().toISOString(),
               });
-          } catch {
-            // safe offline tolerance
+            if (gameError) {
+              hasError = true;
+              lastErrMsg = gameError.message;
+            }
+
+            if (hasError) {
+              setSyncError(lastErrMsg || 'Eşzamanlı ilerleme verisi sunucuya senkronize edilemedi');
+            } else {
+              setSyncError(null);
+            }
+          } catch (err: any) {
+            setSyncError(err?.message || 'Eşzamanlı ilerleme verisi sunucuya senkronize edilemedi');
           }
         }
       } catch (err) {
@@ -389,12 +409,31 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         }
 
-        await supabase.from('user_lesson_progress').upsert(
+        const { error } = await supabase.from('user_lesson_progress').upsert(
           payload,
           { onConflict: 'user_id,lesson_id' }
         );
-      } catch {
+
+        if (error) {
+          console.error('Failed to sync lesson progress to Supabase:', error);
+          setSyncError(error.message || 'İlerleme sunucuya kaydedilemedi');
+          message.warning({
+            content: 'İlerlemeniz yerel olarak kaydedildi, ancak sunucu senkronizasyonu başarısız oldu.',
+            key: 'cenna-sync-status',
+            duration: 4,
+          });
+        } else {
+          setSyncError(null);
+        }
+      } catch (err: any) {
         // Safe offline tolerance
+        console.error('Exception syncing lesson progress to Supabase:', err);
+        setSyncError(err?.message || 'İlerleme sunucuya kaydedilemedi');
+        message.warning({
+          content: 'İlerlemeniz yerel olarak kaydedildi, ancak sunucu senkronizasyonu başarısız oldu.',
+          key: 'cenna-sync-status',
+          duration: 4,
+        });
       }
     },
     []
@@ -478,7 +517,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       try {
-        await supabase
+        const { error: progressError } = await supabase
           .from('user_lesson_progress')
           .upsert(
             {
@@ -493,7 +532,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
             { onConflict: 'user_id,lesson_id' }
           );
 
-        await supabase
+        const { error: gameError } = await supabase
           .from('user_gamification')
           .upsert({
             user_id: activeUser,
@@ -503,8 +542,27 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
             completed_lessons_count: nextGame.completedLessonsCount,
             updated_at: nowIso,
           });
-      } catch {
-        // Safe offline tolerance
+
+        if (progressError || gameError) {
+          const errMsg = progressError?.message || gameError?.message || 'Ders tamamlama verisi sunucuya kaydedilemedi';
+          console.error('Failed to sync lesson completion to Supabase:', { progressError, gameError });
+          setSyncError(errMsg);
+          message.warning({
+            content: 'Ders tamamlandı ve yerel hafızaya kaydedildi, ancak bulut sunucusuna senkronize edilemedi. İnternet bağlantınızı kontrol edin.',
+            key: 'cenna-sync-status',
+            duration: 4,
+          });
+        } else {
+          setSyncError(null);
+        }
+      } catch (err: any) {
+        console.error('Exception syncing completion to Supabase:', err);
+        setSyncError(err?.message || 'Ders tamamlama verisi sunucuya kaydedilemedi');
+        message.warning({
+          content: 'Ders tamamlandı ve yerel hafızaya kaydedildi, ancak bulut sunucusuna senkronize edilemedi. İnternet bağlantınızı kontrol edin.',
+          key: 'cenna-sync-status',
+          duration: 4,
+        });
       }
     },
     []
@@ -536,6 +594,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         userProgress,
         gamification,
         isLoading,
+        syncError,
         getLessonProgress,
         isLessonUnlocked,
         updateStepProgress,
