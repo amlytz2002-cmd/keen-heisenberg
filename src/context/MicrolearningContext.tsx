@@ -407,12 +407,14 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       // 1. Optimistic synchronous update of user progress in memory and user-scoped localStorage
       const prevProg = userProgressRef.current;
       const existing = prevProg[lessonId] || (paired ? prevProg[paired] : undefined);
+      const isFirstCompletion = !existing?.isCompleted;
+
       const nextRecord: UserLessonProgress = {
         lessonId,
         isCompleted: true,
         currentStep: Math.max(existing?.currentStep || 0, 100),
         starsEarned: Math.max(existing?.starsEarned || 0, stars),
-        completedAt: nowIso,
+        completedAt: existing?.completedAt || nowIso,
       };
 
       const nextProgState = {
@@ -444,9 +446,11 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const nextGame: UserGamificationState = {
         streak: nextStreak,
-        xp: prevGame.xp + xpReward,
+        xp: isFirstCompletion ? prevGame.xp + xpReward : prevGame.xp,
         lastActiveDate: today,
-        completedLessonsCount: prevGame.completedLessonsCount + 1,
+        completedLessonsCount: isFirstCompletion
+          ? prevGame.completedLessonsCount + 1
+          : prevGame.completedLessonsCount,
       };
 
       gamificationRef.current = nextGame;
@@ -470,8 +474,8 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
               user_id: activeUser,
               lesson_id: lessonId,
               is_completed: true,
-              stars_earned: stars,
-              completed_at: nowIso,
+              stars_earned: nextRecord.starsEarned,
+              completed_at: nextRecord.completedAt,
               updated_at: nowIso,
             },
             { onConflict: 'user_id,lesson_id' }
