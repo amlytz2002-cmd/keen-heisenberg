@@ -127,13 +127,26 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
+  const storageErrorRef = useRef<string | null>(null);
+
   const persistPendingSync = useCallback(
     (userId: string | null | undefined, state: PendingSyncState) => {
       pendingSyncRef.current = state;
       try {
         const key = getPendingSyncStorageKey(userId);
         localStorage.setItem(key, JSON.stringify(state));
-      } catch {}
+        storageErrorRef.current = null;
+      } catch (err: any) {
+        console.warn('[MicrolearningContext] Failed to persist pending sync queue to localStorage:', err);
+        const errMsg = 'Yerel depolama alanı dolu veya erişilemiyor. Çevrimdışı veriler kalıcı olarak kaydedilemedi.';
+        storageErrorRef.current = errMsg;
+        setSyncError(errMsg);
+        message.warning({
+          content: 'Yerel depolama alanı dolu veya erişilemiyor. Çevrimdışı değişiklikler kalıcı olarak kaydedilemeyebilir.',
+          key: 'cenna-sync-status',
+          duration: 4,
+        });
+      }
     },
     []
   );
@@ -146,83 +159,136 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       isSyncingRef.current = true;
 
       try {
-        const pending = { ...pendingSyncRef.current };
-        const lessonEntries = Object.entries(pending.lessons);
         let hasError = false;
         let lastErrorMsg = '';
-        const wasGamificationPending = pending.gamificationPending;
-        const hasCompletedLesson =
-          lessonEntries.some(([_, p]) => p.isCompleted) || wasGamificationPending;
+        let hasCompletedLesson = false;
 
-        // 1. Flush pending lessons
-        for (const [id, progressRecord] of lessonEntries) {
+        // Drain the queue with a loop in case concurrent updates arrive during in-flight network requests
+        while (true) {
           if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-          try {
-            const payload: Record<string, any> = {
-              user_id: targetUser,
-              lesson_id: id,
-              current_step: progressRecord.currentStep,
-              updated_at: new Date().toISOString(),
-            };
-            if (progressRecord.isCompleted) {
-              payload.is_completed = true;
-              payload.stars_earned = progressRecord.starsEarned;
-              if (progressRecord.completedAt) {
-                payload.completed_at = progressRecord.completedAt;
-              }
-            }
 
-            const { error } = await supabase
-              .from('user_lesson_progress')
-              .upsert(payload, { onConflict: 'user_id,lesson_id' });
+          const pending = { ...pendingSyncRef.current };
+          const lessonEntries = Object.entries(pending.lessons);
+          const wasGamificationPending = pending.gamificationPending;
 
-            if (error) {
-              hasError = true;
-              lastErrorMsg = error.message;
-            } else {
-              const currentPending = { ...pendingSyncRef.current };
-              const updatedLessons = { ...currentPending.lessons };
-              delete updatedLessons[id];
-              persistPendingSync(targetUser, {
-                ...currentPending,
-                lessons: updatedLessons,
-              });
-            }
-          } catch (err: any) {
-            hasError = true;
-            lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+          if (lessonEntries.length === 0 && !wasGamificationPending) {
+            break; // All pending work has successfully synchronized
           }
-        }
 
-        // 2. Flush pending gamification
-        if (pendingSyncRef.current.gamificationPending) {
-          if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-          try {
-            const currentGame = gamificationRef.current;
-            const { error } = await supabase
-              .from('user_gamification')
-              .upsert({
+          if (
+            lessonEntries.some(([_, p]) => p.isCompleted) ||
+            wasGamificationPending
+          ) {
+            hasCompletedLesson = true;
+          }
+
+          let roundProcessedCount = 0;
+          let roundErrorCount = 0;
+
+          // 1. Flush pending lessons
+          for (const [id, progressRecord] of lessonEntries) {
+            if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+            try {
+              const payload: Record<string, any> = {
                 user_id: targetUser,
-                streak: currentGame.streak,
-                xp: currentGame.xp,
-                last_active_date: currentGame.lastActiveDate,
-                completed_lessons_count: currentGame.completedLessonsCount,
+                lesson_id: id,
+                current_step: progressRecord.currentStep,
                 updated_at: new Date().toISOString(),
-              });
+              };
+              if (progressRecord.isCompleted) {
+                payload.is_completed = true;
+                payload.stars_earned = progressRecord.starsEarned;
+                if (progressRecord.completedAt) {
+                  payload.completed_at = progressRecord.completedAt;
+                }
+              }
 
-            if (error) {
+              const { error } = await supabase
+                .from('user_lesson_progress')
+                .upsert(payload, { onConflict: 'user_id,lesson_id' });
+
+              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+
+              if (error) {
+                hasError = true;
+                roundErrorCount++;
+                lastErrorMsg = error.message;
+              } else {
+                roundProcessedCount++;
+                // Concurrency-safe deletion: Only remove if the queued entry has not been updated in the meantime
+                const currentPending = pendingSyncRef.current;
+                const queued = currentPending.lessons[id];
+                if (
+                  queued &&
+                  queued.currentStep <= progressRecord.currentStep &&
+                  queued.isCompleted === progressRecord.isCompleted &&
+                  queued.starsEarned <= progressRecord.starsEarned
+                ) {
+                  const updatedLessons = { ...currentPending.lessons };
+                  delete updatedLessons[id];
+                  persistPendingSync(targetUser, {
+                    ...currentPending,
+                    lessons: updatedLessons,
+                  });
+                }
+              }
+            } catch (err: any) {
+              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
               hasError = true;
-              lastErrorMsg = error.message;
-            } else {
-              const currentPending = { ...pendingSyncRef.current };
-              persistPendingSync(targetUser, {
-                ...currentPending,
-                gamificationPending: false,
-              });
+              roundErrorCount++;
+              lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
             }
-          } catch (err: any) {
-            hasError = true;
-            lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+          }
+
+          // 2. Flush pending gamification
+          if (pendingSyncRef.current.gamificationPending) {
+            if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+            const snapshotGame = gamificationRef.current;
+            try {
+              const { error } = await supabase
+                .from('user_gamification')
+                .upsert({
+                  user_id: targetUser,
+                  streak: snapshotGame.streak,
+                  xp: snapshotGame.xp,
+                  last_active_date: snapshotGame.lastActiveDate,
+                  completed_lessons_count: snapshotGame.completedLessonsCount,
+                  updated_at: new Date().toISOString(),
+                });
+
+              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+
+              if (error) {
+                hasError = true;
+                roundErrorCount++;
+                lastErrorMsg = error.message;
+              } else {
+                roundProcessedCount++;
+                // Concurrency-safe clear: Only clear gamificationPending if gamificationRef hasn't advanced in the meantime
+                const currentGame = gamificationRef.current;
+                if (
+                  currentGame.xp <= snapshotGame.xp &&
+                  currentGame.completedLessonsCount <= snapshotGame.completedLessonsCount &&
+                  currentGame.streak <= snapshotGame.streak
+                ) {
+                  const currentPending = pendingSyncRef.current;
+                  persistPendingSync(targetUser, {
+                    ...currentPending,
+                    gamificationPending: false,
+                  });
+                }
+              }
+            } catch (err: any) {
+              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+              hasError = true;
+              roundErrorCount++;
+              lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+            }
+          }
+
+          // If every attempted item in this round resulted in an error, break to prevent infinite spinning
+          if (roundErrorCount > 0 && roundProcessedCount === 0) {
+            break;
           }
         }
 
@@ -232,8 +298,10 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         const remainingCount =
           Object.keys(finalPending.lessons).length + (finalPending.gamificationPending ? 1 : 0);
 
-        if (hasError || remainingCount > 0) {
-          const errMsg = lastErrorMsg || 'Senkronizasyon tamamlanamadı';
+        const hasStorageError = !!storageErrorRef.current;
+
+        if (hasError || remainingCount > 0 || hasStorageError) {
+          const errMsg = storageErrorRef.current || lastErrorMsg || 'Senkronizasyon tamamlanamadı';
           setSyncError(errMsg);
           if (!options?.silent && hasError) {
             message.warning({
