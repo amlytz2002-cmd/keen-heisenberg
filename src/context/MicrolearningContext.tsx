@@ -11,6 +11,7 @@ export interface MicrolearningContextType {
   gamification: UserGamificationState;
   isLoading: boolean;
   syncError: string | null;
+  retrySync: () => Promise<void>;
   getLessonProgress: (lessonId: string) => UserLessonProgress | undefined;
   isLessonUnlocked: (lessonId: string) => boolean;
   updateStepProgress: (lessonId: string, stepNumber: number) => Promise<void>;
@@ -30,6 +31,11 @@ const DEFAULT_GAMIFICATION: UserGamificationState = {
   completedLessonsCount: 0,
 };
 
+export interface PendingSyncState {
+  lessons: Record<string, UserLessonProgress>;
+  gamificationPending: boolean;
+}
+
 /**
  * Storage key helpers - strictly separated per authenticated identity with dedicated guest slot.
  * Legacy unscoped keys ('cenna_microlearning_*_v1') are intentionally unread to prevent cross-account leakage.
@@ -41,6 +47,19 @@ export const getProgressStorageKey = (userId: string | null | undefined): string
 export const getGamificationStorageKey = (userId: string | null | undefined): string => {
   return userId ? `cenna_microlearning_gamification_${userId}` : 'cenna_microlearning_gamification_guest';
 };
+
+export const getPendingSyncStorageKey = (userId: string | null | undefined): string => {
+  return userId ? `cenna_microlearning_pending_sync_${userId}` : 'cenna_microlearning_pending_sync_guest';
+};
+
+function loadLocalPendingSync(userId: string | null | undefined): PendingSyncState {
+  try {
+    const key = getPendingSyncStorageKey(userId);
+    const saved = localStorage.getItem(key);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return { lessons: {}, gamificationPending: false };
+}
 
 function loadLocalProgress(userId: string | null | undefined): Record<string, UserLessonProgress> {
   try {
@@ -97,6 +116,166 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
   const activeUserIdRef = useRef<string | null>(currentUserId);
   activeUserIdRef.current = currentUserId;
 
+  const pendingSyncRef = useRef<PendingSyncState>(loadLocalPendingSync(currentUserId));
+  const isSyncingRef = useRef<boolean>(false);
+  const isMountedRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const persistPendingSync = useCallback(
+    (userId: string | null | undefined, state: PendingSyncState) => {
+      pendingSyncRef.current = state;
+      try {
+        const key = getPendingSyncStorageKey(userId);
+        localStorage.setItem(key, JSON.stringify(state));
+      } catch {}
+    },
+    []
+  );
+
+  const flushPendingSync = useCallback(
+    async (userId?: string | null, options?: { silent?: boolean }) => {
+      const targetUser = userId ?? activeUserIdRef.current;
+      if (!targetUser || loadedUserIdRef.current !== targetUser) return;
+      if (isSyncingRef.current) return;
+      isSyncingRef.current = true;
+
+      try {
+        const pending = { ...pendingSyncRef.current };
+        const lessonEntries = Object.entries(pending.lessons);
+        let hasError = false;
+        let lastErrorMsg = '';
+        const wasGamificationPending = pending.gamificationPending;
+        const hasCompletedLesson =
+          lessonEntries.some(([_, p]) => p.isCompleted) || wasGamificationPending;
+
+        // 1. Flush pending lessons
+        for (const [id, progressRecord] of lessonEntries) {
+          if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+          try {
+            const payload: Record<string, any> = {
+              user_id: targetUser,
+              lesson_id: id,
+              current_step: progressRecord.currentStep,
+              updated_at: new Date().toISOString(),
+            };
+            if (progressRecord.isCompleted) {
+              payload.is_completed = true;
+              payload.stars_earned = progressRecord.starsEarned;
+              if (progressRecord.completedAt) {
+                payload.completed_at = progressRecord.completedAt;
+              }
+            }
+
+            const { error } = await supabase
+              .from('user_lesson_progress')
+              .upsert(payload, { onConflict: 'user_id,lesson_id' });
+
+            if (error) {
+              hasError = true;
+              lastErrorMsg = error.message;
+            } else {
+              const currentPending = { ...pendingSyncRef.current };
+              const updatedLessons = { ...currentPending.lessons };
+              delete updatedLessons[id];
+              persistPendingSync(targetUser, {
+                ...currentPending,
+                lessons: updatedLessons,
+              });
+            }
+          } catch (err: any) {
+            hasError = true;
+            lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+          }
+        }
+
+        // 2. Flush pending gamification
+        if (pendingSyncRef.current.gamificationPending) {
+          if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+          try {
+            const currentGame = gamificationRef.current;
+            const { error } = await supabase
+              .from('user_gamification')
+              .upsert({
+                user_id: targetUser,
+                streak: currentGame.streak,
+                xp: currentGame.xp,
+                last_active_date: currentGame.lastActiveDate,
+                completed_lessons_count: currentGame.completedLessonsCount,
+                updated_at: new Date().toISOString(),
+              });
+
+            if (error) {
+              hasError = true;
+              lastErrorMsg = error.message;
+            } else {
+              const currentPending = { ...pendingSyncRef.current };
+              persistPendingSync(targetUser, {
+                ...currentPending,
+                gamificationPending: false,
+              });
+            }
+          } catch (err: any) {
+            hasError = true;
+            lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+          }
+        }
+
+        if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
+
+        const finalPending = pendingSyncRef.current;
+        const remainingCount =
+          Object.keys(finalPending.lessons).length + (finalPending.gamificationPending ? 1 : 0);
+
+        if (hasError || remainingCount > 0) {
+          const errMsg = lastErrorMsg || 'Senkronizasyon tamamlanamadı';
+          setSyncError(errMsg);
+          if (!options?.silent && hasError) {
+            message.warning({
+              content: hasCompletedLesson
+                ? 'Ders tamamlandı ve yerel hafızaya kaydedildi, ancak bulut sunucusuna senkronize edilemedi. İnternet bağlantınızı kontrol edin.'
+                : 'İlerlemeniz yerel olarak kaydedildi, ancak sunucu senkronizasyonu başarısız oldu.',
+              key: 'cenna-sync-status',
+              duration: 4,
+            });
+          }
+        } else {
+          setSyncError(null);
+        }
+      } finally {
+        isSyncingRef.current = false;
+      }
+    },
+    [persistPendingSync]
+  );
+
+  const retrySync = useCallback(async () => {
+    const activeUser = activeUserIdRef.current;
+    if (activeUser && loadedUserIdRef.current === activeUser) {
+      await flushPendingSync(activeUser);
+    }
+  }, [flushPendingSync]);
+
+  // Automatically flush pending writes when browser regains internet connectivity
+  useEffect(() => {
+    const handleOnline = () => {
+      const activeUser = activeUserIdRef.current;
+      if (activeUser && loadedUserIdRef.current === activeUser) {
+        flushPendingSync(activeUser);
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [flushPendingSync]);
+
   // Reload progress when authentication identity changes
   useEffect(() => {
     setSyncError(null);
@@ -112,9 +291,11 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     // 1. Immediately switch in-memory state to the cached local state for this identity (guest or user)
     const localProgress = loadLocalProgress(targetUserId);
     const localGamification = loadLocalGamification(targetUserId);
+    const localPendingSync = loadLocalPendingSync(targetUserId);
 
     userProgressRef.current = localProgress;
     gamificationRef.current = localGamification;
+    pendingSyncRef.current = localPendingSync;
     setUserProgress(localProgress);
     setGamification(localGamification);
 
@@ -198,8 +379,11 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         });
 
-        // Compute merged gamification preserving any XP earned during the in-flight loading window
+        // Compute merged gamification preserving any XP earned during the in-flight loading window or pending offline sync
         let mergedGamification = gamificationRef.current;
+        const isGamificationPending =
+          pendingSyncRef.current.gamificationPending || inFlightCompletions.length > 0;
+
         if (!gameError && gameRow) {
           const xpEarnedInFlight = Math.max(0, gamificationRef.current.xp - localGamification.xp);
           const lessonsEarnedInFlight = Math.max(
@@ -209,9 +393,17 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
 
           mergedGamification = {
             streak: gameRow.streak,
-            xp: gameRow.xp + xpEarnedInFlight,
+            xp: isGamificationPending
+              ? Math.max(localGamification.xp, gamificationRef.current.xp, gameRow.xp + xpEarnedInFlight)
+              : gameRow.xp + xpEarnedInFlight,
             lastActiveDate: gameRow.last_active_date || gamificationRef.current.lastActiveDate,
-            completedLessonsCount: gameRow.completed_lessons_count + lessonsEarnedInFlight,
+            completedLessonsCount: isGamificationPending
+              ? Math.max(
+                  localGamification.completedLessonsCount,
+                  gamificationRef.current.completedLessonsCount,
+                  gameRow.completed_lessons_count + lessonsEarnedInFlight
+                )
+              : gameRow.completed_lessons_count + lessonsEarnedInFlight,
           };
         }
 
@@ -225,58 +417,24 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
           localStorage.setItem(getGamificationStorageKey(userId), JSON.stringify(mergedGamification));
         } catch {}
 
+        // Enqueue any in-flight completed lessons to pendingSync
+        if (inFlightCompletions.length > 0 || isGamificationPending) {
+          const currentPending = { ...pendingSyncRef.current };
+          const updatedLessons = { ...currentPending.lessons };
+          inFlightCompletions.forEach((item) => {
+            updatedLessons[item.lessonId] = item;
+          });
+          persistPendingSync(userId, {
+            ...currentPending,
+            lessons: updatedLessons,
+            gamificationPending: isGamificationPending,
+          });
+        }
+
         loadedUserIdRef.current = userId;
 
-        // Sync any in-flight completed lessons to Supabase now that remote loading is complete
-        if (inFlightCompletions.length > 0) {
-          try {
-            let hasError = false;
-            let lastErrMsg = '';
-            for (const item of inFlightCompletions) {
-              const { error: itemError } = await supabase
-                .from('user_lesson_progress')
-                .upsert(
-                  {
-                    user_id: userId,
-                    lesson_id: item.lessonId,
-                    is_completed: item.isCompleted,
-                    current_step: item.currentStep,
-                    stars_earned: item.starsEarned,
-                    completed_at: item.completedAt || new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  },
-                  { onConflict: 'user_id,lesson_id' }
-                );
-              if (itemError) {
-                hasError = true;
-                lastErrMsg = itemError.message;
-              }
-            }
-
-            const { error: gameError } = await supabase
-              .from('user_gamification')
-              .upsert({
-                user_id: userId,
-                streak: mergedGamification.streak,
-                xp: mergedGamification.xp,
-                last_active_date: mergedGamification.lastActiveDate,
-                completed_lessons_count: mergedGamification.completedLessonsCount,
-                updated_at: new Date().toISOString(),
-              });
-            if (gameError) {
-              hasError = true;
-              lastErrMsg = gameError.message;
-            }
-
-            if (hasError) {
-              setSyncError(lastErrMsg || 'Eşzamanlı ilerleme verisi sunucuya senkronize edilemedi');
-            } else {
-              setSyncError(null);
-            }
-          } catch (err: any) {
-            setSyncError(err?.message || 'Eşzamanlı ilerleme verisi sunucuya senkronize edilemedi');
-          }
-        }
+        // Flush any pending sync (offline writes or in-flight completions)
+        await flushPendingSync(userId, { silent: true });
       } catch (err) {
         console.warn('[MicrolearningContext] Remote sync fallback to offline localStorage', err);
         if (isMounted && activeUserIdRef.current === userId) {
@@ -294,7 +452,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       isMounted = false;
     };
-  }, [currentUserId, authLoading]);
+  }, [currentUserId, authLoading, flushPendingSync, persistPendingSync]);
 
   const getLessonProgress = useCallback(
     (lessonId: string): UserLessonProgress | undefined => {
@@ -387,56 +545,28 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem(getProgressStorageKey(activeUser), JSON.stringify(nextState));
       } catch {}
 
-      // Prevent any server write until the correct user's progress has finished loading (Rule 5 & 6)
-      if (!activeUser || loadedUserIdRef.current !== activeUser) {
+      if (!activeUser) {
         return;
       }
 
-      // Background sync to Supabase for the authenticated user
-      try {
-        const payload: Record<string, any> = {
-          user_id: activeUser,
-          lesson_id: lessonId,
-          current_step: nextRecord.currentStep,
-          updated_at: new Date().toISOString(),
-        };
+      // Add to pending sync queue
+      const currentPending = pendingSyncRef.current;
+      persistPendingSync(activeUser, {
+        ...currentPending,
+        lessons: {
+          ...currentPending.lessons,
+          [lessonId]: nextRecord,
+        },
+      });
 
-        if (nextRecord.isCompleted) {
-          payload.is_completed = true;
-          payload.stars_earned = nextRecord.starsEarned;
-          if (nextRecord.completedAt) {
-            payload.completed_at = nextRecord.completedAt;
-          }
-        }
-
-        const { error } = await supabase.from('user_lesson_progress').upsert(
-          payload,
-          { onConflict: 'user_id,lesson_id' }
-        );
-
-        if (error) {
-          console.error('Failed to sync lesson progress to Supabase:', error);
-          setSyncError(error.message || 'İlerleme sunucuya kaydedilemedi');
-          message.warning({
-            content: 'İlerlemeniz yerel olarak kaydedildi, ancak sunucu senkronizasyonu başarısız oldu.',
-            key: 'cenna-sync-status',
-            duration: 4,
-          });
-        } else {
-          setSyncError(null);
-        }
-      } catch (err: any) {
-        // Safe offline tolerance
-        console.error('Exception syncing lesson progress to Supabase:', err);
-        setSyncError(err?.message || 'İlerleme sunucuya kaydedilemedi');
-        message.warning({
-          content: 'İlerlemeniz yerel olarak kaydedildi, ancak sunucu senkronizasyonu başarısız oldu.',
-          key: 'cenna-sync-status',
-          duration: 4,
-        });
+      // Prevent server write until the correct user's remote state is loaded
+      if (loadedUserIdRef.current !== activeUser) {
+        return;
       }
+
+      await flushPendingSync(activeUser);
     },
-    []
+    [flushPendingSync, persistPendingSync]
   );
 
   const updateMissionStepProgress = useCallback(
@@ -510,62 +640,29 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem(getGamificationStorageKey(activeUser), JSON.stringify(nextGame));
       } catch {}
 
-      // 3. Asynchronous background sync to Supabase
-      // CRITICAL: Prevent any server write until the correct user's progress has finished loading (Rule 5 & 6)
-      if (!activeUser || loadedUserIdRef.current !== activeUser) {
+      if (!activeUser) {
         return;
       }
 
-      try {
-        const { error: progressError } = await supabase
-          .from('user_lesson_progress')
-          .upsert(
-            {
-              user_id: activeUser,
-              lesson_id: lessonId,
-              is_completed: true,
-              current_step: nextRecord.currentStep,
-              stars_earned: nextRecord.starsEarned,
-              completed_at: nextRecord.completedAt || nowIso,
-              updated_at: nowIso,
-            },
-            { onConflict: 'user_id,lesson_id' }
-          );
+      // Add to pending sync queue
+      const currentPending = pendingSyncRef.current;
+      persistPendingSync(activeUser, {
+        ...currentPending,
+        lessons: {
+          ...currentPending.lessons,
+          [lessonId]: nextRecord,
+        },
+        gamificationPending: true,
+      });
 
-        const { error: gameError } = await supabase
-          .from('user_gamification')
-          .upsert({
-            user_id: activeUser,
-            streak: nextGame.streak,
-            xp: nextGame.xp,
-            last_active_date: today,
-            completed_lessons_count: nextGame.completedLessonsCount,
-            updated_at: nowIso,
-          });
-
-        if (progressError || gameError) {
-          const errMsg = progressError?.message || gameError?.message || 'Ders tamamlama verisi sunucuya kaydedilemedi';
-          console.error('Failed to sync lesson completion to Supabase:', { progressError, gameError });
-          setSyncError(errMsg);
-          message.warning({
-            content: 'Ders tamamlandı ve yerel hafızaya kaydedildi, ancak bulut sunucusuna senkronize edilemedi. İnternet bağlantınızı kontrol edin.',
-            key: 'cenna-sync-status',
-            duration: 4,
-          });
-        } else {
-          setSyncError(null);
-        }
-      } catch (err: any) {
-        console.error('Exception syncing completion to Supabase:', err);
-        setSyncError(err?.message || 'Ders tamamlama verisi sunucuya kaydedilemedi');
-        message.warning({
-          content: 'Ders tamamlandı ve yerel hafızaya kaydedildi, ancak bulut sunucusuna senkronize edilemedi. İnternet bağlantınızı kontrol edin.',
-          key: 'cenna-sync-status',
-          duration: 4,
-        });
+      // Prevent server write until the correct user's remote state is loaded
+      if (loadedUserIdRef.current !== activeUser) {
+        return;
       }
+
+      await flushPendingSync(activeUser);
     },
-    []
+    [flushPendingSync, persistPendingSync]
   );
 
   const completeMission = useCallback(
@@ -581,11 +678,14 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       localStorage.removeItem(getProgressStorageKey(activeUser));
       localStorage.removeItem(getGamificationStorageKey(activeUser));
+      localStorage.removeItem(getPendingSyncStorageKey(activeUser));
     } catch {}
     userProgressRef.current = {};
     gamificationRef.current = DEFAULT_GAMIFICATION;
+    pendingSyncRef.current = { lessons: {}, gamificationPending: false };
     setUserProgress({});
     setGamification(DEFAULT_GAMIFICATION);
+    setSyncError(null);
   }, []);
 
   return (
@@ -595,6 +695,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
         gamification,
         isLoading,
         syncError,
+        retrySync,
         getLessonProgress,
         isLessonUnlocked,
         updateStepProgress,
