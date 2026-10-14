@@ -55,7 +55,7 @@ export type Database = {
           user_id: string
           streak: number
           xp: number
-          last_active_date: string
+          last_active_date: string | null
           completed_lessons_count: number
           created_at: string
           updated_at: string
@@ -64,7 +64,7 @@ export type Database = {
           user_id: string
           streak?: number
           xp?: number
-          last_active_date?: string
+          last_active_date?: string | null
           completed_lessons_count?: number
           created_at?: string
           updated_at?: string
@@ -73,7 +73,7 @@ export type Database = {
           user_id?: string
           streak?: number
           xp?: number
-          last_active_date?: string
+          last_active_date?: string | null
           completed_lessons_count?: number
           created_at?: string
           updated_at?: string

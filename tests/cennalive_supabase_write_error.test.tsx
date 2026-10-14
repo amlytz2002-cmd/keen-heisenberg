@@ -12,9 +12,42 @@ import { RouterProvider } from '../src/context/RouterContext';
 let mockUpsertLessonResult: any = { error: null };
 let mockUpsertGameResult: any = { error: null };
 
+const mockRpc = (fn: string, args: any) => {
+  if (fn === 'sync_lesson_progress') {
+    if (mockUpsertLessonResult instanceof Error) {
+      return Promise.reject(mockUpsertLessonResult);
+    }
+    if (mockUpsertGameResult instanceof Error) {
+      return Promise.reject(mockUpsertGameResult);
+    }
+    if (mockUpsertLessonResult?.error) {
+      return Promise.resolve(mockUpsertLessonResult);
+    }
+    if (mockUpsertGameResult?.error) {
+      return Promise.resolve(mockUpsertGameResult);
+    }
+    return Promise.resolve({
+      data: {
+        lesson_id: args.p_lesson_id,
+        current_step: args.p_current_step,
+        is_completed: args.p_is_completed,
+        stars_earned: args.p_stars_earned,
+        completed_at: args.p_completed_at,
+        streak: 1,
+        xp: args.p_is_completed ? 140 : 120,
+        completed_lessons_count: args.p_is_completed ? 1 : 0,
+        last_active_date: '2026-10-14',
+      },
+      error: null,
+    });
+  }
+  return Promise.resolve({ data: null, error: null });
+};
+
 vi.mock('../src/lib/supabaseClient', () => {
   return {
     supabase: {
+      rpc: (fn: string, args: any) => mockRpc(fn, args),
       from: (table: string) => {
         if (table === 'user_lesson_progress') {
           return {

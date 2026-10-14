@@ -378,4 +378,111 @@ describe('Microlearning - Atomic Concurrency-Safe RPC Integration', () => {
     expect(Object.keys(bobQueue.lessons || {})).toHaveLength(0);
     expect(bobState.userProgress['les-1']).toBeUndefined();
   });
+
+  it('6. Completing les-1 awards 30 XP and does not mark paired mission-1 completed; completing mission-1 subsequently awards 35 XP', async () => {
+    mockAuthUser = { id: 'user-independent-rewards' };
+    let latestState: any = null;
+
+    mockRpc.mockImplementation((_fn: string, args: any) => {
+      if (args.p_lesson_id === 'les-1') {
+        return Promise.resolve({
+          data: {
+            lesson_id: 'les-1',
+            current_step: 100,
+            is_completed: true,
+            stars_earned: 3,
+            completed_at: '2026-10-14T12:00:00Z',
+            streak: 1,
+            xp: 150,
+            completed_lessons_count: 1,
+            last_active_date: '2026-10-14',
+          },
+          error: null,
+        });
+      }
+      if (args.p_lesson_id === 'mission-1') {
+        return Promise.resolve({
+          data: {
+            lesson_id: 'mission-1',
+            current_step: 100,
+            is_completed: true,
+            stars_earned: 3,
+            completed_at: '2026-10-14T12:05:00Z',
+            streak: 1,
+            xp: 185,
+            completed_lessons_count: 2,
+            last_active_date: '2026-10-14',
+          },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: null });
+    });
+
+    const { getByTestId } = render(
+      <MicrolearningProvider>
+        <TestConsumer onState={(s) => (latestState = s)} />
+      </MicrolearningProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('loading').textContent).toBe('ready');
+    });
+
+    // 1. Complete les-1
+    await act(async () => {
+      await latestState.completeLesson('les-1', 3, 30);
+    });
+
+    expect(latestState.userProgress['les-1']?.isCompleted).toBe(true);
+    // mission-1 MUST NOT be marked completed
+    expect(latestState.userProgress['mission-1']?.isCompleted).toBeFalsy();
+    expect(latestState.getMissionProgress('mission-1')?.isCompleted).toBeFalsy();
+    expect(latestState.gamification.xp).toBe(150); // 120 + 30
+    expect(latestState.gamification.completedLessonsCount).toBe(1);
+
+    // 2. Complete mission-1 independently
+    await act(async () => {
+      await latestState.completeMission('mission-1', 3, 35);
+    });
+
+    expect(latestState.userProgress['mission-1']?.isCompleted).toBe(true);
+    expect(latestState.getMissionProgress('mission-1')?.isCompleted).toBe(true);
+    expect(latestState.gamification.xp).toBe(185); // 120 + 30 + 35
+    expect(latestState.gamification.completedLessonsCount).toBe(2);
+
+    expect(mockRpc).toHaveBeenCalledWith('sync_lesson_progress', expect.objectContaining({
+      p_lesson_id: 'les-1',
+      p_is_completed: true,
+    }));
+    expect(mockRpc).toHaveBeenCalledWith('sync_lesson_progress', expect.objectContaining({
+      p_lesson_id: 'mission-1',
+      p_is_completed: true,
+    }));
+  });
+
+  it('7. Authenticated gamification writes never invoke direct table upsert on user_gamification', async () => {
+    mockAuthUser = { id: 'user-no-raw-writes' };
+    let latestState: any = null;
+
+    const { getByTestId } = render(
+      <MicrolearningProvider>
+        <TestConsumer onState={(s) => (latestState = s)} />
+      </MicrolearningProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('loading').textContent).toBe('ready');
+    });
+
+    mockUpsertGame.mockClear();
+
+    await act(async () => {
+      await latestState.completeLesson('les-1', 3, 30);
+    });
+
+    // Verify mockUpsertGame was NEVER called
+    expect(mockUpsertGame).not.toHaveBeenCalled();
+    expect(mockRpc).toHaveBeenCalledWith('sync_lesson_progress', expect.anything());
+  });
 });

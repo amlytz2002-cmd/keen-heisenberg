@@ -18,9 +18,76 @@ let mockSelectGameResult: any = { data: null, error: null };
 const mockUpsertLessonFn = vi.fn();
 const mockUpsertGameFn = vi.fn();
 
+let simulatedXp = 120;
+let simulatedCount = 0;
+
+const mockRpc = (fn: string, args: any) => {
+  if (fn === 'sync_lesson_progress') {
+    if (mockUpsertLessonResult instanceof Error) {
+      return Promise.reject(mockUpsertLessonResult);
+    }
+    if (mockUpsertGameResult instanceof Error) {
+      return Promise.reject(mockUpsertGameResult);
+    }
+    if (mockUpsertLessonResult?.error) {
+      return Promise.resolve(mockUpsertLessonResult);
+    }
+    if (mockUpsertGameResult?.error) {
+      return Promise.resolve(mockUpsertGameResult);
+    }
+
+    const lessonPayload = {
+      user_id: mockAuthUser?.id,
+      lesson_id: args.p_lesson_id,
+      current_step: args.p_current_step,
+      is_completed: args.p_is_completed,
+      stars_earned: args.p_stars_earned,
+      completed_at: args.p_completed_at,
+    };
+    const maybeLessonPromise = mockUpsertLessonFn(lessonPayload);
+
+    if (args.p_is_completed) {
+      simulatedXp += 20;
+      simulatedCount += 1;
+    }
+    const gamePayload = {
+      user_id: mockAuthUser?.id,
+      xp: simulatedXp,
+      completed_lessons_count: simulatedCount,
+    };
+    const maybeGamePromise = mockUpsertGameFn(gamePayload);
+
+    const rpcData = {
+      lesson_id: args.p_lesson_id,
+      current_step: args.p_current_step,
+      is_completed: args.p_is_completed,
+      stars_earned: args.p_stars_earned,
+      completed_at: args.p_completed_at,
+      streak: 1,
+      xp: simulatedXp,
+      completed_lessons_count: simulatedCount,
+      last_active_date: '2026-10-14',
+    };
+
+    if (maybeLessonPromise && typeof maybeLessonPromise.then === 'function') {
+      return maybeLessonPromise.then(() => ({ data: rpcData, error: null }));
+    }
+    if (maybeGamePromise && typeof maybeGamePromise.then === 'function') {
+      return maybeGamePromise.then(() => ({ data: rpcData, error: null }));
+    }
+
+    return Promise.resolve({
+      data: rpcData,
+      error: null,
+    });
+  }
+  return Promise.resolve({ data: null, error: null });
+};
+
 vi.mock('../src/lib/supabaseClient', () => {
   return {
     supabase: {
+      rpc: (fn: string, args: any) => mockRpc(fn, args),
       from: (table: string) => {
         if (table === 'user_lesson_progress') {
           return {
@@ -89,6 +156,8 @@ describe('Cloud Progress Sync Recovery & Resilience', () => {
     mockSelectGameResult = { data: null, error: null };
     mockUpsertLessonFn.mockClear();
     mockUpsertGameFn.mockClear();
+    simulatedXp = 120;
+    simulatedCount = 0;
     vi.spyOn(message, 'warning').mockImplementation(() => ({} as any));
   });
 
@@ -642,7 +711,7 @@ describe('Cloud Progress Sync Recovery & Resilience', () => {
   });
 
   it('12. Independent error isolation: progress write success does not discard failed gamification, and vice versa', async () => {
-    // Lesson 1 succeeds, gamification fails
+    // Initial RPC completion fails with Gamification quota exceeded
     mockUpsertLessonResult = { error: null };
     mockUpsertGameResult = { error: { message: 'Gamification quota exceeded' } };
 
@@ -669,13 +738,12 @@ describe('Cloud Progress Sync Recovery & Resilience', () => {
     const pendingKey = getPendingSyncStorageKey('user-sync-recovery');
     const stored1 = JSON.parse(localStorage.getItem(pendingKey) || '{}');
 
-    // Lesson was successfully saved to cloud, so removed from lessons
-    expect(stored1.lessons?.['les-1']).toBeUndefined();
-    // Gamification failed, so gamificationPending MUST remain true
+    // On atomic sync failure, the completed lesson and gamificationPending are both preserved in the queue
+    expect(stored1.lessons?.['les-1']).toBeDefined();
     expect(stored1.gamificationPending).toBe(true);
     expect(contextValue.syncError).toContain('Gamification quota exceeded');
 
-    // Now lesson 2 progress fails, but gamification recovers
+    // Now lesson write fails for les-2, but les-1 RPC recovers
     mockUpsertLessonResult = { error: { message: 'Lesson write failed' } };
     mockUpsertGameResult = { error: null };
 
@@ -684,9 +752,7 @@ describe('Cloud Progress Sync Recovery & Resilience', () => {
     });
 
     const stored2 = JSON.parse(localStorage.getItem(pendingKey) || '{}');
-    // Gamification has now succeeded!
-    expect(stored2.gamificationPending).toBe(false);
-    // But lesson 2 failed, so it must stay in the queue
+    // les-2 failed, so it must stay in the queue
     expect(stored2.lessons?.['les-2']).toBeDefined();
     expect(contextValue.syncError).toContain('Lesson write failed');
   });

@@ -3,7 +3,12 @@
 -- Migration: 20261014180000_atomic_sync_lesson_progress.sql
 -- ==============================================================================
 
--- 1. Internal canonical catalog function in auth_helpers schema
+-- 1. Schema & Table Adjustments
+-- Make last_active_date nullable so newly initialized users without activity have NULL last_active_date
+ALTER TABLE public.user_gamification ALTER COLUMN last_active_date DROP NOT NULL;
+ALTER TABLE public.user_gamification ALTER COLUMN last_active_date DROP DEFAULT;
+
+-- 2. Internal canonical catalog function in auth_helpers schema
 -- Not exposed to PostgREST public schema. Maps the 42 verified activities to exact XP.
 CREATE SCHEMA IF NOT EXISTS auth_helpers;
 
@@ -32,10 +37,11 @@ AS $$
   END;
 $$;
 
-REVOKE ALL ON FUNCTION auth_helpers.get_canonical_activity_xp(TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION auth_helpers.get_canonical_activity_xp(TEXT) TO service_role;
+GRANT USAGE ON SCHEMA auth_helpers TO authenticated, service_role;
+REVOKE ALL ON FUNCTION auth_helpers.get_canonical_activity_xp(TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION auth_helpers.get_canonical_activity_xp(TEXT) TO authenticated, service_role;
 
--- 2. Atomic progress synchronization RPC
+-- 3. Atomic progress synchronization RPC
 CREATE OR REPLACE FUNCTION public.sync_lesson_progress(
     p_lesson_id TEXT,
     p_current_step INTEGER,
@@ -87,8 +93,9 @@ BEGIN
     END IF;
 
     -- D. Global lock hierarchy: Order 1 - user_gamification
+    -- Initialize unplayed users with NULL last_active_date and 0 streak
     INSERT INTO public.user_gamification (user_id, streak, xp, completed_lessons_count, last_active_date)
-    VALUES (v_user_id, 0, 0, 0, v_server_today)
+    VALUES (v_user_id, 0, 0, 0, NULL)
     ON CONFLICT (user_id) DO NOTHING;
 
     SELECT * INTO v_existing_game
@@ -119,11 +126,12 @@ BEGIN
 
     -- G. Compute monotonic completed_at
     IF v_existing_prog.is_completed THEN
-        -- Preserve first completion timestamp on replay
-        v_merged_completed_at := v_existing_prog.completed_at;
+        -- Preserve first non-null completion timestamp; repair legacy completed rows where timestamp was NULL
+        v_merged_completed_at := COALESCE(v_existing_prog.completed_at, timezone('utc'::text, now()));
     ELSIF p_is_completed THEN
-        -- Brand new completion: bound client timestamp to now()
-        v_merged_completed_at := LEAST(COALESCE(p_completed_at, timezone('utc'::text, now())), timezone('utc'::text, now()));
+        -- Brand new completion: derive authoritative completion timestamp strictly from server now()
+        -- Untrusted client timestamps cannot backdate or forward-date server-owned completion timestamps
+        v_merged_completed_at := timezone('utc'::text, now());
     ELSE
         v_merged_completed_at := NULL;
     END IF;
@@ -143,15 +151,19 @@ BEGIN
         v_next_streak := v_existing_game.streak;
         v_next_last_active := v_existing_game.last_active_date;
 
-        IF v_existing_game.completed_lessons_count = 0 THEN
+        IF v_existing_game.last_active_date IS NULL THEN
+            -- First recorded completion ever
             v_next_streak := GREATEST(v_existing_game.streak, 1);
             v_next_last_active := v_server_today;
         ELSIF v_existing_game.last_active_date = v_server_today THEN
+            -- Activity already recorded on this calendar day: streak preserved
             v_next_streak := v_existing_game.streak;
         ELSIF v_existing_game.last_active_date = v_server_today - 1 THEN
+            -- Consecutive calendar day: increment streak
             v_next_streak := v_existing_game.streak + 1;
             v_next_last_active := v_server_today;
-        ELSIF v_existing_game.last_active_date < v_server_today - 1 THEN
+        ELSE
+            -- Missed calendar day (< v_server_today - 1) or future date anomaly (> v_server_today)
             v_next_streak := 1;
             v_next_last_active := v_server_today;
         END IF;
@@ -181,6 +193,6 @@ BEGIN
 END;
 $$;
 
--- 3. Security Hardening
+-- 4. Security Hardening
 REVOKE ALL ON FUNCTION public.sync_lesson_progress(TEXT, INTEGER, BOOLEAN, INTEGER, TIMESTAMPTZ) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.sync_lesson_progress(TEXT, INTEGER, BOOLEAN, INTEGER, TIMESTAMPTZ) TO authenticated, service_role;

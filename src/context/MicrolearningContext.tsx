@@ -219,22 +219,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
                       completedAt: currentLocal?.completedAt || serverRow.completed_at || null,
                     };
 
-                    const paired = getPairedId(id);
-                    const currentPaired = paired ? userProgressRef.current[paired] : undefined;
                     const nextProgState = {
                       ...userProgressRef.current,
                       [id]: reconciledRecord,
-                      ...(paired
-                        ? {
-                            [paired]: {
-                              lessonId: paired,
-                              currentStep: Math.max(currentPaired?.currentStep || 0, Number(serverRow.current_step || 0)),
-                              starsEarned: Math.max(currentPaired?.starsEarned || 0, Number(serverRow.stars_earned || 0)),
-                              isCompleted: Boolean(currentPaired?.isCompleted || serverRow.is_completed),
-                              completedAt: currentPaired?.completedAt || serverRow.completed_at || null,
-                            },
-                          }
-                        : {}),
                     };
                     userProgressRef.current = nextProgState;
                     setUserProgress(nextProgState);
@@ -288,49 +275,10 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
                   }
                 }
               } else {
-                // Direct upsert fallback when rpc is unavailable in test mocks or legacy clients
-                const payload: Record<string, any> = {
-                  user_id: targetUser,
-                  lesson_id: id,
-                  current_step: progressRecord.currentStep,
-                  updated_at: new Date().toISOString(),
-                };
-                if (progressRecord.isCompleted) {
-                  payload.is_completed = true;
-                  payload.stars_earned = progressRecord.starsEarned;
-                  if (progressRecord.completedAt) {
-                    payload.completed_at = progressRecord.completedAt;
-                  }
-                }
-
-                const { error } = await supabase
-                  .from('user_lesson_progress')
-                  .upsert(payload, { onConflict: 'user_id,lesson_id' });
-
-                if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-
-                if (error) {
-                  hasError = true;
-                  roundErrorCount++;
-                  lastErrorMsg = error.message;
-                } else {
-                  roundProcessedCount++;
-                  const currentPending = pendingSyncRef.current;
-                  const queued = currentPending.lessons[id];
-                  if (
-                    queued &&
-                    queued.currentStep <= progressRecord.currentStep &&
-                    queued.isCompleted === progressRecord.isCompleted &&
-                    queued.starsEarned <= progressRecord.starsEarned
-                  ) {
-                    const updatedLessons = { ...currentPending.lessons };
-                    delete updatedLessons[id];
-                    persistPendingSync(targetUser, {
-                      ...currentPending,
-                      lessons: updatedLessons,
-                    });
-                  }
-                }
+                // If RPC is unavailable, fail safely and retain in queue. Do not execute uncoordinated direct writes!
+                hasError = true;
+                roundErrorCount++;
+                lastErrorMsg = 'RPC sync_lesson_progress is not available';
               }
             } catch (err: any) {
               if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
@@ -340,49 +288,24 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           }
 
-          // 2. Flush pending gamification
+          // 2. Resolve pending gamification safely without direct client-side table writes
+          // Authenticated gamification updates are derived strictly on the server by sync_lesson_progress.
+          // Direct upserts to user_gamification from the client are forbidden to prevent stale clients
+          // from overwriting server-computed XP, streak, and completion counters.
           if (pendingSyncRef.current.gamificationPending) {
             if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-            const snapshotGame = gamificationRef.current;
-            try {
-              const { error } = await supabase
-                .from('user_gamification')
-                .upsert({
-                  user_id: targetUser,
-                  streak: snapshotGame.streak,
-                  xp: snapshotGame.xp,
-                  last_active_date: snapshotGame.lastActiveDate,
-                  completed_lessons_count: snapshotGame.completedLessonsCount,
-                  updated_at: new Date().toISOString(),
-                });
-
-              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-
-              if (error) {
-                hasError = true;
-                roundErrorCount++;
-                lastErrorMsg = error.message;
-              } else {
-                roundProcessedCount++;
-                // Concurrency-safe clear: Only clear gamificationPending if gamificationRef hasn't advanced in the meantime
-                const currentGame = gamificationRef.current;
-                if (
-                  currentGame.xp <= snapshotGame.xp &&
-                  currentGame.completedLessonsCount <= snapshotGame.completedLessonsCount &&
-                  currentGame.streak <= snapshotGame.streak
-                ) {
-                  const currentPending = pendingSyncRef.current;
-                  persistPendingSync(targetUser, {
-                    ...currentPending,
-                    gamificationPending: false,
-                  });
-                }
-              }
-            } catch (err: any) {
-              if (!isMountedRef.current || activeUserIdRef.current !== targetUser) return;
-              hasError = true;
-              roundErrorCount++;
-              lastErrorMsg = err?.message || 'Sunucu senkronizasyon hatası';
+            const currentPending = pendingSyncRef.current;
+            const remainingLessons = currentPending.lessons;
+            const hasCompletedLessonsInQueue = Object.values(remainingLessons).some(
+              (l) => l.isCompleted
+            );
+            // If no completed lessons remain in the queue and no sync errors occurred,
+            // gamification is confirmed in sync with the server.
+            if (!hasCompletedLessonsInQueue && !hasError) {
+              persistPendingSync(targetUser, {
+                ...currentPending,
+                gamificationPending: false,
+              });
             }
           }
 
@@ -500,11 +423,6 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
               completedAt: row.completed_at,
             };
             remoteMap[row.lesson_id] = progressObj;
-
-            const paired = getPairedId(row.lesson_id);
-            if (paired && !remoteMap[paired]) {
-              remoteMap[paired] = { ...progressObj, lessonId: paired };
-            }
           });
         }
 
@@ -624,10 +542,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getLessonProgress = useCallback(
     (lessonId: string): UserLessonProgress | undefined => {
-      if (userProgress[lessonId]) return userProgress[lessonId];
-      const paired = getPairedId(lessonId);
-      if (paired && userProgress[paired]) return userProgress[paired];
-      return undefined;
+      return userProgress[lessonId];
     },
     [userProgress]
   );
@@ -635,10 +550,7 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
   const getMissionProgress = useCallback(
     (missionId: string): UserLessonProgress | undefined => {
       const canonicalId = missionId.startsWith('mission-') ? missionId : `mission-${missionId}`;
-      if (userProgress[canonicalId]) return userProgress[canonicalId];
-      const paired = getPairedId(canonicalId);
-      if (paired && userProgress[paired]) return userProgress[paired];
-      return undefined;
+      return userProgress[canonicalId];
     },
     [userProgress]
   );
@@ -688,10 +600,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateStepProgress = useCallback(
     async (lessonId: string, stepNumber: number) => {
       const activeUser = activeUserIdRef.current;
-      const paired = getPairedId(lessonId);
 
       const prev = userProgressRef.current;
-      const existing = prev[lessonId] || (paired ? prev[paired] : undefined);
+      const existing = prev[lessonId];
       const nextRecord: UserLessonProgress = {
         lessonId,
         isCompleted: existing?.isCompleted || false,
@@ -703,7 +614,6 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       const nextState = {
         ...prev,
         [lessonId]: nextRecord,
-        ...(paired ? { [paired]: { ...nextRecord, lessonId: paired } } : {}),
       };
 
       userProgressRef.current = nextState;
@@ -750,11 +660,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       const activeUser = activeUserIdRef.current;
       const nowIso = new Date().toISOString();
       const today = nowIso.split('T')[0];
-      const paired = getPairedId(lessonId);
-
       // 1. Optimistic synchronous update of user progress in memory and user-scoped localStorage
       const prevProg = userProgressRef.current;
-      const existing = prevProg[lessonId] || (paired ? prevProg[paired] : undefined);
+      const existing = prevProg[lessonId];
       const isFirstCompletion = !existing?.isCompleted;
 
       const nextRecord: UserLessonProgress = {
@@ -768,7 +676,6 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       const nextProgState = {
         ...prevProg,
         [lessonId]: nextRecord,
-        ...(paired ? { [paired]: { ...nextRecord, lessonId: paired } } : {}),
       };
 
       userProgressRef.current = nextProgState;
@@ -783,7 +690,9 @@ export const MicrolearningProvider: React.FC<{ children: React.ReactNode }> = ({
       const lastDate = prevGame.lastActiveDate;
       let nextStreak = prevGame.streak;
 
-      if (lastDate !== today) {
+      if (!lastDate) {
+        nextStreak = Math.max(prevGame.streak, 1);
+      } else if (lastDate !== today) {
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         if (lastDate === yesterday) {
           nextStreak += 1;

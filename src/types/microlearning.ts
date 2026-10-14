@@ -65,6 +65,6 @@ export interface UserLessonProgress {
 export interface UserGamificationState {
   streak: number;
   xp: number;
-  lastActiveDate: string;
+  lastActiveDate: string | null;
   completedLessonsCount: number;
 }

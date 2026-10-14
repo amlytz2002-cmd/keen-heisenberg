@@ -18,6 +18,39 @@ const mockMaybeSingleGame = vi.fn();
 vi.mock('../src/lib/supabaseClient', () => {
   return {
     supabase: {
+      rpc: (fn: string, args: any) => {
+        if (fn === 'sync_lesson_progress') {
+          const payload: Record<string, any> = {
+            user_id: mockAuthUser?.id,
+            lesson_id: args.p_lesson_id,
+            current_step: args.p_current_step,
+          };
+          if (args.p_is_completed) {
+            payload.is_completed = true;
+            payload.stars_earned = args.p_stars_earned;
+            if (args.p_completed_at) {
+              payload.completed_at = args.p_completed_at;
+            }
+            mockUpsertGame({ user_id: mockAuthUser?.id, xp: 390 });
+          }
+          mockUpsertLesson(payload, { onConflict: 'user_id,lesson_id' });
+          return Promise.resolve({
+            data: {
+              lesson_id: args.p_lesson_id,
+              current_step: args.p_current_step,
+              is_completed: args.p_is_completed,
+              stars_earned: args.p_stars_earned,
+              completed_at: args.p_completed_at,
+              streak: 1,
+              xp: 120,
+              completed_lessons_count: args.p_is_completed ? 1 : 0,
+              last_active_date: '2026-10-14',
+            },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      },
       from: (table: string) => {
         if (table === 'user_lesson_progress') {
           return {
