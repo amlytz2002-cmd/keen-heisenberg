@@ -43,6 +43,35 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
     onSelectHotspot?.(id);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    if (!interactive) return;
+
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      handleClick(hotspots[currentIndex].id);
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIdx = (currentIndex + 1) % hotspots.length;
+      const nextHotspot = hotspots[nextIdx];
+      if (nextHotspot) {
+        handleClick(nextHotspot.id);
+        const container = e.currentTarget.parentElement;
+        const nextBtn = container?.querySelectorAll<HTMLButtonElement>('.cenna-molecule-hotspot')[nextIdx];
+        nextBtn?.focus();
+      }
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIdx = (currentIndex - 1 + hotspots.length) % hotspots.length;
+      const prevHotspot = hotspots[prevIdx];
+      if (prevHotspot) {
+        handleClick(prevHotspot.id);
+        const container = e.currentTarget.parentElement;
+        const prevBtn = container?.querySelectorAll<HTMLButtonElement>('.cenna-molecule-hotspot')[prevIdx];
+        prevBtn?.focus();
+      }
+    }
+  };
+
   // Render molecule skeleton SVG based on type
   const renderSkeleton = () => {
     switch (svgType) {
@@ -135,6 +164,8 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
 
       {/* Interactive Molecule Canvas */}
       <div
+        role="region"
+        aria-label={`${moleculeName} 2D Kimyasal Harita`}
         style={{
           width: '100%',
           height: 240,
@@ -151,14 +182,20 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
         {renderSkeleton()}
 
         {/* Hotspot Markers */}
-        {hotspots.map((hs) => {
+        {hotspots.map((hs, idx) => {
           const isSelected = hs.id === activeId;
           const isTarget = hs.isTarget && highlightTarget;
           return (
             <button
               key={hs.id}
+              type="button"
               onClick={() => handleClick(hs.id)}
+              onKeyDown={(e) => handleKeyDown(e, idx)}
               disabled={!interactive}
+              aria-disabled={!interactive}
+              aria-label={`${hs.label} (${hs.groupType})`}
+              aria-pressed={isSelected}
+              className="cenna-molecule-hotspot"
               style={{
                 position: 'absolute',
                 left: `${hs.x}%`,
@@ -177,7 +214,7 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
                   : isTarget
                   ? '3px solid #A7F3D0'
                   : '2px solid #3B82F6',
-                cursor: interactive ? 'pointer' : 'default',
+                cursor: interactive ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -189,6 +226,7 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
                 boxShadow: isSelected
                   ? '0 0 0 6px rgba(37, 99, 235, 0.25)'
                   : '0 2px 4px rgba(0,0,0,0.1)',
+                outline: 'none',
               }}
               title={hs.label}
             >
@@ -201,6 +239,10 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
       {/* Selected Hotspot Explanation Panel */}
       {activeHotspot ? (
         <div
+          role="region"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label="Fonksiyonel grup açıklaması"
           style={{
             marginTop: 14,
             padding: '12px 16px',
@@ -221,10 +263,22 @@ export const MoleculeInspector: React.FC<MoleculeInspectorProps> = ({
           </div>
         </div>
       ) : (
-        <div style={{ marginTop: 12, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>
-          💡 Molekül üzerindeki numaralı dairelere tıklayarak fonksiyonel grupları inceleyin.
+        <div
+          role="note"
+          aria-label="Kullanım ipucu"
+          style={{ marginTop: 12, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}
+        >
+          💡 Molekül üzerindeki numaralı dairelere tıklayarak veya klavye ile seçerek fonksiyonel grupları inceleyin.
         </div>
       )}
+
+      <style>{`
+        .cenna-molecule-hotspot:focus-visible {
+          outline: 3px solid #0284C7 !important;
+          outline-offset: 3px !important;
+          box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.35) !important;
+        }
+      `}</style>
     </div>
   );
 };

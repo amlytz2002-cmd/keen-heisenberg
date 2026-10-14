@@ -99,8 +99,10 @@ describe('InteractiveLessonPlayer - Answer Validation Fixes (Lesson 14 & Lesson 
       });
 
       // 1. Check that "Kontrol Et" button is disabled
-      const checkBtn = getByText('Kontrol Et').closest('button');
-      expect(checkBtn?.disabled).toBe(true);
+      await waitFor(() => {
+        const checkBtn = getByText('Kontrol Et').closest('button');
+        expect(checkBtn?.disabled).toBe(true);
+      });
 
       // 2. Check that none of the radio buttons are pre-selected
       const radioInputs = container.querySelectorAll<HTMLInputElement>('input[type="radio"]');
@@ -189,8 +191,10 @@ describe('InteractiveLessonPlayer - Answer Validation Fixes (Lesson 14 & Lesson 
       });
 
       // Kontrol Et button MUST be disabled on initial load before any interaction
-      const checkBtn = getByText('Kontrol Et').closest('button');
-      expect(checkBtn?.disabled).toBe(true);
+      await waitFor(() => {
+        const checkBtn = getByText('Kontrol Et').closest('button');
+        expect(checkBtn?.disabled).toBe(true);
+      });
     });
 
     it('incorrect pH submissions receive incorrect feedback and target pH 7.4 receives correct feedback', async () => {
