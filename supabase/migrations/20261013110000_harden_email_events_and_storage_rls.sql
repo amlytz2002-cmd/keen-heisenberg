@@ -4,9 +4,26 @@
 
 -- 1. Restrict email_events administrative policies strictly to service_role
 -- (Preventing anonymous or untrusted clients from reading/modifying all transactional email events)
-ALTER POLICY "Allow server to insert email events" ON public.email_events TO service_role;
-ALTER POLICY "Allow server to select email events" ON public.email_events TO service_role;
-ALTER POLICY "Allow server to update email events" ON public.email_events TO service_role;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'email_events' AND policyname = 'Allow server to insert email events') THEN
+        ALTER POLICY "Allow server to insert email events" ON public.email_events TO service_role;
+    ELSE
+        CREATE POLICY "Allow server to insert email events" ON public.email_events FOR INSERT TO service_role WITH CHECK (true);
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'email_events' AND policyname = 'Allow server to select email events') THEN
+        ALTER POLICY "Allow server to select email events" ON public.email_events TO service_role;
+    ELSE
+        CREATE POLICY "Allow server to select email events" ON public.email_events FOR SELECT TO service_role USING (true);
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'email_events' AND policyname = 'Allow server to update email events') THEN
+        ALTER POLICY "Allow server to update email events" ON public.email_events TO service_role;
+    ELSE
+        CREATE POLICY "Allow server to update email events" ON public.email_events FOR UPDATE TO service_role USING (true) WITH CHECK (true);
+    END IF;
+END $$;
 
 -- Ensure authenticated users can only view their own email events
 DO $$
@@ -21,7 +38,7 @@ BEGIN
 END $$;
 
 -- 2. Storage RLS Policies for course-resources and user-avatars
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- (Note: storage.objects has RLS enabled by default in Supabase storage service)
 
 -- Instructors and admins can upload course resources
 DO $$

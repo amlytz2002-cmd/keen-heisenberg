@@ -47,6 +47,26 @@ $$;
 -- ----------------------------------------------------------------------------
 -- 2. CLASSROOMS & INVITATIONS
 -- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.classrooms (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL DEFAULT '',
+    name TEXT,
+    description TEXT,
+    course_code VARCHAR(32) NOT NULL DEFAULT '',
+    term VARCHAR(32) NOT NULL DEFAULT '',
+    exam_date DATE,
+    join_code VARCHAR(32) NOT NULL DEFAULT '',
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+    section_code TEXT DEFAULT '01',
+    settings JSONB NOT NULL DEFAULT '{"item_cap": 20, "allow_student_reports": true, "target_session_minutes": 25}'::jsonb,
+    blueprint_id UUID,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 ALTER TABLE IF EXISTS classrooms
     ADD COLUMN IF NOT EXISTS name TEXT,
     ADD COLUMN IF NOT EXISTS description TEXT,
@@ -63,6 +83,16 @@ DO $$ BEGIN
         UPDATE public.classrooms SET owner_id = created_by WHERE owner_id IS NULL AND created_by IS NOT NULL;
     END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS public.classroom_members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    classroom_id UUID NOT NULL REFERENCES public.classrooms(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    role VARCHAR(32) NOT NULL DEFAULT 'student',
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'left')),
+    joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT unique_classroom_member UNIQUE (classroom_id, user_id)
+);
 
 ALTER TABLE IF EXISTS classroom_members
     ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'left'));

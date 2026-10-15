@@ -104,7 +104,7 @@ INSERT INTO public.course_modules (
     updated_at
 ) VALUES 
 (
-    'm0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
     'c0000000-0000-0000-0000-000000000001',
     1,
     'Modül 1: Fonksiyonel Gruplar & Moleküler İskelet',
@@ -114,7 +114,7 @@ INSERT INTO public.course_modules (
     NOW()
 ),
 (
-    'm0000000-0000-0000-0000-000000000002',
+    'b0000000-0000-0000-0000-000000000002',
     'c0000000-0000-0000-0000-000000000001',
     2,
     'Modül 2: İlaç-Reseptör Etkileşimi & Bağ Türleri',
@@ -124,7 +124,7 @@ INSERT INTO public.course_modules (
     NOW()
 ),
 (
-    'm0000000-0000-0000-0000-000000000003',
+    'b0000000-0000-0000-0000-000000000003',
     'c0000000-0000-0000-0000-000000000001',
     3,
     'Modül 3: İlaçlarda İzomeri & Stereokimya',
@@ -134,7 +134,7 @@ INSERT INTO public.course_modules (
     NOW()
 ),
 (
-    'm0000000-0000-0000-0000-000000000004',
+    'b0000000-0000-0000-0000-000000000004',
     'c0000000-0000-0000-0000-000000000001',
     4,
     'Modül 4: Biyoizosterizm İlkeleri & İlaç Optimizasyonu',
@@ -144,7 +144,7 @@ INSERT INTO public.course_modules (
     NOW()
 ),
 (
-    'm0000000-0000-0000-0000-000000000005',
+    'b0000000-0000-0000-0000-000000000005',
     'c0000000-0000-0000-0000-000000000001',
     5,
     'Modül 5: Yapı-Etki İlişkileri (SAR) & Çözünürlük',
@@ -154,7 +154,7 @@ INSERT INTO public.course_modules (
     NOW()
 ),
 (
-    'm0000000-0000-0000-0000-000000000006',
+    'b0000000-0000-0000-0000-000000000006',
     'c0000000-0000-0000-0000-000000000001',
     6,
     'Modül 6: İlaç Metabolizması (Biyotransformasyon)',
@@ -186,7 +186,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000001',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
     'medchem-oxygen-groups',
     'Oksijenli Fonksiyonel Gruplar (Alkol, Eter, Ester)',
     'Oksijenli Fonksiyonel Gruplar',
@@ -201,7 +201,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000002',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
     'medchem-carbonyl-acyl',
     'Karbonil & Açil Türevleri Reaktivitesi',
     'Karbonil & Açil Türevleri Reaktivitesi',
@@ -216,7 +216,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000003',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
     'medchem-nitrogen-sulfur',
     'Azot & Kükürt Fonksiyonel Grupları',
     'Azot & Kükürt Fonksiyonel Grupları',
@@ -231,7 +231,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000004',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
     'medchem-heterocycles',
     'Heterosiklik Halkalar & Farmakofor İskeletler',
     'Heterosiklik Halkalar & Farmakofor İskeletler',
@@ -246,7 +246,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000005',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000002',
+    'b0000000-0000-0000-0000-000000000002',
     'medchem-covalent-binding',
     'Kovalent & Geri Dönüşümsüz İlaç Bağları',
     'Kovalent & Geri Dönüşümsüz İlaç Bağları',
@@ -261,7 +261,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000006',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000002',
+    'b0000000-0000-0000-0000-000000000002',
     'medchem-ionic-hydrogen-bonds',
     'İyonik Bağlar & Hidrojen Köprüleri',
     'İyonik Bağlar & Hidrojen Köprüleri',
@@ -276,7 +276,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000007',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000002',
+    'b0000000-0000-0000-0000-000000000002',
     'medchem-hydrophobic-effect',
     'Zayıf Kuvvetler & Lipofilik Reseptör Cebi',
     'Zayıf Kuvvetler & Lipofilik Reseptör Cebi',
@@ -291,7 +291,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000008',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000003',
+    'b0000000-0000-0000-0000-000000000003',
     'medchem-geometric-isomerism',
     'Geometrik İzomeri & Konformasyon',
     'Geometrik İzomeri & Konformasyon',
@@ -306,7 +306,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000009',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000003',
+    'b0000000-0000-0000-0000-000000000003',
     'medchem-easson-stedman',
     'Optik İzomeri & Easson-Stedman 3-Nokta Hipotezi',
     'Optik İzomeri & Easson-Stedman Hipotezi',
@@ -321,7 +321,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000010',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000003',
+    'b0000000-0000-0000-0000-000000000003',
     'medchem-chiral-switch',
     'Kiral Geçiş & Talidomid Teratojenitesi',
     'Kiral Geçiş & Klinik Yansımalar',
@@ -336,7 +336,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000011',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000004',
+    'b0000000-0000-0000-0000-000000000004',
     'medchem-grimm-bioisostere',
     'Grimm Hidrit Kayması & Klasik Biyoizosterler',
     'Grimm Hidrit Kayması & Klasik Biyoizosterler',
@@ -351,7 +351,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000012',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000004',
+    'b0000000-0000-0000-0000-000000000004',
     'medchem-tetrazole-carboxylic',
     'Non-Klasik Biyoizosterler: Tetrazol & Karboksil',
     'Tetrazol & Karboksil Biyoizosterizmi',
@@ -366,7 +366,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000013',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000004',
+    'b0000000-0000-0000-0000-000000000004',
     'medchem-procainamide-stability',
     'Biyoizosterizm ile Metabolik Kararlılık (Prokainamid)',
     'Metabolik Kararlılık & Ester/Amit Değişimi',
@@ -381,7 +381,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000014',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000005',
+    'b0000000-0000-0000-0000-000000000005',
     'medchem-logp-partition',
     'Dağılma Katsayısı (LogP) & Membran Geçirgenliği',
     'Dağılma Katsayısı (LogP) & KBB',
@@ -396,7 +396,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000015',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000005',
+    'b0000000-0000-0000-0000-000000000005',
     'medchem-henderson-hasselbalch',
     'Henderson-Hasselbalch & İlaç İyonizasyonu',
     'Henderson-Hasselbalch & İyon Tuzağı',
@@ -411,7 +411,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000016',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000005',
+    'b0000000-0000-0000-0000-000000000005',
     'medchem-lipinski-ro5',
     'Lipinski 5 Kuralı (Rule of 5 - Ro5)',
     'Lipinski 5 Kuralı (Ro5)',
@@ -426,7 +426,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000017',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000005',
+    'b0000000-0000-0000-0000-000000000005',
     'medchem-sar-methodology',
     'SAR Analiz Metodolojisi & Substitüent Modifikasyonu',
     'SAR Analiz Metodolojisi',
@@ -441,7 +441,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000018',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000006',
+    'b0000000-0000-0000-0000-000000000006',
     'medchem-cyp450-phase1',
     'Faz I Reaksiyonları: CYP450 Oksidasyonu',
     'Faz I CYP450 Oksidasyonları',
@@ -456,7 +456,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000019',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000006',
+    'b0000000-0000-0000-0000-000000000006',
     'medchem-phase1-reduction-hydrolysis',
     'Faz I Redüksiyon & Hidroliz (Sülfasalazin)',
     'Faz I Redüksiyon & Hidroliz',
@@ -471,7 +471,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000020',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000006',
+    'b0000000-0000-0000-0000-000000000006',
     'medchem-phase2-paracetamol-napqi',
     'Faz II Konjugasyon & Parasetamol NAPQI Toksisitesi',
     'Faz II Konjugasyon & Toksisite',
@@ -486,7 +486,7 @@ INSERT INTO public.concepts (
 (
     'c1100000-0000-0000-0000-000000000021',
     'c0000000-0000-0000-0000-000000000001',
-    'm0000000-0000-0000-0000-000000000006',
+    'b0000000-0000-0000-0000-000000000006',
     'medchem-prodrug-design',
     'Ön İlaç (Prodrug) Tasarımı (Enalapril -> Enalaprilat)',
     'Ön İlaç (Prodrug) Tasarımı',

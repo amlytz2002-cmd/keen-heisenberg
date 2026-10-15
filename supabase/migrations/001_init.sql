@@ -81,6 +81,8 @@ CREATE TABLE IF NOT EXISTS error_events (
     error_family VARCHAR(32) NOT NULL,
     misconception_tag VARCHAR(64) NOT NULL,
     failed_node VARCHAR(64),
+    confidence INT NOT NULL DEFAULT 3,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE,
     is_hypercorrection BOOLEAN GENERATED ALWAYS AS (confidence >= 4 AND is_correct = FALSE) STORED,
     resolved BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()

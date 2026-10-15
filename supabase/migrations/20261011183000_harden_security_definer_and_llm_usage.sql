@@ -27,16 +27,16 @@ END;
 $$;
 
 -- 2. Public wrapper functions as SECURITY INVOKER (calling auth_helpers.*)
-CREATE OR REPLACE FUNCTION public.is_admin(p_uid uuid)
+CREATE OR REPLACE FUNCTION public.is_admin(check_user_id uuid)
 RETURNS boolean LANGUAGE sql STABLE SECURITY INVOKER SET search_path = ''
 AS $$
-  SELECT auth_helpers.is_admin(p_uid);
+  SELECT auth_helpers.is_admin(check_user_id);
 $$;
 
-CREATE OR REPLACE FUNCTION public.is_instructor(p_uid uuid)
+CREATE OR REPLACE FUNCTION public.is_instructor(check_user_id uuid)
 RETURNS boolean LANGUAGE sql STABLE SECURITY INVOKER SET search_path = ''
 AS $$
-  SELECT auth_helpers.is_instructor(p_uid);
+  SELECT auth_helpers.is_instructor(check_user_id);
 $$;
 
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated, service_role;
