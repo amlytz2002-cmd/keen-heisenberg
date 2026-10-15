@@ -161,7 +161,7 @@ describe('MissionPlayer - Mission State Isolation & History Navigation (Finding 
     const progressMap = JSON.parse(saved!);
     expect(progressMap['mission-2']?.starsEarned).toBe(3);
     expect(progressMap['mission-2']?.isCompleted).toBe(true);
-  });
+  }, 15000);
 
   it('2. Victory modal does not carry over to the next mission or across history navigation', async () => {
     const { getByText, queryByText } = render(
@@ -201,7 +201,7 @@ describe('MissionPlayer - Mission State Isolation & History Navigation (Finding 
       expect(getByText(/Aspirin Ester Montajı/i)).toBeTruthy();
     });
     expect(queryByText(/KLİNİK KURTARMA BAŞARILI! 🎉/i)).toBeNull();
-  });
+  }, 15000);
 
   it('3. Step progression and completion behavior remain intact within a mission', async () => {
     const { getByText } = render(

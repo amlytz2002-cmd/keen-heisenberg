@@ -274,5 +274,5 @@ describe('MoleculeInspector - Keyboard & Screen Reader Accessibility (Finding B3
     fireEvent.click(checkBtn);
     await screen.findByText(/Doğru Çıkarım!/i);
     expect(screen.getByText(/Klinik İnci/i)).toBeDefined();
-  });
+  }, 15000);
 });

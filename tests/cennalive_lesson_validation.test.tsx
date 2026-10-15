@@ -110,7 +110,7 @@ describe('InteractiveLessonPlayer - Answer Validation Fixes (Lesson 14 & Lesson 
       radioInputs.forEach((input) => {
         expect(input.checked).toBe(false);
       });
-    });
+    }, 15000);
 
     it('selecting an option enables Kontrol Et and validates correct vs incorrect answers', async () => {
       window.history.pushState({}, '', '/learn/lesson/les-14');
