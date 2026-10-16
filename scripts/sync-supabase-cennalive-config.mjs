@@ -8,7 +8,7 @@
  *     Host: smtp.resend.com
  *     Port: 587 (TLS) or 465 (SSL)
  *     User: resend
- *     Pass: re_aN1ARQdM_FyAfTzxYVe7DNjq3KmRujVqb
+ *     Pass: env(RESEND_API_KEY)
  *     Admin Email: bildirim@cenna.live
  *     Sender Name: CENNA.live
  * - Academic Turkish email templates for confirmation, recovery, invite, magiclink, and email_change.
@@ -30,7 +30,7 @@ const RESEND_SMTP = {
   host: 'smtp.resend.com',
   port: 587,
   user: 'resend',
-  pass: 're_aN1ARQdM_FyAfTzxYVe7DNjq3KmRujVqb',
+  pass: process.env.RESEND_API_KEY || '',
   admin_email: 'bildirim@cenna.live',
   sender_name: 'CENNA.live'
 };
