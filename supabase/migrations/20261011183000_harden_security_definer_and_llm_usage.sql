@@ -4,24 +4,24 @@
 -- 1. Helper schema for auth verification to prevent PostgREST exposure & RLS recursion
 CREATE SCHEMA IF NOT EXISTS auth_helpers;
 
-CREATE OR REPLACE FUNCTION auth_helpers.is_admin(p_uid uuid)
+CREATE OR REPLACE FUNCTION auth_helpers.is_admin(check_user_id uuid)
 RETURNS boolean LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.user_roles
-    WHERE user_id = p_uid AND role = 'admin'
+    WHERE user_id = check_user_id AND role = 'admin'
   );
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION auth_helpers.is_instructor(p_uid uuid)
+CREATE OR REPLACE FUNCTION auth_helpers.is_instructor(check_user_id uuid)
 RETURNS boolean LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.user_roles
-    WHERE user_id = p_uid AND role IN ('instructor', 'admin')
+    WHERE user_id = check_user_id AND role IN ('instructor', 'admin')
   );
 END;
 $$;
