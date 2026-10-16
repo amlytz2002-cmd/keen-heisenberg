@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+:root {
+  --background: 222 47% 5%; /* #060B14 */
+  --foreground: 210 40% 98%; /* #F8FAFC */
+  --card: 222 47% 11%; /* #0F172A */
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 199 89% 48%; /* #0EA5E9 */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 217 33% 17%; /* #1E293B */
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%; /* #94A3B8 */
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 33% 17%; /* #1E293B */
+  --input: 217 33% 17%;
+  --ring: 199 89% 48%;
+  --radius: 0.5rem;
+}
+
+body {
+  background-color: #060B14;
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #060B14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Ant Design Dark-Mode Deep Overrides */
+.ant-modal .ant-modal-content,
+.ant-drawer .ant-drawer-content {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border: 1px solid #1E293B !important;
+}
+
+.ant-drawer-header,
+.ant-modal-header {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+.ant-drawer-title,
+.ant-modal-title {
+  color: #F8FAFC !important;
+}
+
+.ant-drawer-close,
+.ant-modal-close {
+  color: #94A3B8 !important;
+}
+.ant-drawer-close:hover,
+.ant-modal-close:hover {
+  color: #FFFFFF !important;
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border-color: #1E293B !important;
+}
+
+.ant-input::placeholder {
+  color: #64748B !important;
+}
+
+.ant-card {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid #1E293B !important;
+  color: #F8FAFC !important;
+}
+
+.ant-table {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #1E293B !important;
+  color: #E2E8F0 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid #1E293B !important;
+  color: #CBD5E1 !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #1E293B/50 !important;
+}
+
+.ant-tabs-nav::before {
+  border-bottom: 1px solid #1E293B !important;
+}
+
+.ant-tabs-tab {
+  color: #94A3B8 !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #38BDF8 !important;
+}
+
+.ant-pagination-item {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+}
+
+.ant-pagination-item a {
+  color: #94A3B8 !important;
+}
+
+.ant-pagination-item-active {
+  border-color: #0284C7 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #38BDF8 !important;
+}
+
+/* Animations for Magic UI */
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam calc(var(--duration)*1s) infinite linear;
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
+}

@@ -6,7 +6,7 @@ export interface EmailParams {
   subject: string;
   html: string;
   text?: string;
-  emailType: 'classroom_invitation' | 'study_reminder' | 'processing_failure' | 'account_notice';
+  emailType: 'classroom_invitation' | 'study_reminder' | 'processing_failure' | 'account_notice' | 'welcome_onboarding';
   userId?: string;
   idempotencyKey: string;
 }
@@ -275,6 +275,77 @@ export function buildTestEmail(recipientEmail: string): { subject: string; html:
 </html>`.trim();
 
   const text = `CENNA.live — İşlemsel E-posta Entegrasyon Doğrulaması\n\nBu ileti cenna.live üzerinden Resend API ve Supabase ile başarıyla gönderilmiştir.\nAlıcı: ${recipientEmail}\nGönderici: bildirim@cenna.live\n\nCENNA.live Ekibi`;
+
+  return { subject, html, text };
+}
+
+/**
+ * Builds high-register academic Turkish welcome and onboarding email.
+ */
+export function buildWelcomeOnboardingEmail(params: {
+  recipientName?: string;
+  recipientEmail: string;
+  role?: 'student' | 'instructor';
+  dashboardUrl: string;
+}): { subject: string; html: string; text: string } {
+  const name = params.recipientName || 'Değerli Kullanıcımız';
+  const isInstructor = params.role === 'instructor';
+  const roleTitle = isInstructor ? 'Eğitmen & Araştırmacı' : 'Öğrenci & Stajyer Eczacı';
+  const subject = `CENNA.live'a Hoş Geldiniz — ${isInstructor ? 'Eğitmen Çalışma Alanınız Hazır' : 'Klinik Kurtarma Laboratuvarınız Hazır'}`;
+
+  const html = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060b14; margin: 0; padding: 24px; color: #f8fafc;">
+  <div style="max-width: 600px; margin: 0 auto; background: #0f172a; border-radius: 14px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);">
+    <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0f172a 100%); padding: 36px 28px; text-align: center; border-bottom: 1px solid #1e293b;">
+      <div style="display: inline-block; padding: 4px 12px; background: rgba(14, 165, 233, 0.2); border: 1px solid #38bdf8; border-radius: 9999px; font-size: 11px; font-weight: 700; color: #38bdf8; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">
+        ${roleTitle}
+      </div>
+      <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">CENNA<span style="color: #38bdf8;">.live</span></h1>
+      <p style="color: #bae6fd; margin: 8px 0 0 0; font-size: 14px;">Farmasötik Kimya & Klinik Farmakoloji İçin Simülasyon Platformu</p>
+    </div>
+    <div style="padding: 32px 28px;">
+      <h2 style="margin-top: 0; font-size: 20px; color: #f8fafc; font-weight: 700;">Hoş Geldiniz, Sayın ${name}</h2>
+      <p style="font-size: 15px; line-height: 1.6; color: #94a3b8;">
+        CENNA.live platformuna kaydınız başarıyla gerçekleşti. ${isInstructor 
+          ? 'Müfredat belgelerinizi (PDF/DOCX) yapay zekâ destekli kavram haritalarına dönüştürebilir, sanal sınıflar oluşturabilir ve öğrencilerinizin Cockcroft-Gault/FSRS gelişimlerini canlı izleyebilirsiniz.' 
+          : '21 adet interaktif Klinik Kurtarma Görevi, enzim parçalanma simülatörleri, reseptör cep uyumu analizleri ve FSRS aralıklı tekrar algoritması ile farmasötik yetkinliğinizi en üst düzeye taşıyabilirsiniz.'}
+      </p>
+
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px 20px; margin: 24px 0;">
+        <div style="font-size: 12px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+          Kayıtlı E-posta Adresi
+        </div>
+        <div style="font-size: 15px; font-family: monospace; color: #e2e8f0;">
+          ${params.recipientEmail}
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${params.dashboardUrl}" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);">
+          ${isInstructor ? 'Eğitmen Paneline Giriş Yap' : 'Klinik Laboratuvara Başla'}
+        </a>
+      </div>
+
+      <div style="border-top: 1px solid #1e293b; padding-top: 20px; font-size: 13px; color: #64748b; line-height: 1.5;">
+        <p style="margin: 0 0 8px 0;">Doğrudan erişim bağlantısı:</p>
+        <a href="${params.dashboardUrl}" style="color: #38bdf8; word-break: break-all;">${params.dashboardUrl}</a>
+      </div>
+    </div>
+    <div style="background-color: #090f1d; padding: 20px 28px; border-top: 1px solid #1e293b; text-align: center; font-size: 12px; color: #64748b;">
+      <p style="margin: 0;">© 2026 CENNA.live. Tüm hakları saklıdır.</p>
+      <p style="margin: 4px 0 0 0;">Bu ileti bildirim@cenna.live tarafından otomatik olarak gönderilmiştir.</p>
+    </div>
+  </div>
+</body>
+</html>`.trim();
+
+  const text = `CENNA.live'a Hoş Geldiniz!\n\nSayın ${name},\n\nCENNA.live platformuna kaydınız başarıyla tamamlandı.\nKayıtlı e-posta: ${params.recipientEmail}\nRol: ${roleTitle}\n\nPanele erişmek için:\n${params.dashboardUrl}\n\nCENNA.live Ekibi`;
 
   return { subject, html, text };
 }

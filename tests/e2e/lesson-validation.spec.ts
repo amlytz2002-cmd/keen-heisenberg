@@ -8,6 +8,21 @@ if (!fs.existsSync(screenshotsDir)) {
   fs.mkdirSync(screenshotsDir, { recursive: true });
 }
 
+// Helper to navigate to protected lesson routes with demo authentication
+async function openProtectedLesson(page: any, targetPath: string) {
+  await page.goto(targetPath);
+  await page.waitForTimeout(600);
+  if (page.url().includes('/auth/login')) {
+    const demoBtn = page.getByRole('button', { name: /Demo Öğrenci/i });
+    await expect(demoBtn).toBeVisible({ timeout: 10000 });
+    await demoBtn.click();
+    await page.waitForURL((url: URL) => !url.pathname.includes('/auth/login'), { timeout: 15000 });
+    if (!page.url().includes(targetPath)) {
+      await page.goto(targetPath);
+    }
+  }
+}
+
 test.describe('CennAlive E2E Real Browser Test Suite', () => {
   test.beforeEach(async ({ page }) => {
     page.on('console', (msg) => {
@@ -22,7 +37,7 @@ test.describe('CennAlive E2E Real Browser Test Suite', () => {
 
   test('1. Lesson 14, Step 2 (SAR Simulator) answer validation & interaction', async ({ page }) => {
     // 1. Navigate to Lesson 14
-    await page.goto('/learn/lesson/les-14');
+    await openProtectedLesson(page, '/learn/lesson/les-14');
 
     // Wait for Step 1 to load
     await expect(page.getByText('LogP Nedir?')).toBeVisible();
@@ -77,7 +92,7 @@ test.describe('CennAlive E2E Real Browser Test Suite', () => {
 
   test('2. Lesson 15, Step 2 (pH Gauge) answer validation & interaction', async ({ page }) => {
     // 1. Navigate to Lesson 15
-    await page.goto('/learn/lesson/les-15');
+    await openProtectedLesson(page, '/learn/lesson/les-15');
 
     // Wait for Step 1 to load
     await expect(page.getByText('pH-Bölme (pH-Partition) Hipotezi')).toBeVisible();
@@ -124,7 +139,7 @@ test.describe('CennAlive E2E Real Browser Test Suite', () => {
 
   test('3. Lesson navigation, state reset, and history back/forward traversal', async ({ page }) => {
     // 1. Open Lesson 1 (4 steps)
-    await page.goto('/learn/lesson/les-1');
+    await openProtectedLesson(page, '/learn/lesson/les-1');
     await expect(page.getByText('Adım 1 / 4')).toBeVisible();
 
     // Generate a mistake on Step 1

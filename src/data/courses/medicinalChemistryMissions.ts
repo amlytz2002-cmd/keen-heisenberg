@@ -2982,7 +2982,39 @@ export function getAllMissions(): ClinicalRescueMission[] {
 }
 
 export function getMissionById(id: string): ClinicalRescueMission | undefined {
-  return MEDICINAL_CHEMISTRY_MISSIONS.find(m => m.id === id || `mission-${m.order}` === id);
+  if (!id) return undefined;
+  const cleanId = id.trim().toLowerCase();
+
+  // 1. Direct match on id, mission-order, or m-order
+  const direct = MEDICINAL_CHEMISTRY_MISSIONS.find(
+    (m) =>
+      m.id.toLowerCase() === cleanId ||
+      `mission-${m.order}` === cleanId ||
+      `m-${m.order}` === cleanId
+  );
+  if (direct) return direct;
+
+  // 2. Pattern: m{mod}-m{num} e.g. m1-m2, m2-m5, or m1-1
+  const mmMatch = cleanId.match(/^m(\d+)-m?(\d+)$/i);
+  if (mmMatch) {
+    const num = parseInt(mmMatch[2], 10);
+    const foundByOrder = MEDICINAL_CHEMISTRY_MISSIONS.find(
+      (m) => m.order === num || m.missionNumber === num
+    );
+    if (foundByOrder) return foundByOrder;
+  }
+
+  // 3. Pure number or m{num} e.g. "2" or "m2"
+  const singleNumMatch = cleanId.match(/^m?(\d+)$/i);
+  if (singleNumMatch) {
+    const num = parseInt(singleNumMatch[1], 10);
+    const foundByOrder = MEDICINAL_CHEMISTRY_MISSIONS.find(
+      (m) => m.order === num || m.missionNumber === num
+    );
+    if (foundByOrder) return foundByOrder;
+  }
+
+  return undefined;
 }
 
 export function getMissionsByModule(moduleId: string): ClinicalRescueMission[] {

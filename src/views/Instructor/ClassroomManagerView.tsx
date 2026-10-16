@@ -18,6 +18,7 @@ import {
   PlusOutlined,
   LinkOutlined,
   CopyOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { api } from '../../lib/api';
 
@@ -81,13 +82,19 @@ export const ClassroomManagerView: React.FC = () => {
       const res = await api.classrooms.createInvitation(selectedClassroom.id, {
         max_uses: values.maxUses || 50,
         expires_in_days: values.expiresInDays || 14,
+        recipientEmail: values.recipientEmail?.trim() || undefined,
+        recipient_email: values.recipientEmail?.trim() || undefined,
       });
 
       if (res.success && res.data) {
-        const rawToken = res.data.raw_token;
-        const fullUrl = `${window.location.origin}/invite/${rawToken}`;
+        const rawToken = res.data.token || res.data.raw_token;
+        const fullUrl = res.data.inviteUrl || `${window.location.origin}/invite/${rawToken}`;
         setGeneratedInviteUrl(fullUrl);
-        message.success('Kriptografik davet bağlantısı oluşturuldu');
+        if (res.data.emailDelivery) {
+          message.success('Kriptografik davet bağlantısı oluşturuldu ve e-posta iletildi!');
+        } else {
+          message.success('Kriptografik davet bağlantısı oluşturuldu');
+        }
       } else {
         message.error(res.error || 'Davet bağlantısı oluşturulamadı');
       }
@@ -109,10 +116,10 @@ export const ClassroomManagerView: React.FC = () => {
       key: 'name',
       render: (_: any, r: any) => (
         <div>
-          <Text strong style={{ fontSize: 15, color: '#0F172A', display: 'block' }}>
+          <Text strong style={{ fontSize: 15, color: '#F8FAFC', display: 'block' }}>
             {r.name}
           </Text>
-          <Text type="secondary" style={{ fontSize: 13 }}>
+          <Text type="secondary" style={{ fontSize: 13, color: '#94A3B8' }}>
             {r.description || 'Akademik çalışma grubu.'}
           </Text>
         </div>
@@ -159,10 +166,10 @@ export const ClassroomManagerView: React.FC = () => {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
             Sınıf Yönetimi
           </Title>
-          <Text style={{ fontSize: 15, color: '#64748B' }}>
+          <Text style={{ fontSize: 15, color: '#94A3B8' }}>
             Akademik sınıfları yönetin, dersleri yapılandırın ve kriptografik katılım bağlantıları dağıtın.
           </Text>
         </div>
@@ -176,13 +183,31 @@ export const ClassroomManagerView: React.FC = () => {
         </Button>
       </div>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
-        <Table
-          dataSource={classrooms}
-          columns={columns}
-          rowKey="id"
-          pagination={{ pageSize: 8 }}
-        />
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0B1120' }}>
+        {classrooms.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 20px' }}>
+            <TeamOutlined style={{ fontSize: 44, color: '#38BDF8', marginBottom: 12 }} />
+            <Title level={4} style={{ color: '#F8FAFC', margin: 0 }}>Henüz Açılmış Bir Sınıf Bulunmuyor</Title>
+            <Paragraph style={{ color: '#94A3B8', marginTop: 4 }}>
+              Öğrencilerinizi organize etmek ve aralıklı tekrar telemetrisini takip etmek için ilk akademik sınıfınızı oluşturun.
+            </Paragraph>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setCreateModalOpen(true)}
+              style={{ marginTop: 12, backgroundColor: '#2563EB', borderRadius: 8 }}
+            >
+              İlk Sınıfı Oluştur
+            </Button>
+          </div>
+        ) : (
+          <Table
+            dataSource={classrooms}
+            columns={columns}
+            rowKey="id"
+            pagination={{ pageSize: 8 }}
+          />
+        )}
       </Card>
 
       {/* Create Classroom Modal */}
@@ -235,9 +260,13 @@ export const ClassroomManagerView: React.FC = () => {
               onFinish={handleGenerateInvite}
               initialValues={{ maxUses: 50, expiresInDays: 14 }}
             >
-              <Paragraph style={{ color: '#64748B' }}>
+              <Paragraph style={{ color: '#94A3B8' }}>
                 Süreli ve kullanım sınırı belirlenmiş kriptografik sınıf kayıt bağlantısı oluşturun.
               </Paragraph>
+
+              <Form.Item name="recipientEmail" label="Öğrenci E-posta Adresi (İsteğe Bağlı - E-posta ile Gönderim)">
+                <Input placeholder="ogrenci@universite.edu.tr" size="large" type="email" />
+              </Form.Item>
 
               <Form.Item name="maxUses" label="Maksimum Katılımcı Sayısı">
                 <InputNumber min={1} max={500} style={{ width: '100%' }} size="large" />
@@ -255,7 +284,7 @@ export const ClassroomManagerView: React.FC = () => {
                 size="large"
                 style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
               >
-                Kriptografik Bağlantı Üret
+                Kriptografik Bağlantı Üret & Gönder
               </Button>
             </Form>
           ) : (
@@ -272,14 +301,14 @@ export const ClassroomManagerView: React.FC = () => {
                 style={{
                   display: 'flex',
                   gap: 8,
-                  backgroundColor: '#F8FAFC',
+                  backgroundColor: '#0F172A',
                   padding: 12,
                   borderRadius: 8,
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid #1E293B',
                   alignItems: 'center',
                 }}
               >
-                <Text ellipsis style={{ flex: 1, fontFamily: 'monospace', fontSize: 13 }}>
+                <Text ellipsis style={{ flex: 1, fontFamily: 'monospace', fontSize: 13, color: '#38BDF8' }}>
                   {generatedInviteUrl}
                 </Text>
                 <Button

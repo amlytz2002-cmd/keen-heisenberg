@@ -127,56 +127,56 @@ export const AdminAuditView: React.FC = () => {
             <SecurityScanOutlined /> Platform Güvenliği ve Denetim
           </Tag>
         </div>
-        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
           Sistem Denetim İzi ve Durumu
         </Title>
-        <Text style={{ fontSize: 15, color: '#64748B' }}>
+        <Text style={{ fontSize: 15, color: '#94A3B8' }}>
           Yetkili idari işlemler, yapay zekâ çıkarım süreçleri ve rol değişikliklerinin değiştirilemez denetim kayıtları.
         </Text>
       </div>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Veritabanı Kümesi"
+              title={<span style={{ color: '#94A3B8' }}>Veritabanı Kümesi</span>}
               value="Sağlıklı"
-              prefix={<DatabaseOutlined style={{ color: '#059669' }} />}
-              valueStyle={{ color: '#059669', fontWeight: 800 }}
+              prefix={<DatabaseOutlined style={{ color: '#10B981' }} />}
+              valueStyle={{ color: '#10B981', fontWeight: 800 }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Aktif RLS Politikaları"
+              title={<span style={{ color: '#94A3B8' }}>Aktif RLS Politikaları</span>}
               value="27 Tablo"
-              prefix={<SafetyCertificateOutlined style={{ color: '#2563EB' }} />}
-              valueStyle={{ color: '#2563EB', fontWeight: 800 }}
+              prefix={<SafetyCertificateOutlined style={{ color: '#38BDF8' }} />}
+              valueStyle={{ color: '#38BDF8', fontWeight: 800 }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Kaydedilen Denetim İzi"
+              title={<span style={{ color: '#94A3B8' }}>Kaydedilen Denetim İzi</span>}
               value={auditLogs.length}
-              valueStyle={{ color: '#0F172A', fontWeight: 800 }}
+              valueStyle={{ color: '#F8FAFC', fontWeight: 800 }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Uç Nokta Fonksiyonları (Edge)"
+              title={<span style={{ color: '#94A3B8' }}>Uç Nokta Fonksiyonları (Edge)</span>}
               value="Cloudflare"
-              valueStyle={{ color: '#7C3AED', fontWeight: 800 }}
+              valueStyle={{ color: '#A855F7', fontWeight: 800 }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
         <Table
           dataSource={auditLogs}
           columns={columns}

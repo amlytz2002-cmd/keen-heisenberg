@@ -63,10 +63,10 @@ export const ExamsListView: React.FC = () => {
       key: 'title',
       render: (_: any, record: any) => (
         <div>
-          <Text strong style={{ fontSize: 15, color: '#0F172A', display: 'block' }}>
+          <Text strong style={{ fontSize: 15, color: '#F8FAFC', display: 'block' }}>
             {record.title}
           </Text>
-          <Text type="secondary" style={{ fontSize: 13 }}>
+          <Text type="secondary" style={{ fontSize: 13, color: '#94A3B8' }}>
             {record.description || 'Kapsamlı klinik aktif hatırlama ve değerlendirme sınavı.'}
           </Text>
         </div>
@@ -99,7 +99,7 @@ export const ExamsListView: React.FC = () => {
             setSelectedExam(record);
             setConfirmModalOpen(true);
           }}
-          style={{ backgroundColor: '#2563EB', borderRadius: 6 }}
+          style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', borderRadius: 6 }}
         >
           Sınava Gir
         </Button>
@@ -111,7 +111,7 @@ export const ExamsListView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Deneme sınavları yükleniyor...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#94A3B8' }}>Deneme sınavları yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -119,20 +119,20 @@ export const ExamsListView: React.FC = () => {
   return (
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ marginBottom: 28 }}>
-        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
           Süreli Deneme Sınavları
         </Title>
-        <Text style={{ fontSize: 15, color: '#64748B' }}>
+        <Text style={{ fontSize: 15, color: '#94A3B8' }}>
           Sunucu kontrollü geri sayım ve ayrıntılı kavram analiziyle resmi sınav koşullarını deneyimleyin.
         </Text>
       </div>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
         {exams.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-            <TrophyOutlined style={{ fontSize: 44, color: '#94A3B8', marginBottom: 12 }} />
-            <Title level={4} style={{ color: '#0F172A' }}>Aktif Deneme Sınavı Bulunmuyor</Title>
-            <Paragraph style={{ color: '#64748B' }}>
+            <TrophyOutlined style={{ fontSize: 44, color: '#64748B', marginBottom: 12 }} />
+            <Title level={4} style={{ color: '#F8FAFC' }}>Aktif Deneme Sınavı Bulunmuyor</Title>
+            <Paragraph style={{ color: '#94A3B8' }}>
               Kayıtlı olduğunuz derslerde henüz planlanmış bir deneme sınavı bulunmamaktadır.
             </Paragraph>
           </div>

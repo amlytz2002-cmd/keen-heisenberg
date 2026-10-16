@@ -76,6 +76,8 @@ export const api = {
     getProfile: () => apiRequest('/api/auth/profile'),
     updateProfile: (data: { full_name?: string; primary_role?: 'student' | 'instructor' | 'admin' }) =>
       apiRequest('/api/auth/profile', { method: 'POST', body: JSON.stringify(data) }),
+    sendWelcomeEmail: (data: { email: string; fullName?: string; role?: 'student' | 'instructor' }) =>
+      apiRequest('/api/auth/welcome-email', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   classrooms: {
@@ -83,7 +85,7 @@ export const api = {
     create: (data: { name: string; description?: string }) =>
       apiRequest('/api/classrooms', { method: 'POST', body: JSON.stringify(data) }),
     get: (id: string) => apiRequest(`/api/classrooms/${id}`),
-    createInvitation: (id: string, data?: { max_uses?: number; expires_in_days?: number }) =>
+    createInvitation: (id: string, data?: { maxUses?: number; expiresInDays?: number; recipientEmail?: string; max_uses?: number; expires_in_days?: number; recipient_email?: string }) =>
       apiRequest(`/api/classrooms/${id}/invitations`, { method: 'POST', body: JSON.stringify(data || {}) }),
     redeemInvitation: (token: string) =>
       apiRequest(`/api/invitations/${token}`, { method: 'POST' }),
@@ -147,10 +149,11 @@ export const api = {
   },
 
   study: {
-    getSession: (params?: { course_id?: string; concept_id?: string }) => {
+    getSession: (params?: { course_id?: string; concept_id?: string; session_id?: string }) => {
       const q = new URLSearchParams();
       if (params?.course_id) q.set('course_id', params.course_id);
       if (params?.concept_id) q.set('concept_id', params.concept_id);
+      if (params?.session_id) q.set('session_id', params.session_id);
       return apiRequest(`/api/study/session?${q.toString()}`);
     },
     submitAnswer: (data: {

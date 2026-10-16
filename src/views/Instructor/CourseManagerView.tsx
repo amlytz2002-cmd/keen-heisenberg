@@ -104,11 +104,11 @@ export const CourseManagerView: React.FC = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Tag color="blue">{r.code || 'DERS'}</Tag>
-            <Text strong style={{ fontSize: 15, color: '#0F172A' }}>
+            <Text strong style={{ fontSize: 15, color: '#F8FAFC' }}>
               {r.title}
             </Text>
           </div>
-          <Text type="secondary" style={{ fontSize: 13, marginTop: 4, display: 'block' }}>
+          <Text type="secondary" style={{ fontSize: 13, marginTop: 4, display: 'block', color: '#94A3B8' }}>
             {r.description || 'Yapılandırılmış aktif hatırlama müfredatı.'}
           </Text>
         </div>
@@ -118,7 +118,7 @@ export const CourseManagerView: React.FC = () => {
       title: 'Sınıf',
       key: 'classroom',
       render: (_: any, r: any) => (
-        <span>{r.classroom?.name || 'Genel Ders'}</span>
+        <span style={{ color: '#CBD5E1' }}>{r.classroom?.name || 'Genel Ders'}</span>
       ),
     },
     {
@@ -152,7 +152,7 @@ export const CourseManagerView: React.FC = () => {
     return (
       <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Ders yönetimi yükleniyor...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#94A3B8' }}>Ders yönetimi yükleniyor...</Paragraph>
       </div>
     );
   }
@@ -161,10 +161,10 @@ export const CourseManagerView: React.FC = () => {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
             Ders ve Müfredat Mimarisi
           </Title>
-          <Text style={{ fontSize: 15, color: '#64748B' }}>
+          <Text style={{ fontSize: 15, color: '#94A3B8' }}>
             Yapılandırılmış öğrenme modülleri oluşturun ve müfredat kavramlarını sabitleyin.
           </Text>
         </div>
@@ -172,13 +172,13 @@ export const CourseManagerView: React.FC = () => {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setCreateCourseOpen(true)}
-          style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
+          style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
           Yeni Ders Oluştur
         </Button>
       </div>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
         <Table
           dataSource={courses}
           columns={columns}

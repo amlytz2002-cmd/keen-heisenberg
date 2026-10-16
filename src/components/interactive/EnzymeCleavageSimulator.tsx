@@ -203,106 +203,140 @@ export const EnzymeCleavageSimulator: React.FC<EnzymeCleavageSimulatorProps> = (
         />
       )}
 
-      {/* Optional Available Tool Quick-Selector if tools are provided */}
-      {availableTools && availableTools.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', marginBottom: 8 }}>
-            Enzime Karşı Test Edilecek Kimyasal Modifikasyonu Seçin:
+      {/* Responsive 2-Column Grid: Substrate Selector Sidebar & Laser Assault Arena */}
+      <div className="grid grid-cols-1 xl:grid-cols-[250px_minmax(0,1fr)] gap-4 mb-4">
+        {/* Left Column: Substrat Seçimi & Biyoizosterik Değişim */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+          <div>
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+              <span>Substrat Seçimi</span>
+              <span className="font-mono text-[11px] text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800/60">
+                Cmax: %100
+              </span>
+            </div>
+            <div className="text-xs text-slate-400 mb-3">
+              Molekül: <strong className="text-white">{moleculeName}</strong>
+            </div>
+
+            {availableTools && availableTools.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                <div className="text-[11px] font-semibold text-slate-400">
+                  Modifikasyon Seçeneği:
+                </div>
+                {availableTools.map((tool) => {
+                  const isSelected = tool.id === selectedToolId;
+                  return (
+                    <button
+                      key={tool.id}
+                      onClick={() => onSelectTool?.(tool.id)}
+                      disabled={disabled}
+                      className={`w-full text-left p-2.5 rounded-lg border text-xs font-medium transition-all flex items-center justify-between ${
+                        isSelected
+                          ? 'bg-sky-600 border-sky-400 text-white shadow-md shadow-sky-600/30'
+                          : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      <span className="truncate">{tool.name}</span>
+                      <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/40 text-slate-300 shrink-0 ml-1">
+                        {tool.formula}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-xs text-slate-400 p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                Hedef Scissile Bağ: <span className="font-mono text-amber-400 font-bold">{targetBond}</span>
+              </div>
+            )}
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {availableTools.map((tool) => {
-              const isSelected = tool.id === selectedToolId;
-              return (
-                <button
-                  key={tool.id}
-                  onClick={() => onSelectTool?.(tool.id)}
-                  disabled={disabled}
-                  style={{
-                    background: isSelected ? '#2563EB' : '#1E293B',
-                    border: isSelected ? '2px solid #38BDF8' : '1px solid #334155',
-                    color: isSelected ? '#FFFFFF' : '#CBD5E1',
-                    borderRadius: 8,
-                    padding: '6px 12px',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <span style={{ fontFamily: 'monospace' }}>{tool.formula}</span>
-                  <span>{tool.name}</span>
-                </button>
-              );
-            })}
+
+          <div className="pt-2.5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>Denge Cmax Değeri:</span>
+            <span className="font-mono font-bold text-emerald-400">
+              {effectiveIsShielded ? '14.2 µg/mL' : '0.4 µg/mL'}
+            </span>
           </div>
         </div>
-      )}
 
-      {/* Main SVG Laser Assault Arena */}
-      <div
-        style={{
-          background: 'radial-gradient(ellipse at center, #1E1B4B 0%, #0B0F19 100%)',
-          borderRadius: 14,
-          border: '1px solid #2E1065',
-          padding: 16,
-          marginBottom: 18,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+        {/* Right Column: Main SVG Laser Assault Arena */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 6,
+            background: 'radial-gradient(ellipse at center, #1E1B4B 0%, #0B0F19 100%)',
+            borderRadius: 14,
+            border: '1px solid #2E1065',
+            padding: 16,
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#A5B4FC', letterSpacing: '0.05em' }}>
-            METABOLİK LAZER HEDEFLEME SAHASI
-          </span>
-          <span style={{ fontSize: 12, color: simState === 'deflected' ? '#10B981' : simState === 'cleaved' ? '#EF4444' : '#94A3B8' }}>
-            {simState === 'idle' && 'Lazer Beklemede (Test Et butonuna basın)'}
-            {simState === 'charging' && '⚡ Enzimatik Serin Nükleofili Yükleniyor...'}
-            {simState === 'firing' && '🔥 Hidrolitik Işın Fırlatıldı!'}
-            {simState === 'deflected' && '🛡️ IŞIN SAPTIRILDI (Biyoizosterik Zafer)'}
-            {simState === 'cleaved' && '💥 BAĞ PARÇALANDI (Hızlı Metabolizma)'}
-          </span>
-        </div>
-
-        {/* Responsive Interactive SVG Canvas */}
-        <div style={{ width: '100%', height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg
-            viewBox="0 0 640 220"
-            style={{ width: '100%', height: '100%', maxHeight: 220, overflow: 'visible' }}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 6,
+              flexWrap: 'wrap',
+              gap: 8,
+            }}
           >
-            <defs>
-              {/* Laser Core Gradient */}
-              <linearGradient id="laserBeamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#DC2626" stopOpacity="0.9" />
-                <stop offset="50%" stopColor="#F97316" stopOpacity="1" />
-                <stop offset="100%" stopColor="#FEF08A" stopOpacity="1" />
-              </linearGradient>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#A5B4FC', letterSpacing: '0.05em' }}>
+              METABOLİK LAZER HEDEFLEME SAHASI
+            </span>
+            <span style={{ fontSize: 12, color: simState === 'deflected' ? '#10B981' : simState === 'cleaved' ? '#EF4444' : '#94A3B8' }}>
+              {simState === 'idle' && 'Lazer Beklemede (Test Et butonuna basın)'}
+              {simState === 'charging' && '⚡ Enzimatik Serin Nükleofili Yükleniyor...'}
+              {simState === 'firing' && '🔥 Hidrolitik Işın Fırlatıldı!'}
+              {simState === 'deflected' && '🛡️ IŞIN SAPTIRILDI (Biyoizosterik Zafer)'}
+              {simState === 'cleaved' && '💥 BAĞ PARÇALANDI (Hızlı Metabolizma)'}
+            </span>
+          </div>
 
-              {/* Emerald Deflection Shield Gradient */}
-              <radialGradient id="shieldAura" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#10B981" stopOpacity="0.7" />
-                <stop offset="70%" stopColor="#059669" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#047857" stopOpacity="0" />
-              </radialGradient>
+          {/* Responsive Interactive SVG Canvas */}
+          <div style={{ width: '100%', height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg
+              viewBox="0 0 640 220"
+              style={{ width: '100%', height: '100%', maxHeight: 220, overflow: 'visible' }}
+            >
+              <defs>
+                {/* Laser Core Gradient */}
+                <linearGradient id="laserBeamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#DC2626" stopOpacity="0.9" />
+                  <stop offset="50%" stopColor="#F97316" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#FEF08A" stopOpacity="1" />
+                </linearGradient>
 
-              {/* Deflection Vector Glow */}
-              <filter id="laserGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+                {/* Emerald Deflection Shield Gradient */}
+                <radialGradient id="shieldAura" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#10B981" stopOpacity="0.7" />
+                  <stop offset="70%" stopColor="#059669" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#047857" stopOpacity="0" />
+                </radialGradient>
+
+                {/* Deflection Vector Glow */}
+                <filter id="laserGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Top Readouts: Distinct, Non-overlapping Substrat Seçimi & Cmax Badges */}
+              <g transform="translate(380, 22)">
+                <rect x="-65" y="-12" width="130" height="22" rx="6" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="#38BDF8" fontSize="9" fontWeight="700">
+                  Substrat: {moleculeName.split('/')[0]?.trim() || 'Hedef'}
+                </text>
+              </g>
+
+              <g transform="translate(560, 22)">
+                <rect x="-45" y="-12" width="90" height="22" rx="6" fill="#0F172A" stroke="#10B981" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="#6EE7B7" fontSize="9" fontWeight="700">
+                  Cmax: {effectiveIsShielded ? '14.2 µg/mL' : '0.4 µg/mL'}
+                </text>
+              </g>
 
             {/* 1. Enzyme Active Site Glyphs (Left Side: Ser-His-Asp Triad) */}
             <g transform="translate(60, 110)">
@@ -514,6 +548,7 @@ export const EnzymeCleavageSimulator: React.FC<EnzymeCleavageSimulatorProps> = (
           </svg>
         </div>
       </div>
+    </div>
 
       {/* Telemetry Dashboard Counters */}
       <div

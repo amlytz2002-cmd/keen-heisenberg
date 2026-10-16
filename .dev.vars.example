@@ -1,0 +1,22 @@
+# ==============================================================================
+# Cloudflare Pages Functions Local Development Variables (.dev.vars.example)
+# Copy this file to `.dev.vars` for local `wrangler pages dev` usage.
+# NEVER commit `.dev.vars` containing real production secrets.
+# ==============================================================================
+
+# Supabase Edge Bindings
+SUPABASE_URL=https://ltmtmhmadsrlvuqffdcs.supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+
+# Resend Transactional Email API
+RESEND_API_KEY=re_your_resend_api_key_here
+RESEND_FROM_EMAIL="CENNA.live <bildirim@cenna.live>"
+
+# OpenRouter / LLM Inference
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_MODEL=nvidia/nemotron-3-ultra:free
+OPENROUTER_FALLBACK_MODEL=nvidia/nemotron-3.5-lightning:free
+
+# Application Base URL
+APP_BASE_URL=https://cenna.live

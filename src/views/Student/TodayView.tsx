@@ -146,14 +146,14 @@ export const TodayView: React.FC = () => {
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <Tag color="blue" style={{ borderRadius: 12 }}>Günün Hedefi: ~25 Dakika</Tag>
-          <Text type="secondary" style={{ fontSize: 13 }}>
+          <Text type="secondary" style={{ fontSize: 13, color: '#94A3B8' }}>
             {new Date().toLocaleDateString('tr-TR', { weekday: 'long', month: 'short', day: 'numeric' })}
           </Text>
         </div>
-        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
           İyi çalışmalar, {profile?.full_name?.split(' ')[0] || 'Değerli Öğrencimiz'}.
         </Title>
-        <Text style={{ fontSize: 15, color: '#64748B' }}>
+        <Text style={{ fontSize: 15, color: '#94A3B8' }}>
           Bugün için hazırlanan interaktif klinik kurtarma laboratuvarı ve aktif hatırlama programınız:
         </Text>
       </div>
@@ -414,11 +414,14 @@ export const TodayView: React.FC = () => {
               background: 'linear-gradient(135deg, #2563EB 0%, #4F46E5 100%)',
               borderColor: '#4F46E5',
               borderRadius: 10,
-              height: 46,
-              padding: '0 28px',
+              height: 'auto',
+              minHeight: 46,
+              padding: '10px 24px',
               fontWeight: 700,
               fontSize: 15,
               boxShadow: '0 4px 16px rgba(37, 99, 235, 0.4)',
+              whiteSpace: 'normal',
+              textAlign: 'left',
             }}
           >
             {isAllMissionsCompleted
@@ -528,7 +531,7 @@ export const TodayView: React.FC = () => {
           {/* Active Courses / Enrolled Learning */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <Title level={4} style={{ margin: 0, color: '#0F172A' }}>
+              <Title level={4} style={{ margin: 0, color: '#F8FAFC' }}>
                 Kayıtlı Derslerim
               </Title>
               <Button type="link" onClick={() => navigate('/app/classrooms')} style={{ padding: 0 }}>
@@ -537,9 +540,9 @@ export const TodayView: React.FC = () => {
             </div>
 
             {courses.length === 0 ? (
-              <Card bordered style={{ borderRadius: 12, textAlign: 'center', padding: '24px 0' }}>
+              <Card bordered style={{ borderRadius: 12, textAlign: 'center', padding: '24px 0', borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
                 <BookOutlined style={{ fontSize: 32, color: '#94A3B8', marginBottom: 8 }} />
-                <Paragraph style={{ color: '#64748B', margin: 0 }}>
+                <Paragraph style={{ color: '#94A3B8', margin: 0 }}>
                   Henüz kayıtlı olduğunuz bir ders bulunmuyor.
                 </Paragraph>
                 <Button
@@ -557,19 +560,19 @@ export const TodayView: React.FC = () => {
                     <Card
                       hoverable
                       bordered
-                      style={{ borderRadius: 12, borderColor: '#E2E8F0', height: '100%' }}
+                      style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A', height: '100%' }}
                       onClick={() => navigate(`/app/courses/${c.id}`)}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                         <Tag color={c.code === 'ECZ304' ? 'purple' : 'geekblue'}>{c.code || 'DERS'}</Tag>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
+                        <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
                           {c.code === 'ECZ304' ? '6 Modül (21 Görev)' : `${c.modules?.length || 0} Modül`}
                         </Text>
                       </div>
-                      <Title level={5} style={{ margin: '4px 0 8px 0', fontSize: 16 }}>
+                      <Title level={5} style={{ margin: '4px 0 8px 0', fontSize: 16, color: '#F8FAFC' }}>
                         {c.title}
                       </Title>
-                      <Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+                      <Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 13, color: '#94A3B8', margin: 0 }}>
                         {c.description || 'Yapılandırılmış akademik pratik modülü.'}
                       </Paragraph>
                       {c.code === 'ECZ304' && (
@@ -578,7 +581,7 @@ export const TodayView: React.FC = () => {
                             <CheckCircleOutlined style={{ marginRight: 4 }} />
                             {completedCount}/21 Görev
                           </Tag>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
+                          <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
                             Klinik Laboratuvar
                           </Text>
                         </div>
@@ -598,21 +601,22 @@ export const TodayView: React.FC = () => {
             bordered
             style={{
               borderRadius: 14,
-              borderColor: '#E2E8F0',
+              borderColor: '#1E293B',
+              backgroundColor: '#0F172A',
               marginBottom: 20,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <HistoryOutlined style={{ fontSize: 18, color: '#7C3AED' }} />
-                <Text strong style={{ fontSize: 16 }}>Aralıklı Tekrarlar</Text>
+                <HistoryOutlined style={{ fontSize: 18, color: '#A78BFA' }} />
+                <Text strong style={{ fontSize: 16, color: '#F8FAFC' }}>Aralıklı Tekrarlar</Text>
               </div>
               <Tag color={reviewsDue > 0 ? 'red' : 'green'}>
                 {reviewsDue > 0 ? `${reviewsDue} Bekliyor` : 'Tamamlandı'}
               </Tag>
             </div>
-            <Paragraph style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
+            <Paragraph style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5 }}>
               Unutma gerçekleşmeden önce bilginin pekişmesi için 1, 3, 7 ve 14 günlük aralıklarla planlanan kavramlar.
             </Paragraph>
             <Button
@@ -636,16 +640,17 @@ export const TodayView: React.FC = () => {
             bordered
             style={{
               borderRadius: 14,
-              borderColor: '#E2E8F0',
+              borderColor: '#1E293B',
+              backgroundColor: '#0F172A',
               marginBottom: 20,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <TrophyOutlined style={{ fontSize: 18, color: '#D97706' }} />
-              <Text strong style={{ fontSize: 16 }}>Süreli Deneme Sınavları</Text>
+              <TrophyOutlined style={{ fontSize: 18, color: '#FBBF24' }} />
+              <Text strong style={{ fontSize: 16, color: '#F8FAFC' }}>Süreli Deneme Sınavları</Text>
             </div>
-            <Paragraph style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
+            <Paragraph style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.5 }}>
               Sunucu süre kontrollü deneme sınavlarına katılın; anlık soru analizi ve kişiselleştirilmiş eksik giderme raporu alın.
             </Paragraph>
             <Button block onClick={() => navigate('/app/exams')} style={{ borderRadius: 8 }}>
@@ -656,14 +661,14 @@ export const TodayView: React.FC = () => {
           {/* Current Mastery Metric */}
           <Card
             bordered
-            style={{ borderRadius: 14, borderColor: '#E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}
+            style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <Text strong>Genel Kavram Hakimiyeti</Text>
-              <Text strong style={{ color: '#2563EB' }}>{overallMastery}%</Text>
+              <Text strong style={{ color: '#F8FAFC' }}>Genel Kavram Hakimiyeti</Text>
+              <Text strong style={{ color: '#38BDF8' }}>{overallMastery}%</Text>
             </div>
             <Progress percent={overallMastery} strokeColor="#2563EB" showInfo={false} />
-            <Text type="secondary" style={{ fontSize: 12, marginTop: 8, display: 'block' }}>
+            <Text type="secondary" style={{ fontSize: 12, marginTop: 8, display: 'block', color: '#94A3B8' }}>
               Aktif hatırlama doğruluğu ve ipucu bağımsızlığına göre hesaplanmıştır.
             </Text>
           </Card>

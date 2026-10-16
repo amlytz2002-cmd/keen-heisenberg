@@ -1,53 +1,52 @@
 import React, { useState } from 'react';
-import { Button, Drawer, Dropdown, MenuProps, Tag, Space } from 'antd';
 import {
-  MenuOutlined,
-  BookOutlined,
-  CalendarOutlined,
-  HistoryOutlined,
-  FormOutlined,
-  LineChartOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined,
-  LogoutOutlined,
-  SwapOutlined,
-  FileTextOutlined,
-  CheckCircleOutlined,
-  TeamOutlined,
-  AppstoreOutlined,
-  ExperimentOutlined,
-} from '@ant-design/icons';
-import { useAuth } from '../context/AuthContext';
+  Menu,
+  BookOpen,
+  Calendar,
+  History,
+  FileText,
+  TrendingUp,
+  ShieldCheck,
+  User,
+  LogOut,
+  RefreshCw,
+  FlaskConical,
+  Sparkles,
+  Users,
+  BarChart3,
+  CheckCircle2,
+  FolderOpen,
+} from 'lucide-react';
+import { useAuth, UserRole } from '../context/AuthContext';
 import { useRouter } from '../context/RouterContext';
 import { useMicrolearning } from '../context/MicrolearningContext';
 import { StreakBadge } from './gamification/StreakBadge';
+import { Sheet } from './ui/sheet';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 export const Navbar: React.FC = () => {
   const { user, profile, activeRole, setActiveRole, signOut } = useAuth();
   const { path, navigate } = useRouter();
   const { gamification } = useMicrolearning();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const isInstructor = (Array.isArray(profile?.roles) && profile.roles.includes('instructor')) || profile?.primary_role === 'instructor' || activeRole === 'instructor';
-  const isAdmin = (Array.isArray(profile?.roles) && profile.roles.includes('admin')) || profile?.primary_role === 'admin' || activeRole === 'admin';
+  const isInstructor =
+    (Array.isArray(profile?.roles) && profile.roles.includes('instructor')) ||
+    profile?.primary_role === 'instructor' ||
+    activeRole === 'instructor';
 
-  const getRoleBadgeConfig = (role?: string) => {
-    switch (role) {
-      case 'admin':
-        return { label: 'YÖNETİCİ', color: 'red' };
-      case 'instructor':
-        return { label: 'EĞİTMEN', color: 'purple' };
-      case 'student':
-      default:
-        return { label: 'ÖĞRENCİ', color: 'blue' };
-    }
-  };
-
-  const roleBadgeConfig = getRoleBadgeConfig(activeRole);
+  const isAdmin =
+    (Array.isArray(profile?.roles) && profile.roles.includes('admin')) ||
+    profile?.primary_role === 'admin' ||
+    activeRole === 'admin';
 
   const handleRoleToggle = () => {
-    const nextRole = activeRole === 'student' ? 'instructor' : 'student';
+    const nextRole: UserRole = activeRole === 'student' ? 'instructor' : 'student';
     setActiveRole(nextRole);
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
     if (nextRole === 'instructor') {
       navigate('/app/teach');
     } else {
@@ -55,466 +54,380 @@ export const Navbar: React.FC = () => {
     }
   };
 
-  const userMenuItems: MenuProps['items'] = [
-    {
-      key: 'user_info',
-      label: (
-        <div style={{ padding: '4px 0' }}>
-          <div style={{ fontWeight: 600, color: '#0F172A' }}>{profile?.full_name || 'Kullanıcı'}</div>
-          <div style={{ fontSize: 12, color: '#64748B' }}>{user?.email}</div>
-          <div style={{ marginTop: 4 }}>
-            <Tag color={roleBadgeConfig.color}>
-              {roleBadgeConfig.label}
-            </Tag>
-          </div>
-        </div>
-      ),
-    },
-    { type: 'divider' },
-    {
-      key: 'my_profile',
-      icon: <UserOutlined />,
-      label: 'Profilim',
-      onClick: () => {
-        if (activeRole === 'instructor') {
-          navigate('/app/teach');
-        } else {
-          navigate('/app/progress');
-        }
-      },
-    },
-    ...(isInstructor
-      ? [
-          {
-            key: 'switch_role',
-            icon: <SwapOutlined />,
-            label: activeRole === 'student' ? 'Eğitmen Görünümüne Geç' : 'Öğrenci Görünümüne Geç',
-            onClick: handleRoleToggle,
-          },
-        ]
-      : []),
-    ...(isAdmin
-      ? [
-          {
-            key: 'admin_audit',
-            icon: <SafetyCertificateOutlined />,
-            label: 'Sistem Denetim Kayıtları',
-            onClick: () => navigate('/app/admin/audit'),
-          },
-        ]
-      : []),
-    { type: 'divider' },
-    {
-      key: 'sign_out',
-      icon: <LogoutOutlined />,
-      danger: true,
-      label: 'Oturumu Kapat',
-      onClick: async () => {
-        await signOut();
-        navigate('/');
-      },
-    },
-  ];
-
   const studentNavItems = [
-    { label: 'Klinik Laboratuvar', path: '/learn', icon: <ExperimentOutlined /> },
-    { label: 'Bugün', path: '/app/today', icon: <CalendarOutlined /> },
-    { label: 'Aralıklı Tekrar', path: '/app/review', icon: <HistoryOutlined /> },
-    { label: 'Süreli Sınavlar', path: '/app/exams', icon: <FormOutlined /> },
-    { label: 'Gelişim & İlerleme', path: '/app/progress', icon: <LineChartOutlined /> },
+    { label: 'Müfredat & Görevler', path: '/learn', icon: BookOpen },
+    { label: 'Bugün', path: '/app/today', icon: Calendar },
+    { label: 'Sınıflarım', path: '/app/classrooms', icon: Users },
+    { label: 'Aralıklı Tekrar', path: '/app/review', icon: History },
+    { label: 'Sınavlar', path: '/app/exams', icon: FileText },
+    { label: 'Gelişim', path: '/app/progress', icon: TrendingUp },
   ];
 
   const instructorNavItems = [
-    { label: 'Eğitmen Paneli', path: '/app/teach', icon: <BookOutlined /> },
-    { label: 'Sınıf Yönetimi', path: '/app/teach/classrooms', icon: <TeamOutlined /> },
-    { label: 'Dersler', path: '/app/teach/courses', icon: <AppstoreOutlined /> },
-    { label: 'Belgeler & Kaynaklar', path: '/app/teach/resources', icon: <FileTextOutlined /> },
-    { label: 'İçerik İnceleme', path: '/app/teach/content-review', icon: <CheckCircleOutlined /> },
-    { label: 'Analitik', path: '/app/teach/analytics', icon: <LineChartOutlined /> },
+    { label: 'Eğitmen Paneli', path: '/app/teach', icon: FlaskConical },
+    { label: 'Sınıf Yönetimi', path: '/app/teach/classrooms', icon: Users },
+    { label: 'Dersler', path: '/app/teach/courses', icon: BookOpen },
+    { label: 'Belgeler', path: '/app/teach/resources', icon: FolderOpen },
+    { label: 'İçerik İnceleme', path: '/app/teach/content-review', icon: CheckCircle2 },
+    { label: 'Analitik', path: '/app/teach/analytics', icon: BarChart3 },
   ];
 
   const currentNavItems = activeRole === 'instructor' ? instructorNavItems : studentNavItems;
 
+  const handleSignOut = async () => {
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    await signOut();
+    navigate('/');
+  };
+
   return (
-    <header
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000,
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1280,
-          margin: '0 auto',
-          padding: '0 16px',
-          height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
+    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#060B14]/85 backdrop-blur-md transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <div
-          onClick={() => navigate(user ? (activeRole === 'instructor' ? '/app/teach' : '/learn') : '/')}
-          style={{
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            userSelect: 'none',
-          }}
+          onClick={() => navigate('/')}
+          className="cursor-pointer flex items-center gap-3 select-none group"
         >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              fontWeight: 900,
-              fontSize: 20,
-              boxShadow: '0 2px 4px rgba(37, 99, 235, 0.25)',
-            }}
-          >
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-sky-500/25 group-hover:scale-105 transition-transform">
             C
           </div>
-          <div>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px' }}>
-              CENNA
-            </span>
-            <span style={{ fontSize: 18, fontWeight: 700, color: '#2563EB', marginLeft: 1 }}>.live</span>
+          <div className="flex items-baseline">
+            <span className="text-xl font-black text-white tracking-tight">CENNA</span>
+            <span className="text-lg font-bold text-sky-400">.live</span>
           </div>
         </div>
 
-        {/* Desktop Nav */}
-        <div style={{ display: 'none', alignItems: 'center', gap: 6 }} className="desktop-nav">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex items-center gap-1">
           {user ? (
-            <>
-              {currentNavItems.map((item) => {
-                const isActive = path.startsWith(item.path);
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '8px 14px',
-                      borderRadius: 8,
-                      border: 'none',
-                      backgroundColor: isActive ? '#EFF6FF' : 'transparent',
-                      color: isActive ? '#2563EB' : '#475569',
-                      fontWeight: isActive ? 600 : 500,
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </>
+            currentNavItems.map((item) => {
+              const isActive = path === item.path || (item.path !== '/' && path.startsWith(item.path));
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => navigate('/features')}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 8,
-                  border: 'none',
-                  backgroundColor: path === '/features' ? '#EFF6FF' : 'transparent',
-                  color: path === '/features' ? '#2563EB' : '#475569',
-                  fontWeight: 500,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  path === '/features'
+                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                }`}
               >
                 Özellikler
               </button>
               <button
                 onClick={() => navigate('/how-it-works')}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 8,
-                  border: 'none',
-                  backgroundColor: path === '/how-it-works' ? '#EFF6FF' : 'transparent',
-                  color: path === '/how-it-works' ? '#2563EB' : '#475569',
-                  fontWeight: 500,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  path === '/how-it-works'
+                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                }`}
               >
                 Eğitim Metodu & Pedagoji
               </button>
-            </>
+            </div>
           )}
-        </div>
+        </nav>
 
-        {/* Right CTA / User controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Right Actions & User Controls */}
+        <div className="flex items-center gap-3">
           {user ? (
             <>
-              {isInstructor && (
+              {/* If on home cover page, render quick dashboard return button */}
+              {(path === '/' || path === '') && (
                 <Button
-                  size="small"
-                  type="text"
-                  icon={<SwapOutlined />}
-                  onClick={handleRoleToggle}
-                  style={{
-                    display: 'none',
-                    borderRadius: 6,
-                    color: '#64748B',
-                    fontSize: 12,
-                  }}
-                  className="desktop-nav"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate(activeRole === 'instructor' ? '/app/teach' : '/app/today')}
+                  className="hidden sm:inline-flex text-xs border-sky-500/40 text-sky-300 hover:bg-sky-500/10"
                 >
-                  {activeRole === 'student' ? 'Eğitmen Görünümü' : 'Öğrenci Görünümü'}
+                  <Sparkles className="h-3.5 w-3.5 mr-1 text-sky-400" />
+                  {activeRole === 'instructor' ? 'Eğitmen Paneline Dön' : 'Laboratuvara Dön'}
                 </Button>
               )}
 
-              <div className="desktop-nav">
-                <StreakBadge streak={gamification.streak} xp={gamification.xp} />
-              </div>
-
-              <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
-                <Button
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    borderRadius: 20,
-                    padding: '4px 12px',
-                    borderColor: '#E2E8F0',
-                  }}
-                >
-                  <UserOutlined style={{ color: '#2563EB' }} />
-                  <span
-                    style={{
-                      maxWidth: 120,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {profile?.full_name?.split(' ')[0] || 'Profilim'}
-                  </span>
-                </Button>
-              </Dropdown>
-            </>
-          ) : (
-            <Space>
-              <Button
-                type="text"
-                onClick={() => navigate('/auth/login')}
-                style={{ fontWeight: 600, color: '#334155' }}
-              >
-                Giriş Yap
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => navigate('/auth/register')}
-                style={{
-                  backgroundColor: '#2563EB',
-                  fontWeight: 600,
-                  boxShadow: '0 1px 2px rgba(37, 99, 235, 0.2)',
-                }}
-              >
-                Hemen Başla
-              </Button>
-            </Space>
-          )}
-
-          {/* Mobile hamburger button */}
-          <Button
-            type="text"
-            aria-label="Gezinme Menüsünü Aç"
-            icon={<MenuOutlined style={{ fontSize: 18, color: '#1E293B' }} />}
-            onClick={() => setMobileMenuOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            className="mobile-hamburger"
-          />
-        </div>
-      </div>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontWeight: 800, color: '#0F172A' }}>CENNA.live</span>
-            {user && (
-              <Tag color={roleBadgeConfig.color}>
-                {roleBadgeConfig.label}
-              </Tag>
-            )}
-          </div>
-        }
-        placement="right"
-        onClose={() => setMobileMenuOpen(false)}
-        open={mobileMenuOpen}
-        width={280}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {user ? (
-            <>
+              {/* Role Toggle Button */}
               {isInstructor && (
-                <div style={{ marginBottom: 12 }}>
-                  <Button
-                    block
-                    icon={<SwapOutlined />}
-                    onClick={() => {
-                      handleRoleToggle();
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    {activeRole === 'student' ? 'Eğitmen Görünümüne Geç' : 'Öğrenci Görünümüne Geç'}
-                  </Button>
+                <button
+                  type="button"
+                  onClick={handleRoleToggle}
+                  className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all"
+                  title="Öğrenci / Eğitmen Rol Değişimi"
+                >
+                  <RefreshCw className="h-3 w-3 text-sky-400" />
+                  <span>{activeRole === 'student' ? 'Eğitmen Görünümü' : 'Öğrenci Görünümü'}</span>
+                </button>
+              )}
+
+              {/* Gamification Streak & XP */}
+              {activeRole === 'student' && (
+                <div className="hidden sm:block">
+                  <StreakBadge streak={gamification.streak} xp={gamification.xp} compact />
                 </div>
               )}
 
-              {currentNavItems.map((item) => (
-                <Button
-                  key={item.path}
-                  block
-                  type={path.startsWith(item.path) ? 'primary' : 'text'}
-                  icon={item.icon}
-                  onClick={() => {
-                    navigate(item.path);
-                    setMobileMenuOpen(false);
-                  }}
-                  style={{
-                    textAlign: 'left',
-                    justifyContent: 'flex-start',
-                    height: 44,
-                    fontSize: 15,
-                  }}
+              {/* User Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  className="flex items-center gap-2 rounded-full bg-slate-900 border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-sky-500/50 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-sky-500"
                 >
-                  {item.label}
-                </Button>
-              ))}
+                  <div className="h-5 w-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-[10px]">
+                    {profile?.full_name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <span className="max-w-[100px] truncate hidden sm:inline-block">
+                    {profile?.full_name?.split(' ')[0] || 'Hesabım'}
+                  </span>
+                  <Badge variant={activeRole === 'instructor' ? 'purple' : 'default'} className="text-[10px] py-0 px-1.5">
+                    {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
+                  </Badge>
+                </button>
 
-              <div style={{ margin: '16px 0', borderTop: '1px solid #E2E8F0' }} />
+                {userMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-2 border-b border-slate-800 mb-1">
+                        <p className="text-xs font-bold text-white truncate">{profile?.full_name || 'Kullanıcı'}</p>
+                        <p className="text-[11px] text-slate-400 truncate mt-0.5">{user.email}</p>
+                      </div>
 
-              <Button
-                danger
-                block
-                icon={<LogoutOutlined />}
-                onClick={async () => {
-                  await signOut();
-                  setMobileMenuOpen(false);
-                  navigate('/');
-                }}
-              >
-                Oturumu Kapat
-              </Button>
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          navigate(activeRole === 'instructor' ? '/app/teach' : '/app/progress');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-left"
+                      >
+                        <User className="h-3.5 w-3.5 text-sky-400" />
+                        <span>Profil ve İlerleme</span>
+                      </button>
+
+                      {isInstructor && (
+                        <button
+                          onClick={handleRoleToggle}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-left"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5 text-purple-400" />
+                          <span>{activeRole === 'student' ? 'Eğitmen Görünümü' : 'Öğrenci Görünümü'}</span>
+                        </button>
+                      )}
+
+                      {isAdmin && (
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            navigate('/app/admin/audit');
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-left"
+                        >
+                          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                          <span>Sistem Denetim Logları</span>
+                        </button>
+                      )}
+
+                      <div className="border-t border-slate-800 my-1" />
+
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-300 hover:text-rose-200 hover:bg-rose-950/40 transition-colors text-left"
+                      >
+                        <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                        <span>Oturumu Kapat</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Button
-                block
-                type="text"
-                onClick={() => {
-                  navigate('/');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ textAlign: 'left', height: 44 }}
-              >
-                Ana Sayfa
-              </Button>
-              <Button
-                block
-                type="text"
-                onClick={() => {
-                  navigate('/features');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ textAlign: 'left', height: 44 }}
-              >
-                Özellikler
-              </Button>
-              <Button
-                block
-                type="text"
-                onClick={() => {
-                  navigate('/how-it-works');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ textAlign: 'left', height: 44 }}
-              >
-                Eğitim Metodu & Pedagoji
-              </Button>
-              <Button
-                block
-                type="text"
-                onClick={() => {
-                  navigate('/privacy');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ textAlign: 'left', height: 44 }}
-              >
-                Gizlilik Politikası
-              </Button>
-              <Button
-                block
-                type="text"
-                onClick={() => {
-                  navigate('/terms');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ textAlign: 'left', height: 44 }}
-              >
-                Kullanım Koşulları
-              </Button>
-
-              <div style={{ margin: '16px 0', borderTop: '1px solid #E2E8F0' }} />
-
-              <Button
-                block
-                type="primary"
-                onClick={() => {
-                  navigate('/auth/login');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ height: 44 }}
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/auth/login')}
+                className="text-xs text-slate-300 hover:text-white"
               >
                 Giriş Yap
               </Button>
               <Button
-                block
-                onClick={() => {
-                  navigate('/auth/register');
-                  setMobileMenuOpen(false);
-                }}
-                style={{ height: 44 }}
+                size="sm"
+                onClick={() => navigate('/auth/register')}
+                className="text-xs bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-md shadow-sky-500/20 hover:from-sky-400 hover:to-blue-500"
               >
                 Hemen Başla
               </Button>
-            </>
+            </div>
           )}
-        </div>
-      </Drawer>
 
-      <style>{`
-        @media (min-width: 768px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-          .mobile-hamburger {
-            display: none !important;
-          }
-        }
-      `}</style>
+          {/* Mobile menu trigger */}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
+            aria-label="Gezinme Menüsünü Aç"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Sheet */}
+      <Sheet
+        open={mobileMenuOpen}
+        onOpenChange={setMobileMenuOpen}
+        side="right"
+        title="CENNA.live Gezinme"
+      >
+        <div className="flex flex-col h-full justify-between space-y-6">
+          <div className="space-y-4">
+            {user && (
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">{profile?.full_name || 'Kullanıcı'}</span>
+                  <Badge variant={activeRole === 'instructor' ? 'purple' : 'default'} className="text-[10px]">
+                    {activeRole === 'instructor' ? 'EĞİTMEN' : 'ÖĞRENCİ'}
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-slate-400">{user.email}</p>
+                {activeRole === 'student' && (
+                  <div className="pt-2 border-t border-slate-800/80">
+                    <StreakBadge streak={gamification.streak} xp={gamification.xp} compact />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 py-1">
+                Sayfalar
+              </div>
+              {user ? (
+                currentNavItems.map((item) => {
+                  const isActive = path === item.path || (item.path !== '/' && path.startsWith(item.path));
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.path}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        navigate(item.path);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left ${
+                        isActive
+                          ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900 text-left"
+                  >
+                    <BookOpen className="h-4 w-4 text-sky-400" />
+                    <span>Ana Sayfa</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/features');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900 text-left"
+                  >
+                    <Sparkles className="h-4 w-4 text-sky-400" />
+                    <span>Özellikler</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/how-it-works');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900 text-left"
+                  >
+                    <FlaskConical className="h-4 w-4 text-emerald-400" />
+                    <span>Eğitim Metodu</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Footer Actions */}
+          <div className="space-y-3 pt-4 border-t border-slate-800">
+            {user ? (
+              <>
+                {isInstructor && (
+                  <Button
+                    variant="outline"
+                    className="w-full text-xs justify-center"
+                    onClick={handleRoleToggle}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5 mr-2" />
+                    {activeRole === 'student' ? 'Eğitmen Görünümüne Geç' : 'Öğrenci Görünümüne Geç'}
+                  </Button>
+                )}
+                <Button
+                  variant="destructive"
+                  className="w-full text-xs justify-center"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-3.5 w-3.5 mr-2" />
+                  Oturumu Kapat
+                </Button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="text-xs"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/auth/login');
+                  }}
+                >
+                  Giriş Yap
+                </Button>
+                <Button
+                  className="text-xs bg-sky-500 hover:bg-sky-400 text-white"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/auth/register');
+                  }}
+                >
+                  Hemen Başla
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </Sheet>
     </header>
   );
 };

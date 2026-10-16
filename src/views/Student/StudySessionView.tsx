@@ -29,6 +29,7 @@ export const StudySessionView: React.FC = () => {
   const sessionId = params.sessionId;
 
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [sessionData, setSessionData] = useState<any>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState<any>('');
@@ -45,22 +46,26 @@ export const StudySessionView: React.FC = () => {
   // Timing
   const [startTime, setStartTime] = useState<number>(Date.now());
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      setLoading(true);
-      try {
-        const res = await api.study.getSession();
-        if (res.success && res.data) {
-          setSessionData(res.data);
-          setStartTime(Date.now());
-        }
-      } catch (err) {
-        console.error('Error fetching study session:', err);
-      } finally {
-        setLoading(false);
+  const fetchSession = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await api.study.getSession(sessionId ? { session_id: sessionId } : undefined);
+      if (res.success && res.data) {
+        setSessionData(res.data);
+        setStartTime(Date.now());
+      } else {
+        setErrorMsg(res.error || 'Çalışma oturumu başlatılamadı. Lütfen tekrar deneyin.');
       }
-    };
+    } catch (err: unknown) {
+      console.error('Error fetching study session:', err);
+      setErrorMsg(err instanceof Error ? err.message : 'Bağlantı hatası oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSession();
   }, [sessionId]);
 
@@ -141,9 +146,53 @@ export const StudySessionView: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+      <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Aktif hatırlama oturumu başlatılıyor...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#94A3B8' }}>Aktif hatırlama oturumu yükleniyor...</Paragraph>
+      </div>
+    );
+  }
+
+  if (errorMsg) {
+    return (
+      <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 20px' }}>
+        <Card bordered style={{ borderRadius: 16, textAlign: 'center', borderColor: '#DC2626' }}>
+          <Alert
+            message="Oturum Yüklenemedi"
+            description={errorMsg}
+            type="error"
+            showIcon
+            style={{ marginBottom: 20, textAlign: 'left', borderRadius: 8 }}
+          />
+          <Space>
+            <Button type="primary" onClick={fetchSession} style={{ backgroundColor: '#2563EB', borderRadius: 8 }}>
+              Tekrar Dene
+            </Button>
+            <Button onClick={() => navigate('/app/today')} style={{ borderRadius: 8 }}>
+              Bugünün Paneline Dön
+            </Button>
+          </Space>
+        </Card>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 20px' }}>
+        <Card bordered style={{ borderRadius: 16, textAlign: 'center' }}>
+          <Title level={3} style={{ color: '#F8FAFC' }}>Aktif Soru Bulunamadı</Title>
+          <Paragraph style={{ color: '#94A3B8' }}>
+            Bu kavram veya oturum için henüz tanımlanmış soru bulunmuyor.
+          </Paragraph>
+          <Button
+            type="primary"
+            onClick={() => navigate('/app/today')}
+            style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
+          >
+            Bugünün Paneline Dön
+          </Button>
+        </Card>
       </div>
     );
   }
@@ -152,9 +201,9 @@ export const StudySessionView: React.FC = () => {
     return (
       <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 20px' }}>
         <Card bordered style={{ borderRadius: 16, textAlign: 'center' }}>
-          <CheckCircleOutlined style={{ fontSize: 48, color: '#059669', marginBottom: 16 }} />
-          <Title level={3}>Çalışma Oturumu Tamamlandı</Title>
-          <Paragraph style={{ color: '#64748B' }}>
+          <CheckCircleOutlined style={{ fontSize: 48, color: '#10B981', marginBottom: 16 }} />
+          <Title level={3} style={{ color: '#F8FAFC' }}>Çalışma Oturumu Tamamlandı</Title>
+          <Paragraph style={{ color: '#94A3B8' }}>
             Bu kavrama ait planlanan tüm aktif hatırlama sorularını başarıyla tamamladınız!
           </Paragraph>
           <Button
@@ -212,26 +261,26 @@ export const StudySessionView: React.FC = () => {
           bordered
           style={{
             borderRadius: 12,
-            borderColor: '#E2E8F0',
-            backgroundColor: '#F8FAFC',
+            borderColor: '#1E293B',
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
             marginBottom: 20,
           }}
           bodyStyle={{ padding: '16px 20px' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC' }}>
               Kavram: {concept.name}
             </span>
             <Tag color="cyan">Hedef %85</Tag>
           </div>
-          <Paragraph style={{ fontSize: 13, color: '#475569', margin: '0 0 8px 0', lineHeight: 1.6 }}>
+          <Paragraph style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 8px 0', lineHeight: 1.6 }}>
             {concept.description}
           </Paragraph>
           {concept.sources && concept.sources.length > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B' }}>
               <FileTextOutlined />
               <span>
-                Kaynak: <strong>{concept.sources[0]?.resource_title || 'Ders Kitabı'}</strong> (Sayfa {concept.sources[0]?.page_number || '1'}, Paragraf {concept.sources[0]?.paragraph_index || '1'})
+                Kaynak: <strong style={{ color: '#CBD5E1' }}>{concept.sources[0]?.resource_title || 'Ders Kitabı'}</strong> (Sayfa {concept.sources[0]?.page_number || '1'}, Paragraf {concept.sources[0]?.paragraph_index || '1'})
               </span>
             </div>
           )}
@@ -243,8 +292,9 @@ export const StudySessionView: React.FC = () => {
         bordered
         style={{
           borderRadius: 16,
-          borderColor: '#E2E8F0',
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+          borderColor: '#1E293B',
+          backgroundColor: '#0B1120',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
           marginBottom: 24,
         }}
         bodyStyle={{ padding: 28 }}
@@ -254,15 +304,15 @@ export const StudySessionView: React.FC = () => {
             {formatQuestionType(activeQuestion.question_type)}
           </Tag>
           <Button
-            icon={<BulbOutlined style={{ color: '#D97706' }} />}
+            icon={<BulbOutlined style={{ color: '#F59E0B' }} />}
             onClick={openHintModal}
-            style={{ borderRadius: 6, borderColor: '#FDE68A', backgroundColor: '#FEF3C7', color: '#92400E' }}
+            style={{ borderRadius: 6, borderColor: 'rgba(245, 158, 11, 0.3)', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#FBBF24' }}
           >
             Sokratik İpucu ({hintsUsedCount}/3)
           </Button>
         </div>
 
-        <Title level={4} style={{ color: '#0F172A', lineHeight: 1.5, marginBottom: 24 }}>
+        <Title level={4} style={{ color: '#F8FAFC', lineHeight: 1.5, marginBottom: 24 }}>
           {activeQuestion.stem}
         </Title>
 
@@ -282,8 +332,9 @@ export const StudySessionView: React.FC = () => {
                     style={{
                       padding: '12px 16px',
                       borderRadius: 8,
-                      border: userAnswer === opt.key ? '2px solid #2563EB' : '1px solid #E2E8F0',
-                      backgroundColor: userAnswer === opt.key ? '#EFF6FF' : '#FFFFFF',
+                      border: userAnswer === opt.key ? '2px solid #3B82F6' : '1px solid #1E293B',
+                      backgroundColor: userAnswer === opt.key ? 'rgba(59, 130, 246, 0.15)' : '#0F172A',
+                      color: '#F8FAFC',
                       fontSize: 15,
                     }}
                   >
@@ -299,21 +350,26 @@ export const StudySessionView: React.FC = () => {
                 onChange={(val) => setUserAnswer(val)}
                 style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}
               >
-                {activeQuestion.options?.map((opt: any) => (
-                  <Checkbox
-                    key={opt.key}
-                    value={opt.key}
-                    style={{
-                      padding: '12px 16px',
-                      borderRadius: 8,
-                      border: '1px solid #E2E8F0',
-                      fontSize: 15,
-                      margin: 0,
-                    }}
-                  >
-                    <strong>{opt.key}.</strong> {opt.text}
-                  </Checkbox>
-                ))}
+                {activeQuestion.options?.map((opt: any) => {
+                  const isChecked = Array.isArray(userAnswer) && userAnswer.includes(opt.key);
+                  return (
+                    <Checkbox
+                      key={opt.key}
+                      value={opt.key}
+                      style={{
+                        padding: '12px 16px',
+                        borderRadius: 8,
+                        border: isChecked ? '2px solid #3B82F6' : '1px solid #1E293B',
+                        backgroundColor: isChecked ? 'rgba(59, 130, 246, 0.15)' : '#0F172A',
+                        color: '#F8FAFC',
+                        fontSize: 15,
+                        margin: 0,
+                      }}
+                    >
+                      <strong>{opt.key}.</strong> {opt.text}
+                    </Checkbox>
+                  );
+                })}
               </Checkbox.Group>
             )}
 

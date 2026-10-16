@@ -53,8 +53,8 @@ export async function onRequestPost(context: { request: Request; params: { id: s
   }
 
   const body = (await request.json().catch(() => ({}))) as Record<string, any>;
-  const expiresInDays = Number(body.expiresInDays) || 7;
-  const maxUses = body.maxUses ? Number(body.maxUses) : null;
+  const expiresInDays = Number(body.expiresInDays || body.expires_in_days) || 7;
+  const maxUses = (body.maxUses || body.max_uses) ? Number(body.maxUses || body.max_uses) : null;
 
   // Generate high-entropy raw invite token
   const rawToken = `${crypto.randomUUID()}-${Math.random().toString(36).substring(2, 10)}`;
@@ -87,12 +87,12 @@ export async function onRequestPost(context: { request: Request; params: { id: s
   if (recipientEmail) {
     const { data: classroom } = await client
       .from('classrooms')
-      .select('title')
+      .select('name')
       .eq('id', params.id)
       .single();
 
     const emailContent = buildClassroomInvitationEmail({
-      classroomName: classroom?.title || 'Eczacılık Dönem 3 Sınıfı',
+      classroomName: classroom?.name || 'Eczacılık Dönem 3 Sınıfı',
       inviterName: user.email || 'Ders Sorumlusu',
       inviteUrl,
       expiresInDays,

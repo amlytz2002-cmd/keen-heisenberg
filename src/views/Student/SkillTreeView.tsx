@@ -5,6 +5,8 @@ import {
   CheckCircleFilled,
   StarFilled,
   PlayCircleFilled,
+  CalendarOutlined,
+  RocketFilled,
 } from '@ant-design/icons';
 import { MEDICINAL_CHEMISTRY_TIER_1, getAllTier1Lessons } from '../../data/courses/medicinalChemistryTier1';
 import { useMicrolearning } from '../../context/MicrolearningContext';
@@ -21,9 +23,8 @@ export const SkillTreeView: React.FC = () => {
         role="status"
         aria-busy="true"
         aria-label="Ders haritası ve öğrenci ilerlemesi yükleniyor..."
-        style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: 80 }}
+        style={{ minHeight: '100vh', background: '#060B14', paddingBottom: 80 }}
       >
-        {/* Screen reader live announcement */}
         <span
           style={{
             position: 'absolute',
@@ -43,183 +44,49 @@ export const SkillTreeView: React.FC = () => {
         {/* Hero Header Skeleton */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            background: 'linear-gradient(135deg, #0B132B 0%, #0F172A 100%)',
+            borderBottom: '1px solid #1E293B',
             color: '#FFFFFF',
             padding: '40px 24px 36px 24px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <div style={{ maxWidth: 880, margin: '0 auto' }}>
+          <div style={{ maxWidth: 960, margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div
-                style={{
-                  width: 220,
-                  height: 28,
-                  borderRadius: 12,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                }}
-              />
-              <div
-                style={{
-                  width: 140,
-                  height: 28,
-                  borderRadius: 20,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                }}
-              />
+              <div style={{ width: 220, height: 28, borderRadius: 12, background: 'rgba(255, 255, 255, 0.08)' }} />
+              <div style={{ width: 140, height: 28, borderRadius: 20, background: 'rgba(255, 255, 255, 0.08)' }} />
             </div>
 
-            <div
-              style={{
-                width: 380,
-                maxWidth: '85%',
-                height: 36,
-                borderRadius: 8,
-                background: 'rgba(255, 255, 255, 0.15)',
-                marginBottom: 14,
-              }}
-            />
-            <div
-              style={{
-                width: 520,
-                maxWidth: '95%',
-                height: 18,
-                borderRadius: 6,
-                background: 'rgba(255, 255, 255, 0.08)',
-                marginBottom: 24,
-              }}
-            />
+            <div style={{ width: 380, maxWidth: '85%', height: 36, borderRadius: 8, background: 'rgba(255, 255, 255, 0.12)', marginBottom: 14 }} />
+            <div style={{ width: 520, maxWidth: '95%', height: 18, borderRadius: 6, background: 'rgba(255, 255, 255, 0.06)', marginBottom: 24 }} />
 
-            {/* Quick Stats & Progress Bar Skeleton */}
             <div
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'rgba(15, 23, 42, 0.8)',
                 borderRadius: 18,
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid #1E293B',
                 padding: '18px 24px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 12,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div
-                  style={{
-                    width: 260,
-                    maxWidth: '70%',
-                    height: 16,
-                    borderRadius: 6,
-                    background: 'rgba(255, 255, 255, 0.12)',
-                  }}
-                />
-                <div
-                  style={{
-                    width: 42,
-                    height: 18,
-                    borderRadius: 6,
-                    background: 'rgba(255, 255, 255, 0.15)',
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  height: 10,
-                  borderRadius: 5,
-                  background: 'rgba(255, 255, 255, 0.08)',
-                }}
-              />
+              <div style={{ width: '100%', height: 10, borderRadius: 5, background: '#1E293B' }} />
             </div>
           </div>
         </div>
 
         {/* Main Skill Path Container Skeleton */}
-        <div style={{ maxWidth: 880, margin: '-20px auto 0 auto', padding: '0 20px' }}>
-          {/* Continue Next Lesson Card Skeleton */}
+        <div style={{ maxWidth: 960, margin: '-20px auto 0 auto', padding: '0 20px' }}>
           <div
             style={{
               borderRadius: 20,
-              boxShadow: '0 10px 25px -5px rgba(2, 132, 199, 0.15)',
-              border: '2px solid rgba(2, 132, 199, 0.25)',
+              background: '#0F172A',
+              border: '1px solid #1E293B',
               marginBottom: 36,
-              background: '#FFFFFF',
               padding: 24,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 16,
+              height: 120,
             }}
-          >
-            <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ width: 130, height: 22, borderRadius: 8, background: '#E2E8F0' }} />
-              <div style={{ width: 280, maxWidth: '80%', height: 24, borderRadius: 8, background: '#CBD5E1' }} />
-              <div style={{ width: 340, maxWidth: '95%', height: 16, borderRadius: 6, background: '#F1F5F9' }} />
-            </div>
-            <div style={{ width: 140, height: 48, borderRadius: 14, background: '#E2E8F0' }} />
-          </div>
-
-          {/* Module Roadmap Skeletons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
-            {[1, 2].map((modIndex) => (
-              <div key={modIndex} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {/* Module Header Skeleton */}
-                <div
-                  style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: 18,
-                    padding: '20px 24px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <div style={{ width: 70, height: 16, borderRadius: 6, background: '#E2E8F0' }} />
-                      <div style={{ width: 120, height: 16, borderRadius: 6, background: '#E2E8F0' }} />
-                    </div>
-                    <div style={{ width: 240, maxWidth: '70%', height: 22, borderRadius: 8, background: '#CBD5E1' }} />
-                    <div style={{ width: 360, maxWidth: '90%', height: 14, borderRadius: 6, background: '#F1F5F9' }} />
-                  </div>
-                </div>
-
-                {/* Lesson Nodes Skeleton */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingLeft: 12 }}>
-                  {[1, 2, 3].map((nodeIndex) => (
-                    <div
-                      key={nodeIndex}
-                      style={{
-                        background: '#FFFFFF',
-                        borderRadius: 16,
-                        border: '1.5px solid #F1F5F9',
-                        padding: '16px 20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: '50%',
-                          background: '#F1F5F9',
-                          flexShrink: 0,
-                        }}
-                      />
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <div style={{ width: 200, maxWidth: '60%', height: 18, borderRadius: 6, background: '#E2E8F0' }} />
-                        <div style={{ width: 260, maxWidth: '80%', height: 14, borderRadius: 6, background: '#F1F5F9' }} />
-                      </div>
-                      <div style={{ width: 64, height: 24, borderRadius: 8, background: '#F1F5F9' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          />
         </div>
       </div>
     );
@@ -238,100 +105,152 @@ export const SkillTreeView: React.FC = () => {
   const getThemeColors = (theme: string) => {
     switch (theme) {
       case 'emerald':
-        return { bg: '#ECFDF5', border: '#A7F3D0', accent: '#059669', badge: 'green' };
+        return { bg: 'rgba(5, 150, 105, 0.12)', border: '#065F46', accent: '#34D399', badge: 'green' };
       case 'purple':
-        return { bg: '#FAF5FF', border: '#E9D5FF', accent: '#9333EA', badge: 'purple' };
+        return { bg: 'rgba(147, 51, 234, 0.12)', border: '#581C87', accent: '#C084FC', badge: 'purple' };
       case 'amber':
-        return { bg: '#FFFBEB', border: '#FDE68A', accent: '#D97706', badge: 'gold' };
+        return { bg: 'rgba(217, 119, 6, 0.12)', border: '#78350F', accent: '#FBBF24', badge: 'gold' };
       case 'rose':
-        return { bg: '#FFF1F2', border: '#FECDD3', accent: '#E11D48', badge: 'volcano' };
+        return { bg: 'rgba(225, 29, 72, 0.12)', border: '#881337', accent: '#FB7185', badge: 'volcano' };
       case 'cyan':
-        return { bg: '#ECFEFF', border: '#A5F3FC', accent: '#0891B2', badge: 'cyan' };
+        return { bg: 'rgba(8, 145, 178, 0.12)', border: '#164E63', accent: '#38BDF8', badge: 'cyan' };
       case 'blue':
       default:
-        return { bg: '#F0F9FF', border: '#BAE6FD', accent: '#0284C7', badge: 'blue' };
+        return { bg: 'rgba(2, 132, 199, 0.12)', border: '#0C4A6E', accent: '#38BDF8', badge: 'blue' };
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: 80 }}>
-      {/* Hero Header */}
+    <div style={{ minHeight: '100vh', background: '#060B14', color: '#F8FAFC', paddingBottom: 80 }}>
+      {/* 1. Hero Dark-Mode Cockpit Header with Unified Bridge Navigation */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-          color: '#FFFFFF',
+          background: 'radial-gradient(ellipse at 50% 0%, #0F223D 0%, #060B14 100%)',
+          borderBottom: '1px solid #1E293B',
           padding: '40px 24px 36px 24px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <div style={{ maxWidth: 880, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <Tag color="#0284C7" style={{ borderRadius: 12, fontWeight: 700, padding: '4px 12px', fontSize: 13 }}>
-              KADEME 1: TEMEL İLKELER & SAR
-            </Tag>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          {/* Top Pill & Streak */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Tag color="#0284C7" style={{ borderRadius: 12, fontWeight: 700, padding: '4px 12px', fontSize: 13, border: 'none' }}>
+                KADEME 1: TEMEL İLKELER & SAR
+              </Tag>
+              <Tag color="cyan" style={{ borderRadius: 12, fontWeight: 700, padding: '4px 12px', fontSize: 12 }}>
+                21 Klinik Kurtarma Görevi
+              </Tag>
+            </div>
             <StreakBadge streak={gamification.streak} xp={gamification.xp} />
           </div>
 
-          <h1 style={{ fontSize: 30, fontWeight: 800, color: '#F8FAFC', margin: '0 0 10px 0' }}>
+          <h1 style={{ fontSize: 32, fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px 0', letterSpacing: '-0.02em' }}>
             Farmasötik ve Medisinal Kimya
           </h1>
-          <p style={{ color: '#94A3B8', fontSize: 16, margin: '0 0 24px 0', maxWidth: 640 }}>
-            Prof. Dr. Bedia Kaymakçıoğlu ders notlarından modellenmiş, aktif çıkarım ve Brilliant-tarzı interaktif kimyasal mikro-öğrenme yolu.
+          <p style={{ color: '#94A3B8', fontSize: 15, margin: '0 0 24px 0', maxWidth: 680, lineHeight: 1.6 }}>
+            Prof. Dr. Bedia Kaymakçıoğlu ders notlarından modellenmiş, aktif çıkarım ve Brilliant-tarzı interaktif kimyasal mikro-öğrenme yolu ile 21 gerçek klinik kurtarma simülasyonu.
           </p>
+
+          {/* Direct Bridge Action Strip: /app/today and /learn/mission/mission-1 */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 12,
+              marginBottom: 24,
+            }}
+          >
+            <Button
+              type="primary"
+              size="middle"
+              icon={<RocketFilled />}
+              onClick={() => navigate('/learn/mission/mission-1')}
+              style={{
+                height: 42,
+                borderRadius: 10,
+                background: 'linear-gradient(135deg, #0284C7 0%, #2563EB 100%)',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: 13,
+                boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)',
+              }}
+            >
+              21 Klinik Kurtarma Görevini Başlat (Laboratuvar)
+            </Button>
+
+            <Button
+              size="middle"
+              icon={<CalendarOutlined />}
+              onClick={() => navigate('/app/today')}
+              style={{
+                height: 42,
+                borderRadius: 10,
+                background: '#0F172A',
+                border: '1px solid #334155',
+                color: '#CBD5E1',
+                fontWeight: 600,
+                fontSize: 13,
+              }}
+            >
+              Bugünün Çalışma Paneline Dön
+            </Button>
+          </div>
 
           {/* Quick Stats & Progress Bar */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
+              background: 'rgba(15, 23, 42, 0.85)',
               borderRadius: 18,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid #1E293B',
               padding: '18px 24px',
               display: 'flex',
               flexDirection: 'column',
               gap: 12,
+              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: '#CBD5E1', fontWeight: 600 }}>
-                Müfredat İlerlemesi: {completedCount} / {totalLessons} Ders Tamamlandı
+              <span style={{ fontSize: 13, color: '#94A3B8', fontWeight: 600 }}>
+                {completedCount} / {totalLessons} Ders Tamamlandı
               </span>
-              <span style={{ fontSize: 16, fontWeight: 800, color: '#38BDF8' }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: '#38BDF8', fontFamily: 'monospace' }}>
                 %{progressPercent}
               </span>
             </div>
             <Progress
               percent={progressPercent}
               strokeColor={{ '0%': '#0284C7', '100%': '#10B981' }}
+              trailColor="#1E293B"
               showInfo={false}
-              size={['100%', 10]}
+              size={['100%', 8]}
             />
           </div>
         </div>
       </div>
 
-      {/* Main Skill Path Container */}
-      <div style={{ maxWidth: 880, margin: '-20px auto 0 auto', padding: '0 20px' }}>
-        {/* Continue Next Lesson Card */}
+      {/* 2. Main Skill Path Container */}
+      <div style={{ maxWidth: 960, margin: '-20px auto 0 auto', padding: '0 20px' }}>
+        {/* Continue Next Lesson Highlight Card */}
         {currentActiveLesson && (
           <Card
             style={{
               borderRadius: 20,
-              boxShadow: '0 10px 25px -5px rgba(2, 132, 199, 0.25)',
-              border: '2px solid #0284C7',
+              boxShadow: '0 12px 30px -5px rgba(2, 132, 199, 0.3)',
+              border: '1.5px solid #0284C7',
               marginBottom: 36,
-              background: '#FFFFFF',
+              background: '#0F172A',
             }}
             styles={{ body: { padding: 24 } }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
               <div>
-                <Tag color="blue" style={{ borderRadius: 8, fontWeight: 700, marginBottom: 6 }}>
+                <Tag color="#0284C7" style={{ borderRadius: 8, fontWeight: 700, marginBottom: 8, border: 'none' }}>
                   Sıradaki Mikro-Ders
                 </Tag>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>
+                <h3 style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', margin: '0 0 6px 0' }}>
                   {currentActiveLesson.lessonNumber}. {currentActiveLesson.title}
                 </h3>
-                <p style={{ color: '#64748B', fontSize: 14, margin: 0 }}>
+                <p style={{ color: '#94A3B8', fontSize: 14, margin: 0 }}>
                   {currentActiveLesson.subtitle} · ⏱️ {currentActiveLesson.durationMinutes} dk · ⚡ +{currentActiveLesson.xpReward} XP
                 </p>
               </div>
@@ -345,9 +264,9 @@ export const SkillTreeView: React.FC = () => {
                   height: 48,
                   padding: '0 28px',
                   borderRadius: 14,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: 700,
-                  background: '#0284C7',
+                  background: 'linear-gradient(135deg, #0284C7 0%, #2563EB 100%)',
                   border: 'none',
                   boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)',
                 }}
@@ -358,13 +277,13 @@ export const SkillTreeView: React.FC = () => {
           </Card>
         )}
 
-        {/* Modules Roadmap */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+        {/* 3. Modules Roadmap */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           {MEDICINAL_CHEMISTRY_TIER_1.map((module) => {
             const theme = getThemeColors(module.colorTheme);
 
             return (
-              <div key={module.id} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div key={module.id} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {/* Module Header Card */}
                 <div
                   style={{
@@ -386,17 +305,17 @@ export const SkillTreeView: React.FC = () => {
                         {module.badgeText}
                       </Tag>
                     </div>
-                    <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>
+                    <h2 style={{ fontSize: 19, fontWeight: 800, color: '#FFFFFF', margin: '0 0 4px 0' }}>
                       {module.title}
                     </h2>
-                    <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
+                    <p style={{ color: '#94A3B8', fontSize: 13, margin: 0 }}>
                       {module.shortDescription}
                     </p>
                   </div>
                 </div>
 
                 {/* Lessons Node List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingLeft: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingLeft: 8 }}>
                   {module.lessons.map((lesson) => {
                     const isUnlocked = isLessonUnlocked(lesson.id);
                     const progress = userProgress[lesson.id];
@@ -412,43 +331,43 @@ export const SkillTreeView: React.FC = () => {
                           }
                         }}
                         style={{
-                          background: '#FFFFFF',
+                          background: isCompleted ? '#0A1829' : '#0F172A',
                           borderRadius: 16,
                           border: isCompleted
-                            ? '1.5px solid #BBF7D0'
+                            ? '1.5px solid #059669'
                             : isUnlocked
-                            ? '1.5px solid #E2E8F0'
-                            : '1.5px solid #F1F5F9',
+                            ? '1.5px solid #1E293B'
+                            : '1.5px solid #141E33',
                           padding: '16px 20px',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 16,
                           cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                          opacity: isUnlocked ? 1 : 0.6,
+                          opacity: isUnlocked ? 1 : 0.5,
                           transition: 'all 0.2s ease',
-                          boxShadow: isUnlocked ? '0 2px 4px rgba(0, 0, 0, 0.02)' : 'none',
+                          boxShadow: isUnlocked ? '0 4px 12px rgba(0, 0, 0, 0.25)' : 'none',
                         }}
                       >
                         {/* Node Status Circle */}
                         <div
                           style={{
-                            width: 48,
-                            height: 48,
+                            width: 44,
+                            height: 44,
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: 20,
+                            fontSize: 18,
                             background: isCompleted
-                              ? '#DCFCE7'
+                              ? '#064E3B'
                               : isUnlocked
-                              ? '#E0F2FE'
-                              : '#F1F5F9',
+                              ? '#0C4A6E'
+                              : '#1E293B',
                             color: isCompleted
-                              ? '#16A34A'
+                              ? '#34D399'
                               : isUnlocked
-                              ? '#0284C7'
-                              : '#94A3B8',
+                              ? '#38BDF8'
+                              : '#64748B',
                             flexShrink: 0,
                           }}
                         >
@@ -464,11 +383,11 @@ export const SkillTreeView: React.FC = () => {
                         {/* Title & Subtitle */}
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                            <span style={{ fontSize: 16, fontWeight: 700, color: isUnlocked ? '#0F172A' : '#94A3B8' }}>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: isUnlocked ? '#FFFFFF' : '#64748B' }}>
                               {lesson.title}
                             </span>
                           </div>
-                          <div style={{ fontSize: 13, color: '#64748B' }}>
+                          <div style={{ fontSize: 12, color: '#94A3B8' }}>
                             {lesson.subtitle}
                           </div>
                         </div>
@@ -476,23 +395,23 @@ export const SkillTreeView: React.FC = () => {
                         {/* Right: Stars or XP badge */}
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                           {isCompleted ? (
-                            <div style={{ display: 'flex', gap: 2 }}>
+                            <div style={{ display: 'flex', gap: 3 }}>
                               {[1, 2, 3].map((s) => (
                                 <StarFilled
                                   key={s}
                                   style={{
-                                    fontSize: 14,
-                                    color: s <= stars ? '#F59E0B' : '#E2E8F0',
+                                    fontSize: 13,
+                                    color: s <= stars ? '#F59E0B' : '#334155',
                                   }}
                                 />
                               ))}
                             </div>
                           ) : (
-                            <Tag color="blue" style={{ borderRadius: 8, fontWeight: 600, margin: 0 }}>
+                            <Tag color="blue" style={{ borderRadius: 8, fontWeight: 600, margin: 0, background: '#1E3A8A', borderColor: '#3B82F6', color: '#93C5FD' }}>
                               +{lesson.xpReward} XP
                             </Tag>
                           )}
-                          <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                          <span style={{ fontSize: 11, color: '#64748B', fontFamily: 'monospace' }}>
                             {lesson.durationMinutes} dk
                           </span>
                         </div>

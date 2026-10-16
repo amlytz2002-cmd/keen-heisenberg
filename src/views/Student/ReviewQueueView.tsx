@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Typography, Button, Spin, Row, Col, Statistic } from 'antd';
+import { Card, Table, Tag, Typography, Button, Spin, Row, Col, Statistic, Alert } from 'antd';
 import {
   HistoryOutlined,
   PlayCircleOutlined,
@@ -15,23 +15,28 @@ const { Title, Paragraph, Text } = Typography;
 export const ReviewQueueView: React.FC = () => {
   const { navigate } = useRouter();
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [queue, setQueue] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchQueue = async () => {
-      setLoading(true);
-      try {
-        const res = await api.reviews.getQueue();
-        if (res.success && res.data) {
-          setQueue(res.data);
-        }
-      } catch (err) {
-        console.error('Error fetching review queue:', err);
-      } finally {
-        setLoading(false);
+  const fetchQueue = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await api.reviews.getQueue();
+      if (res.success && res.data) {
+        setQueue(res.data);
+      } else {
+        setErrorMsg(res.error || 'Aralıklı tekrar kuyruğu alınırken bir sorun oluştu.');
       }
-    };
+    } catch (err: unknown) {
+      console.error('Error fetching review queue:', err);
+      setErrorMsg(err instanceof Error ? err.message : 'Bağlantı hatası oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchQueue();
   }, []);
 
@@ -52,10 +57,10 @@ export const ReviewQueueView: React.FC = () => {
       key: 'concept',
       render: (_: any, record: any) => (
         <div>
-          <Text strong style={{ fontSize: 14, color: '#0F172A', display: 'block' }}>
+          <Text strong style={{ fontSize: 14, color: '#F8FAFC', display: 'block' }}>
             {record.concept_name || record.name || 'Temel Kavram'}
           </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
             {record.course_title || 'Genel Müfredat'}
           </Text>
         </div>
@@ -112,9 +117,33 @@ export const ReviewQueueView: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+      <div style={{ textAlign: 'center', padding: '100px 20px' }}>
         <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Aralıklı tekrar kuyruğu hesaplanıyor...</Paragraph>
+        <Paragraph style={{ marginTop: 16, color: '#94A3B8' }}>Aralıklı tekrar kuyruğu hesaplanıyor...</Paragraph>
+      </div>
+    );
+  }
+
+  if (errorMsg) {
+    return (
+      <div style={{ maxWidth: 640, margin: '60px auto', padding: '0 20px' }}>
+        <Card bordered style={{ borderRadius: 16, textAlign: 'center', borderColor: '#DC2626' }}>
+          <Alert
+            message="Tekrar Kuyruğu Yüklenemedi"
+            description={errorMsg}
+            type="error"
+            showIcon
+            style={{ marginBottom: 20, textAlign: 'left', borderRadius: 8 }}
+          />
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <Button type="primary" onClick={fetchQueue} style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED', borderRadius: 8 }}>
+              Tekrar Dene
+            </Button>
+            <Button onClick={() => navigate('/app/today')} style={{ borderRadius: 8 }}>
+              Bugünün Paneline Dön
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -123,10 +152,10 @@ export const ReviewQueueView: React.FC = () => {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
         <div>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
             Aralıklı Tekrar Kuyruğu (SRS)
           </Title>
-          <Text style={{ fontSize: 15, color: '#64748B' }}>
+          <Text style={{ fontSize: 15, color: '#94A3B8' }}>
             Hafızayı pekiştirmek ve unutmayı önlemek için bilimsel olarak planlanmış 1, 3, 7 ve 14 günlük tekrar aralıkları.
           </Text>
         </div>
@@ -136,7 +165,7 @@ export const ReviewQueueView: React.FC = () => {
             size="large"
             icon={<PlayCircleOutlined />}
             onClick={() => handleStartReview()}
-            style={{ backgroundColor: '#7C3AED', borderRadius: 8, height: 44, fontWeight: 600 }}
+            style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED', borderRadius: 8, height: 44, fontWeight: 600 }}
           >
             Günü Gelen Tüm Kavramları Tekrar Et
           </Button>
@@ -146,31 +175,31 @@ export const ReviewQueueView: React.FC = () => {
       {/* Summary Cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={8}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Bugün Tekrar Edilecekler"
+              title={<span style={{ color: '#94A3B8' }}>Bugün Tekrar Edilecekler</span>}
               value={queue.length}
-              valueStyle={{ color: queue.length > 0 ? '#7C3AED' : '#059669', fontWeight: 800 }}
+              valueStyle={{ color: queue.length > 0 ? '#A78BFA' : '#10B981', fontWeight: 800 }}
               prefix={<HistoryOutlined />}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Geciken Kavramlar"
+              title={<span style={{ color: '#94A3B8' }}>Geciken Kavramlar</span>}
               value={overdueCount}
-              valueStyle={{ color: overdueCount > 0 ? '#DC2626' : '#64748B', fontWeight: 800 }}
+              valueStyle={{ color: overdueCount > 0 ? '#F87171' : '#94A3B8', fontWeight: 800 }}
               prefix={<WarningOutlined />}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Tekrar Protokolü"
+              title={<span style={{ color: '#94A3B8' }}>Tekrar Protokolü</span>}
               value="1 · 3 · 7 · 14"
-              valueStyle={{ color: '#2563EB', fontWeight: 800, fontSize: 22 }}
+              valueStyle={{ color: '#38BDF8', fontWeight: 800, fontSize: 22 }}
               prefix={<CalendarOutlined />}
             />
           </Card>
@@ -178,12 +207,12 @@ export const ReviewQueueView: React.FC = () => {
       </Row>
 
       {/* Queue Table */}
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0B1120' }}>
         {queue.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-            <CheckCircleOutlined style={{ fontSize: 44, color: '#059669', marginBottom: 12 }} />
-            <Title level={4} style={{ color: '#0F172A', margin: 0 }}>Tüm Tekrarlar Tamamlandı!</Title>
-            <Paragraph style={{ color: '#64748B', marginTop: 4 }}>
+            <CheckCircleOutlined style={{ fontSize: 44, color: '#10B981', marginBottom: 12 }} />
+            <Title level={4} style={{ color: '#F8FAFC', margin: 0 }}>Tüm Tekrarlar Tamamlandı!</Title>
+            <Paragraph style={{ color: '#94A3B8', marginTop: 4 }}>
               Bugün için planlanan tüm aralıklı tekrarları bitirdiniz. Yeni tekrarlar günleri geldikçe kuyruğa eklenecektir.
             </Paragraph>
             <Button onClick={() => navigate('/app/today')} style={{ marginTop: 12, borderRadius: 6 }}>

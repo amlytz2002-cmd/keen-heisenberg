@@ -22,7 +22,7 @@ interface AuthContextType {
   setActiveRole: (role: UserRole) => void;
   loading: boolean;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: (overrideUserId?: string) => Promise<{ activeRole: UserRole; roles: UserRole[]; profile: UserProfile | null }>;
   signInDemo: (role: 'student' | 'instructor') => Promise<boolean>;
 }
 
@@ -34,7 +34,7 @@ const AuthContext = createContext<AuthContextType>({
   setActiveRole: () => {},
   loading: true,
   signOut: async () => {},
-  refreshProfile: async () => {},
+  refreshProfile: async () => ({ activeRole: 'student', roles: ['student'], profile: null }),
   signInDemo: async () => false,
 });
 
@@ -47,7 +47,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeRole, setActiveRole] = useState<UserRole>('student');
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchProfile = async (currentUser: User) => {
+  const fetchProfile = async (targetUser?: User | null, overrideUserId?: string): Promise<{ activeRole: UserRole; roles: UserRole[]; profile: UserProfile | null }> => {
+    let effectiveUser = targetUser || user;
+    if (!effectiveUser) {
+      const { data: userData } = await supabase.auth.getUser();
+      effectiveUser = userData.user;
+    }
+
+    const userId = overrideUserId || effectiveUser?.id;
+    if (!userId) {
+      return { activeRole: 'student', roles: ['student'], profile: null };
+    }
+
     try {
       const res = await api.auth.getProfile();
       if (res.success && res.data) {
@@ -64,9 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           : (u.primary_role || raw.primary_role || 'student');
 
         const normalizedProfile: UserProfile = {
-          id: u.id || currentUser.id,
-          email: u.email || currentUser.email || '',
-          full_name: p.display_name || u.full_name || raw.full_name || currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
+          id: u.id || userId,
+          email: u.email || effectiveUser?.email || '',
+          full_name: p.display_name || u.full_name || raw.full_name || effectiveUser?.user_metadata?.full_name || effectiveUser?.email?.split('@')[0] || 'Kullanıcı',
           avatar_url: p.avatar_path || u.avatar_url || raw.avatar_url,
           primary_role: primaryRole,
           roles,
@@ -74,35 +85,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setProfile(normalizedProfile);
         setActiveRole(primaryRole);
+        return { activeRole: primaryRole, roles, profile: normalizedProfile };
       } else {
         const defaultProfile: UserProfile = {
-          id: currentUser.id,
-          email: currentUser.email || '',
-          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
+          id: userId,
+          email: effectiveUser?.email || '',
+          full_name: effectiveUser?.user_metadata?.full_name || effectiveUser?.email?.split('@')[0] || 'Kullanıcı',
           primary_role: 'student',
           roles: ['student'],
         };
         setProfile(defaultProfile);
         setActiveRole('student');
+        return { activeRole: 'student', roles: ['student'], profile: defaultProfile };
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
       const fallbackProfile: UserProfile = {
-        id: currentUser.id,
-        email: currentUser.email || '',
-        full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Kullanıcı',
+        id: userId,
+        email: effectiveUser?.email || '',
+        full_name: effectiveUser?.user_metadata?.full_name || effectiveUser?.email?.split('@')[0] || 'Kullanıcı',
         primary_role: 'student',
         roles: ['student'],
       };
       setProfile(fallbackProfile);
       setActiveRole('student');
+      return { activeRole: 'student', roles: ['student'], profile: fallbackProfile };
     }
   };
 
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user);
-    }
+  const refreshProfile = async (overrideUserId?: string): Promise<{ activeRole: UserRole; roles: UserRole[]; profile: UserProfile | null }> => {
+    return await fetchProfile(null, overrideUserId);
   };
 
   useEffect(() => {
@@ -135,11 +147,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('Sign out error:', e);
+    }
     setUser(null);
     setSession(null);
     setProfile(null);
     setActiveRole('student');
+    try {
+      localStorage.removeItem('cenna_demo_role');
+      localStorage.removeItem('cenna_selected_course');
+    } catch {}
   };
 
   const signInDemo = async (role: 'student' | 'instructor'): Promise<boolean> => {

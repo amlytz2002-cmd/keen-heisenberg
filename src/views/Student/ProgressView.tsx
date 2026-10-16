@@ -54,10 +54,10 @@ export const ProgressView: React.FC = () => {
       key: 'name',
       render: (_: any, r: any) => (
         <div>
-          <Text strong style={{ fontSize: 14, color: '#0F172A', display: 'block' }}>
+          <Text strong style={{ fontSize: 14, color: '#F8FAFC', display: 'block' }}>
             {r.name}
           </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
             {r.course_title || 'Temel Müfredat'}
           </Text>
         </div>
@@ -71,7 +71,8 @@ export const ProgressView: React.FC = () => {
           <Progress
             percent={r.mastery_score || 0}
             size="small"
-            strokeColor={r.mastery_score >= 80 ? '#059669' : r.mastery_score >= 50 ? '#2563EB' : '#DC2626'}
+            strokeColor={r.mastery_score >= 80 ? '#10B981' : r.mastery_score >= 50 ? '#38BDF8' : '#F43F5E'}
+            trailColor="#1E293B"
           />
         </div>
       ),
@@ -89,7 +90,7 @@ export const ProgressView: React.FC = () => {
       title: 'Hata Sayısı',
       key: 'lapses',
       render: (_: any, r: any) => (
-        <span style={{ color: r.lapse_count > 0 ? '#DC2626' : '#64748B' }}>
+        <span style={{ color: r.lapse_count > 0 ? '#F43F5E' : '#94A3B8' }}>
           {r.lapse_count || 0}
         </span>
       ),
@@ -109,10 +110,10 @@ export const ProgressView: React.FC = () => {
   return (
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ marginBottom: 28 }}>
-        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
           Akademik Gelişim & Kalıcılık Analitiği
         </Title>
-        <Text style={{ fontSize: 15, color: '#64748B' }}>
+        <Text style={{ fontSize: 15, color: '#94A3B8' }}>
           Aktif hatırlama başarımı, ipucu bağımsızlığı ve aralıklı tekrar kararlılığını yansıtan gerçek öğrenme metrikleri.
         </Text>
       </div>
@@ -120,91 +121,91 @@ export const ProgressView: React.FC = () => {
       {/* Top 4 Metrics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Ortalama Kavrama"
+              title={<span style={{ color: '#94A3B8' }}>Ortalama Kavrama</span>}
               value={avgMastery}
               suffix="%"
-              valueStyle={{ color: '#2563EB', fontWeight: 800 }}
+              valueStyle={{ color: '#38BDF8', fontWeight: 800 }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="İlk Deneme Doğruluğu"
+              title={<span style={{ color: '#94A3B8' }}>İlk Deneme Doğruluğu</span>}
               value={avgAccuracy}
               suffix="%"
-              valueStyle={{ color: '#059669', fontWeight: 800 }}
+              valueStyle={{ color: '#10B981', fontWeight: 800 }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Kavranan Kavramlar"
+              title={<span style={{ color: '#94A3B8' }}>Kavranan Kavramlar</span>}
               value={masteredCount}
-              valueStyle={{ color: '#059669', fontWeight: 800 }}
-              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#10B981', fontWeight: 800 }}
+              prefix={<CheckCircleOutlined style={{ color: '#10B981' }} />}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Toplam Soru Denemesi"
+              title={<span style={{ color: '#94A3B8' }}>Toplam Soru Denemesi</span>}
               value={totalAttempts}
-              valueStyle={{ color: '#0F172A', fontWeight: 800 }}
-              prefix={<BarChartOutlined />}
+              valueStyle={{ color: '#F8FAFC', fontWeight: 800 }}
+              prefix={<BarChartOutlined style={{ color: '#F8FAFC' }} />}
             />
           </Card>
         </Col>
       </Row>
 
       {/* Mastery Breakdown Distribution */}
-      <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0', marginBottom: 24 }}>
-        <Title level={4} style={{ color: '#0F172A', marginBottom: 16 }}>
+      <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A', marginBottom: 24 }}>
+        <Title level={4} style={{ color: '#F8FAFC', marginBottom: 16 }}>
           Kavram Kalıcılık Dağılımı
         </Title>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8}>
-            <div style={{ padding: 16, backgroundColor: '#F0FDF4', borderRadius: 10, border: '1px solid #BBF7D0' }}>
-              <Text strong style={{ color: '#166534', display: 'block', fontSize: 16 }}>
+            <div style={{ padding: 16, backgroundColor: 'rgba(5, 150, 105, 0.15)', borderRadius: 10, border: '1px solid #065F46' }}>
+              <Text strong style={{ color: '#34D399', display: 'block', fontSize: 16 }}>
                 Kavrandı (≥%80)
               </Text>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#15803D', margin: '4px 0' }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#6EE7B7', margin: '4px 0' }}>
                 {masteredCount}
               </div>
-              <Text style={{ fontSize: 12, color: '#166534' }}>Yüksek tekrar aralıklarında kararlı hatırlama.</Text>
+              <Text style={{ fontSize: 12, color: '#A7F3D0' }}>Yüksek tekrar aralıklarında kararlı hatırlama.</Text>
             </div>
           </Col>
           <Col xs={24} sm={8}>
-            <div style={{ padding: 16, backgroundColor: '#EFF6FF', borderRadius: 10, border: '1px solid #BFDBFE' }}>
-              <Text strong style={{ color: '#1E40AF', display: 'block', fontSize: 16 }}>
+            <div style={{ padding: 16, backgroundColor: 'rgba(2, 132, 199, 0.15)', borderRadius: 10, border: '1px solid #0C4A6E' }}>
+              <Text strong style={{ color: '#38BDF8', display: 'block', fontSize: 16 }}>
                 Pekiştiriliyor (%50–%79)
               </Text>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#1D4ED8', margin: '4px 0' }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#7DD3FC', margin: '4px 0' }}>
                 {inProgressCount}
               </div>
-              <Text style={{ fontSize: 12, color: '#1E40AF' }}>3. ve 7. gün tekrar aralıklarında ilerleyen kavramlar.</Text>
+              <Text style={{ fontSize: 12, color: '#BAE6FD' }}>3. ve 7. gün tekrar aralıklarında ilerleyen kavramlar.</Text>
             </div>
           </Col>
           <Col xs={24} sm={8}>
-            <div style={{ padding: 16, backgroundColor: '#FEF2F2', borderRadius: 10, border: '1px solid #FECACA' }}>
-              <Text strong style={{ color: '#991B1B', display: 'block', fontSize: 16 }}>
+            <div style={{ padding: 16, backgroundColor: 'rgba(225, 29, 72, 0.15)', borderRadius: 10, border: '1px solid #881337' }}>
+              <Text strong style={{ color: '#FB7185', display: 'block', fontSize: 16 }}>
                 Eksik Giderme Gerekli (&lt;%50)
               </Text>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#B91C1C', margin: '4px 0' }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#FDA4AF', margin: '4px 0' }}>
                 {needsAttentionCount}
               </div>
-              <Text style={{ fontSize: 12, color: '#991B1B' }}>Hızlı toparlanma için 1. gün tekrar aralığına sıfırlandı.</Text>
+              <Text style={{ fontSize: 12, color: '#FECDD3' }}>Hızlı toparlanma için 1. gün tekrar aralığına sıfırlandı.</Text>
             </div>
           </Col>
         </Row>
       </Card>
 
       {/* Concepts Table */}
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }} title="İzlenen Müfredat Kavramları">
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A' }} title={<span style={{ color: '#F8FAFC' }}>İzlenen Müfredat Kavramları</span>}>
         <Table
           dataSource={concepts}
           columns={columns}

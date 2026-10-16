@@ -66,10 +66,10 @@ export const TeachDashboardView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
           <Tag color="purple" style={{ marginBottom: 4 }}>Eğitim & Müfredat Yönetimi</Tag>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
             Eğitmen Yönetim Paneli
           </Title>
-          <Text style={{ fontSize: 15, color: '#64748B' }}>
+          <Text style={{ fontSize: 15, color: '#94A3B8' }}>
             Sınıf yönetimi, ders materyali ayrıştırma, yapay zekâ soru üretimi ve eğitmen onay kapısı.
           </Text>
         </div>
@@ -78,14 +78,14 @@ export const TeachDashboardView: React.FC = () => {
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => navigate('/app/teach/classrooms')}
-            style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40 }}
+            style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', borderRadius: 8, height: 40 }}
           >
             Yeni Sınıf
           </Button>
           <Button
             icon={<UploadOutlined />}
             onClick={() => navigate('/app/teach/resources')}
-            style={{ borderRadius: 8, height: 40 }}
+            style={{ backgroundColor: '#0F172A', borderColor: '#334155', color: '#CBD5E1', borderRadius: 8, height: 40 }}
           >
             Ders Belgesi Yükle
           </Button>
@@ -95,32 +95,32 @@ export const TeachDashboardView: React.FC = () => {
       {/* Overview Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 32 }}>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Kayıtlı Sınıflar"
+              title={<span style={{ color: '#94A3B8' }}>Kayıtlı Sınıflar</span>}
               value={classroomsCount}
-              prefix={<TeamOutlined style={{ color: '#2563EB' }} />}
-              valueStyle={{ fontWeight: 800, color: '#0F172A' }}
+              prefix={<TeamOutlined style={{ color: '#38BDF8' }} />}
+              valueStyle={{ fontWeight: 800, color: '#F8FAFC' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="Aktif Dersler"
+              title={<span style={{ color: '#94A3B8' }}>Aktif Dersler</span>}
               value={coursesCount}
-              prefix={<BookOutlined style={{ color: '#0284C7' }} />}
-              valueStyle={{ fontWeight: 800, color: '#0F172A' }}
+              prefix={<BookOutlined style={{ color: '#818CF8' }} />}
+              valueStyle={{ fontWeight: 800, color: '#F8FAFC' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card bordered style={{ borderRadius: 14, borderColor: '#E2E8F0' }}>
+          <Card bordered style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
             <Statistic
-              title="İşlenen Belgeler"
+              title={<span style={{ color: '#94A3B8' }}>İşlenen Belgeler</span>}
               value={resourcesCount}
-              prefix={<FileTextOutlined style={{ color: '#D97706' }} />}
-              valueStyle={{ fontWeight: 800, color: '#0F172A' }}
+              prefix={<FileTextOutlined style={{ color: '#FBBF24' }} />}
+              valueStyle={{ fontWeight: 800, color: '#F8FAFC' }}
             />
           </Card>
         </Col>
@@ -129,15 +129,15 @@ export const TeachDashboardView: React.FC = () => {
             bordered
             style={{
               borderRadius: 14,
-              borderColor: pendingReviewCount > 0 ? '#FDE68A' : '#E2E8F0',
-              backgroundColor: pendingReviewCount > 0 ? '#FFFBEB' : '#FFFFFF',
+              borderColor: pendingReviewCount > 0 ? '#78350F' : '#1E293B',
+              backgroundColor: pendingReviewCount > 0 ? 'rgba(217, 119, 6, 0.12)' : '#0F172A',
             }}
           >
             <Statistic
-              title="İnceleme Bekleyenler"
+              title={<span style={{ color: '#94A3B8' }}>İnceleme Bekleyenler</span>}
               value={pendingReviewCount}
-              prefix={<SafetyCertificateOutlined style={{ color: '#D97706' }} />}
-              valueStyle={{ fontWeight: 800, color: pendingReviewCount > 0 ? '#B45309' : '#059669' }}
+              prefix={<SafetyCertificateOutlined style={{ color: '#F59E0B' }} />}
+              valueStyle={{ fontWeight: 800, color: pendingReviewCount > 0 ? '#FBBF24' : '#10B981' }}
             />
           </Card>
         </Col>
@@ -149,8 +149,8 @@ export const TeachDashboardView: React.FC = () => {
           bordered
           style={{
             borderRadius: 16,
-            backgroundColor: '#FEF3C7',
-            borderColor: '#FDE68A',
+            backgroundColor: 'rgba(217, 119, 6, 0.12)',
+            borderColor: '#78350F',
             marginBottom: 32,
           }}
           bodyStyle={{ padding: 24 }}
@@ -158,19 +158,19 @@ export const TeachDashboardView: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <SafetyCertificateOutlined style={{ color: '#B45309', fontSize: 20 }} />
-                <Title level={4} style={{ margin: 0, color: '#92400E' }}>
+                <SafetyCertificateOutlined style={{ color: '#F59E0B', fontSize: 20 }} />
+                <Title level={4} style={{ margin: 0, color: '#FDE68A' }}>
                   {pendingReviewCount} Yeni İçerik Eğitmen İncelemesi Bekliyor
                 </Title>
               </div>
-              <Paragraph style={{ color: '#78350F', margin: '4px 0 0 0', fontSize: 14 }}>
+              <Paragraph style={{ color: '#FCD34D', margin: '4px 0 0 0', fontSize: 14 }}>
                 Yapay zekâ tarafından oluşturulan hiçbir içerik eğitmen onaylayıp yayınlayana kadar öğrencilere gösterilmez.
               </Paragraph>
             </div>
             <Button
               type="primary"
               onClick={() => navigate('/app/teach/content-review')}
-              style={{ backgroundColor: '#B45309', borderColor: '#B45309', borderRadius: 8, height: 40, fontWeight: 600 }}
+              style={{ backgroundColor: '#D97706', borderColor: '#D97706', borderRadius: 8, height: 40, fontWeight: 600, color: '#FFFFFF' }}
             >
               İçerik İnceleme Kapısını Aç
             </Button>
@@ -184,14 +184,14 @@ export const TeachDashboardView: React.FC = () => {
           <Card
             hoverable
             bordered
-            style={{ borderRadius: 14, borderColor: '#E2E8F0', height: '100%' }}
+            style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A', height: '100%' }}
             onClick={() => navigate('/app/teach/classrooms')}
           >
-            <TeamOutlined style={{ fontSize: 32, color: '#2563EB', marginBottom: 16 }} />
-            <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
+            <TeamOutlined style={{ fontSize: 32, color: '#38BDF8', marginBottom: 16 }} />
+            <Title level={4} style={{ margin: '0 0 8px 0', color: '#F8FAFC' }}>
               Sınıflar & Davet Yönetimi
             </Title>
-            <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
+            <Paragraph style={{ color: '#94A3B8', fontSize: 13, margin: 0 }}>
               Kriptografik davet bağlantıları oluşturun, kayıtlı öğrenci listelerini yönetin ve katılımı denetleyin.
             </Paragraph>
           </Card>
@@ -201,14 +201,14 @@ export const TeachDashboardView: React.FC = () => {
           <Card
             hoverable
             bordered
-            style={{ borderRadius: 14, borderColor: '#E2E8F0', height: '100%' }}
+            style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A', height: '100%' }}
             onClick={() => navigate('/app/teach/resources')}
           >
-            <FileTextOutlined style={{ fontSize: 32, color: '#D97706', marginBottom: 16 }} />
-            <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
+            <FileTextOutlined style={{ fontSize: 32, color: '#FBBF24', marginBottom: 16 }} />
+            <Title level={4} style={{ margin: '0 0 8px 0', color: '#F8FAFC' }}>
               Belge İşleme & Ayrıştırma
             </Title>
-            <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
+            <Paragraph style={{ color: '#94A3B8', fontSize: 13, margin: 0 }}>
               Ders notlarını, slaytları ve kaynak kitapları yükleyin; kaynak koordinatları korunmuş anlamsal bölümler çıkarın.
             </Paragraph>
           </Card>
@@ -218,14 +218,14 @@ export const TeachDashboardView: React.FC = () => {
           <Card
             hoverable
             bordered
-            style={{ borderRadius: 14, borderColor: '#E2E8F0', height: '100%' }}
+            style={{ borderRadius: 14, borderColor: '#1E293B', backgroundColor: '#0F172A', height: '100%' }}
             onClick={() => navigate('/app/teach/analytics')}
           >
-            <LineChartOutlined style={{ fontSize: 32, color: '#059669', marginBottom: 16 }} />
-            <Title level={4} style={{ margin: '0 0 8px 0', color: '#0F172A' }}>
+            <LineChartOutlined style={{ fontSize: 32, color: '#34D399', marginBottom: 16 }} />
+            <Title level={4} style={{ margin: '0 0 8px 0', color: '#F8FAFC' }}>
               Sınıf Başarı Analitiği
             </Title>
-            <Paragraph style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
+            <Paragraph style={{ color: '#94A3B8', fontSize: 13, margin: 0 }}>
               Öğrencilerin en çok zorlandığı kavramları ve yüksek hata oranına sahip konuları tespit edin.
             </Paragraph>
           </Card>

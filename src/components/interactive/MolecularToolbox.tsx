@@ -308,7 +308,7 @@ export const MolecularToolbox: React.FC<MolecularToolboxProps> = ({
           padding: 16,
           marginBottom: 18,
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'visible',
         }}
       >
         <div
@@ -328,10 +328,10 @@ export const MolecularToolbox: React.FC<MolecularToolboxProps> = ({
         </div>
 
         {/* Responsive Chemical Scaffold SVG */}
-        <div style={{ width: '100%', height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg
-            viewBox="0 0 540 160"
-            style={{ width: '100%', height: '100%', maxHeight: 160, overflow: 'visible' }}
+            viewBox="0 0 540 170"
+            style={{ width: '100%', height: '100%', maxHeight: 170, overflow: 'visible' }}
           >
             <defs>
               <linearGradient id="scaffoldBond" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -588,39 +588,71 @@ export const MolecularToolbox: React.FC<MolecularToolboxProps> = ({
               {/* Physicochemical Delta Tags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 <Tooltip title="Lipofilisite Değişimi (ΔLogP)">
-                  <Tag
-                    color={tool.deltaLogP >= 0 ? 'blue' : 'cyan'}
-                    style={{ margin: 0, fontSize: 11, fontWeight: 600, borderRadius: 4 }}
+                  <span
+                    style={{
+                      margin: 0,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      borderRadius: 4,
+                      padding: '2px 6px',
+                      backgroundColor: 'rgba(14, 165, 233, 0.15)',
+                      color: '#38BDF8',
+                      border: '1px solid rgba(14, 165, 233, 0.3)',
+                    }}
                   >
                     ΔLogP {tool.deltaLogP >= 0 ? `+${tool.deltaLogP}` : tool.deltaLogP}
-                  </Tag>
+                  </span>
                 </Tooltip>
                 <Tooltip title="Reseptör Bağlanma Serbest Enerjisi (ΔAffinity kcal/mol)">
-                  <Tag
-                    color={tool.deltaAffinity < 0 ? 'green' : 'volcano'}
-                    style={{ margin: 0, fontSize: 11, fontWeight: 600, borderRadius: 4 }}
+                  <span
+                    style={{
+                      margin: 0,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      borderRadius: 4,
+                      padding: '2px 6px',
+                      backgroundColor: tool.deltaAffinity < 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
+                      color: tool.deltaAffinity < 0 ? '#34D399' : '#FB7185',
+                      border: `1px solid ${tool.deltaAffinity < 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(244, 63, 94, 0.3)'}`,
+                    }}
                   >
                     ΔG {tool.deltaAffinity >= 0 ? `+${tool.deltaAffinity}` : tool.deltaAffinity}
-                  </Tag>
+                  </span>
                 </Tooltip>
                 {tool.halfLifeMultiplier > 1 && (
                   <Tooltip title="Metabolik Yarı Ömür Çarpanı">
-                    <Tag
-                      color="purple"
-                      style={{ margin: 0, fontSize: 11, fontWeight: 600, borderRadius: 4 }}
+                    <span
+                      style={{
+                        margin: 0,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        borderRadius: 4,
+                        padding: '2px 6px',
+                        backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                        color: '#C084FC',
+                        border: '1px solid rgba(168, 85, 247, 0.3)',
+                      }}
                     >
                       {tool.halfLifeMultiplier}x Yarı Ömür
-                    </Tag>
+                    </span>
                   </Tooltip>
                 )}
                 {tool.shieldingFactor > 0 && (
                   <Tooltip title="Enzimatik Koruyucu Zırh Faktörü">
-                    <Tag
-                      color="gold"
-                      style={{ margin: 0, fontSize: 11, fontWeight: 600, borderRadius: 4 }}
+                    <span
+                      style={{
+                        margin: 0,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        borderRadius: 4,
+                        padding: '2px 6px',
+                        backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                        color: '#FBBF24',
+                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                      }}
                     >
                       %{Math.round(tool.shieldingFactor * 100)} Zırh
-                    </Tag>
+                    </span>
                   </Tooltip>
                 )}
               </div>

@@ -297,246 +297,287 @@ export const ReceptorPocketFit: React.FC<ReceptorPocketFitProps> = ({
       )}
 
       {/* SVG Docking Stage Arena */}
-      <div
-        style={{
-          background: 'radial-gradient(ellipse at center, #0F223D 0%, #080D1A 100%)',
-          borderRadius: 14,
-          border: '1px solid #1E293B',
-          padding: 16,
-          marginBottom: 18,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 6,
-          }}
-        >
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#38BDF8', letterSpacing: '0.05em' }}>
-            RESEPTÖR CEBİ YÜZEYİ & LİGAND DOCKING SAHASI
-          </span>
-          <span style={{ fontSize: 12, color: isOptimal ? '#10B981' : stericClashes > 0 ? '#EF4444' : '#94A3B8' }}>
-            Mesafe: <strong style={{ color: '#F8FAFC' }}>{distanceAngstrom} Å</strong>
-            {isOptimal && ' (Optimal van der Waals yarıçapı!)'}
-          </span>
-        </div>
-
-        {/* Responsive Interactive SVG Canvas */}
-        <div style={{ width: '100%', height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg
-            viewBox="0 0 620 260"
-            style={{ width: '100%', height: '100%', maxHeight: 260, overflow: 'visible' }}
-          >
-            <defs>
-              {/* Pocket Cavity Wall Texture */}
-              <linearGradient id="pocketCleftGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#1E293B" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#0B132B" stopOpacity="0.95" />
-              </linearGradient>
-
-              {/* Force Vector Glow */}
-              <filter id="forceGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* 1. Receptor Pocket Cleft Boundary Contour (Lock Cavity) */}
-            <path
-              d="M 50 20 Q 90 220 310 230 Q 530 220 570 20 L 610 20 L 610 250 L 10 250 L 10 20 Z"
-              fill="url(#pocketCleftGrad)"
-              stroke="#1E3A8A"
-              strokeWidth="2.5"
-            />
-
-            {/* Steric Boundary Warning Zone (Red striped collision wall) */}
-            {stericClashes > 0 && (
-              <path
-                d="M 120 200 Q 310 220 500 200"
-                fill="none"
-                stroke="#EF4444"
-                strokeWidth="6"
-                strokeDasharray="6,4"
-                filter="url(#forceGlow)"
-              />
-            )}
-
-            {/* 2. Pocket Amino Acid Residue Targets Anchored on Walls */}
-            {pocketResidues.map((res) => {
-              const isSalt = res.optimalInteraction === 'salt_bridge';
-              const isHBond = res.optimalInteraction === 'hbond';
-              const isPi = res.optimalInteraction === 'pi_stack';
-
-              const strokeColor = isSalt ? '#06B6D4' : isHBond ? '#10B981' : isPi ? '#F59E0B' : '#8B5CF6';
-
-              return (
-                <g key={res.id} transform={`translate(${res.x}, ${res.y})`}>
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="22"
-                    fill="#1E293B"
-                    stroke={strokeColor}
-                    strokeWidth="2"
-                    filter="url(#forceGlow)"
-                  />
-                  <text x="0" y="-4" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="800">
-                    {res.code.split(' ')[0]}
-                  </text>
-                  <text x="0" y="8" textAnchor="middle" fill={strokeColor} fontSize="8" fontWeight="600">
-                    {isSalt ? 'TUZ KÖPRÜSÜ' : isHBond ? 'H-BAĞI' : 'π-İSTİF'}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* 3. Ligand Center Coordinates calculated based on dockingProgress & rotationAngle */}
-            {/* Base target center is (310, 110) */}
-            {(() => {
-              const ligandY = 40 + (dockingProgress / 100) * 70; // 40 to 110
-              const ligandX = 310;
-
-              return (
-                <g transform={`translate(${ligandX}, ${ligandY}) rotate(${rotationAngle})`}>
-                  {/* Central Ligand Scaffold (Aromatic Core with Branches) */}
-                  <g filter="url(#forceGlow)">
-                    {/* Central Ligand Core */}
-                    <polygon
-                      points="0,-25 22,-12.5 22,12.5 0,25 -22,12.5 -22,-12.5"
-                      fill="#0284C7"
-                      stroke="#38BDF8"
-                      strokeWidth="2"
-                    />
-                    <circle cx="0" cy="0" r="12" fill="none" stroke="#FFFFFF" strokeWidth="1" strokeDasharray="3,3" />
-                    <text x="0" y="3" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="800">
-                      LİGAND
-                    </text>
-
-                    {/* Ligand Functional Group Arms */}
-                    {ligandGroups.map((lg) => (
-                      <g key={lg.id}>
-                        <line x1={lg.offsetX * 0.25} y1={lg.offsetY * 0.25} x2={lg.offsetX * 0.85} y2={lg.offsetY * 0.85} stroke="#38BDF8" strokeWidth="2.5" />
-                        <circle cx={lg.offsetX} cy={lg.offsetY} r={14} fill="#1E3A8A" stroke="#06B6D4" strokeWidth="2" />
-                        <text x={lg.offsetX} y={lg.offsetY + 4} textAnchor="middle" fill="#67E8F9" fontSize="8" fontWeight="800">
-                          {lg.formula}
-                        </text>
-                      </g>
-                    ))}
-                  </g>
-                </g>
-              );
-            })()}
-
-            {/* 4. Dynamic Force Lines between Ligand & Residues */}
-            {/* Draw interaction lines if dockingProgress > 30 */}
-            {dockingProgress > 30 && (
-              <g filter="url(#forceGlow)">
-                {/* Asp113 Salt Bridge Vector (Cyan) */}
-                <line
-                  x1={310 - 85}
-                  y1={40 + (dockingProgress / 100) * 70 - 32}
-                  x2={180}
-                  y2={70}
-                  stroke="#06B6D4"
-                  strokeWidth={isOptimal ? 4 : 2}
-                  strokeDasharray={isOptimal ? 'none' : '4,4'}
-                />
-
-                {/* Ser204 H-Bond Vector (Green) */}
-                <line
-                  x1={310 + 90}
-                  y1={40 + (dockingProgress / 100) * 70 - 30}
-                  x2={440}
-                  y2={75}
-                  stroke="#10B981"
-                  strokeWidth={isOptimal ? 3.5 : 2}
-                  strokeDasharray="3,3"
-                />
-
-                {/* Phe290 Pi-Stacking Vector (Amber) */}
-                <line
-                  x1={310}
-                  y1={40 + (dockingProgress / 100) * 70 + 52}
-                  x2={310}
-                  y2={175}
-                  stroke="#F59E0B"
-                  strokeWidth={isOptimal ? 3 : 1.5}
-                  strokeDasharray="5,3"
-                />
-
-                {/* Steric Clash Halo if clashes occur */}
-                {stericClashes > 0 && (
-                  <circle
-                    cx="310"
-                    cy="160"
-                    r="28"
-                    fill="rgba(239, 68, 68, 0.25)"
-                    stroke="#EF4444"
-                    strokeWidth="2.5"
-                  />
-                )}
-              </g>
-            )}
-          </svg>
-        </div>
-      </div>
-
-      {/* Docking Manipulation Controls: Sliders */}
-      <div
-        style={{
-          background: '#1E293B',
-          borderRadius: 12,
-          padding: 16,
-          marginBottom: 16,
-          border: '1px solid #334155',
-        }}
-      >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-          {/* Depth Docking Slider */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-              <span style={{ fontWeight: 600, color: '#94A3B8' }}>
-                Cepte İlerleme Derinliği (% Docking):
-              </span>
-              <span style={{ fontWeight: 700, color: isDepthDocked ? '#10B981' : '#38BDF8' }}>
-                %{dockingProgress}
+      {/* Responsive 2-Column Grid: Sliders & Docking Stage Arena */}
+      <div className="grid grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)] gap-4 mb-4">
+        {/* Left Column: Docking Manipulation Sliders & Controls */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <span>Docking Kontrolleri</span>
+              <span className="font-mono text-[11px] text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800/60">
+                {isOptimal ? 'Tam Uyum' : `${distanceAngstrom} Å`}
               </span>
             </div>
-            <Slider
-              min={0}
-              max={100}
-              value={dockingProgress}
-              onChange={(val) => setDockingProgress(val)}
-              disabled={disabled}
-              trackStyle={{ background: isDepthDocked ? '#10B981' : '#0284C7' }}
-            />
+
+            {/* Depth Docking Slider */}
+            <div>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="font-semibold text-slate-400 text-[11px]">
+                  Cepte İlerleme Derinliği:
+                </span>
+                <span className={`font-mono font-bold text-xs ${isDepthDocked ? 'text-emerald-400' : 'text-sky-400'}`}>
+                  %{dockingProgress}
+                </span>
+              </div>
+              <Slider
+                min={0}
+                max={100}
+                value={dockingProgress}
+                onChange={(val) => setDockingProgress(val)}
+                disabled={disabled}
+                trackStyle={{ background: isDepthDocked ? '#10B981' : '#0284C7' }}
+              />
+            </div>
+
+            {/* Orientation Rotation Slider */}
+            <div>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="font-semibold text-slate-400 text-[11px]">
+                  Ligand Rotasyon Açısı (θ):
+                </span>
+                <span className={`font-mono font-bold text-xs ${isAngleAligned ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {rotationAngle}° {isAngleAligned && '✓'}
+                </span>
+              </div>
+              <Slider
+                min={-60}
+                max={60}
+                value={rotationAngle}
+                onChange={(val) => setRotationAngle(val)}
+                disabled={disabled}
+                trackStyle={{ background: isAngleAligned ? '#10B981' : '#F59E0B' }}
+              />
+            </div>
           </div>
 
-          {/* Orientation Rotation Slider */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-              <span style={{ fontWeight: 600, color: '#94A3B8' }}>
-                Ligand Rotasyon Açısı (θ Derece):
-              </span>
-              <span style={{ fontWeight: 700, color: isAngleAligned ? '#10B981' : '#F59E0B' }}>
-                {rotationAngle}° {isAngleAligned && '(Hizalı)'}
-              </span>
-            </div>
-            <Slider
-              min={-60}
-              max={60}
-              value={rotationAngle}
-              onChange={(val) => setRotationAngle(val)}
+          <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+            <Button
+              size="small"
+              icon={<SyncOutlined />}
+              onClick={handleReset}
               disabled={disabled}
-              trackStyle={{ background: isAngleAligned ? '#10B981' : '#F59E0B' }}
-            />
+              className="text-xs bg-slate-950 border-slate-800 text-slate-300 hover:text-white flex-1"
+            >
+              Sıfırla
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              icon={<AimOutlined />}
+              onClick={handleSnapDock}
+              disabled={disabled || isOptimal}
+              className="text-xs bg-sky-600 hover:bg-sky-500 text-white flex-1 font-semibold"
+            >
+              Hizala
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Column: Main SVG Docking Stage Arena */}
+        <div
+          style={{
+            background: 'radial-gradient(ellipse at center, #0F223D 0%, #080D1A 100%)',
+            borderRadius: 14,
+            border: '1px solid #1E293B',
+            padding: 16,
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 6,
+              flexWrap: 'wrap',
+              gap: 8,
+            }}
+          >
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#38BDF8', letterSpacing: '0.05em' }}>
+              RESEPTÖR CEBİ YÜZEYİ & LİGAND DOCKING SAHASI
+            </span>
+            <span style={{ fontSize: 12, color: isOptimal ? '#10B981' : stericClashes > 0 ? '#EF4444' : '#94A3B8' }}>
+              Mesafe: <strong style={{ color: '#F8FAFC' }}>{distanceAngstrom} Å</strong>
+              {isOptimal && ' (Optimal van der Waals yarıçapı!)'}
+            </span>
+          </div>
+
+          {/* Responsive Interactive SVG Canvas */}
+          <div style={{ width: '100%', height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg
+              viewBox="0 0 620 260"
+              style={{ width: '100%', height: '100%', maxHeight: 260, overflow: 'visible' }}
+            >
+              <defs>
+                {/* Pocket Cavity Wall Texture */}
+                <linearGradient id="pocketCleftGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#1E293B" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#0B132B" stopOpacity="0.95" />
+                </linearGradient>
+
+                {/* Force Vector Glow */}
+                <filter id="forceGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* 1. Receptor Pocket Cleft Boundary Contour (Lock Cavity) */}
+              <path
+                d="M 50 20 Q 90 220 310 230 Q 530 220 570 20 L 610 20 L 610 250 L 10 250 L 10 20 Z"
+                fill="url(#pocketCleftGrad)"
+                stroke="#1E3A8A"
+                strokeWidth="2.5"
+              />
+
+              {/* Distinct Non-Overlapping Readout Badges */}
+              {/* Top-Right: K_d = 10.0 nM Readout */}
+              <g transform="translate(530, 26)">
+                <rect x="-50" y="-12" width="100" height="22" rx="6" fill="#0F172A" stroke="#06B6D4" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="#38BDF8" fontSize="10" fontWeight="700">
+                  {isOptimal ? 'K_d = 8.5 nM' : 'K_d = 10.0 nM'}
+                </text>
+              </g>
+
+              {/* Bottom-Left: Lokal Konformasyonel İndüksiyon Tag */}
+              <g transform="translate(100, 242)">
+                <rect x="-70" y="-10" width="140" height="20" rx="5" fill="#0F172A" stroke="#6366F1" strokeWidth="1" />
+                <text x="0" y="3" textAnchor="middle" fill="#A5B4FC" fontSize="8" fontWeight="700">
+                  Lokal Konformasyonel İndüksiyon
+                </text>
+              </g>
+
+              {/* Steric Boundary Warning Zone (Red striped collision wall) */}
+              {stericClashes > 0 && (
+                <path
+                  d="M 120 200 Q 310 220 500 200"
+                  fill="none"
+                  stroke="#EF4444"
+                  strokeWidth="6"
+                  strokeDasharray="6,4"
+                  filter="url(#forceGlow)"
+                />
+              )}
+
+              {/* 2. Pocket Amino Acid Residue Targets Anchored on Walls */}
+              {pocketResidues.map((res) => {
+                const isSalt = res.optimalInteraction === 'salt_bridge';
+                const isHBond = res.optimalInteraction === 'hbond';
+                const isPi = res.optimalInteraction === 'pi_stack';
+
+                const strokeColor = isSalt ? '#06B6D4' : isHBond ? '#10B981' : isPi ? '#F59E0B' : '#8B5CF6';
+
+                return (
+                  <g key={res.id} transform={`translate(${res.x}, ${res.y})`}>
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="22"
+                      fill="#1E293B"
+                      stroke={strokeColor}
+                      strokeWidth="2"
+                      filter="url(#forceGlow)"
+                    />
+                    <text x="0" y="-4" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="800">
+                      {res.code.split(' ')[0]}
+                    </text>
+                    <text x="0" y="8" textAnchor="middle" fill={strokeColor} fontSize="8" fontWeight="600">
+                      {isSalt ? 'TUZ KÖPRÜSÜ' : isHBond ? 'H-BAĞI' : 'π-İSTİF'}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* 3. Ligand Center Coordinates calculated based on dockingProgress & rotationAngle */}
+              {(() => {
+                const ligandY = 40 + (dockingProgress / 100) * 70; // 40 to 110
+                const ligandX = 310;
+
+                return (
+                  <g transform={`translate(${ligandX}, ${ligandY}) rotate(${rotationAngle})`}>
+                    {/* Central Ligand Scaffold (Aromatic Core with Branches) */}
+                    <g filter="url(#forceGlow)">
+                      {/* Central Ligand Core */}
+                      <polygon
+                        points="0,-25 22,-12.5 22,12.5 0,25 -22,12.5 -22,-12.5"
+                        fill="#0284C7"
+                        stroke="#38BDF8"
+                        strokeWidth="2"
+                      />
+                      <circle cx="0" cy="0" r="12" fill="none" stroke="#FFFFFF" strokeWidth="1" strokeDasharray="3,3" />
+                      <text x="0" y="3" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="800">
+                        LİGAND
+                      </text>
+
+                      {/* Ligand Functional Group Arms */}
+                      {ligandGroups.map((lg) => (
+                        <g key={lg.id}>
+                          <line x1={lg.offsetX * 0.25} y1={lg.offsetY * 0.25} x2={lg.offsetX * 0.85} y2={lg.offsetY * 0.85} stroke="#38BDF8" strokeWidth="2.5" />
+                          <circle cx={lg.offsetX} cy={lg.offsetY} r={14} fill="#1E3A8A" stroke="#06B6D4" strokeWidth="2" />
+                          <text x={lg.offsetX} y={lg.offsetY + 4} textAnchor="middle" fill="#67E8F9" fontSize="8" fontWeight="800">
+                            {lg.formula}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  </g>
+                );
+              })()}
+
+              {/* 4. Dynamic Force Lines between Ligand & Residues */}
+              {dockingProgress > 30 && (
+                <g filter="url(#forceGlow)">
+                  {/* Asp113 Salt Bridge Vector (Cyan) */}
+                  <line
+                    x1={310 - 85}
+                    y1={40 + (dockingProgress / 100) * 70 - 32}
+                    x2={180}
+                    y2={70}
+                    stroke="#06B6D4"
+                    strokeWidth={isOptimal ? 4 : 2}
+                    strokeDasharray={isOptimal ? 'none' : '4,4'}
+                  />
+
+                  {/* Ser204 H-Bond Vector (Green) */}
+                  <line
+                    x1={310 + 90}
+                    y1={40 + (dockingProgress / 100) * 70 - 30}
+                    x2={440}
+                    y2={75}
+                    stroke="#10B981"
+                    strokeWidth={isOptimal ? 3.5 : 2}
+                    strokeDasharray="3,3"
+                  />
+
+                  {/* Phe290 Pi-Stacking Vector (Amber) */}
+                  <line
+                    x1={310}
+                    y1={40 + (dockingProgress / 100) * 70 + 52}
+                    x2={310}
+                    y2={175}
+                    stroke="#F59E0B"
+                    strokeWidth={isOptimal ? 3 : 1.5}
+                    strokeDasharray="5,3"
+                  />
+
+                  {/* Steric Clash Halo if clashes occur */}
+                  {stericClashes > 0 && (
+                    <circle
+                      cx="310"
+                      cy="160"
+                      r="28"
+                      fill="rgba(239, 68, 68, 0.25)"
+                      stroke="#EF4444"
+                      strokeWidth="2.5"
+                    />
+                  )}
+                </g>
+              )}
+            </svg>
           </div>
         </div>
       </div>

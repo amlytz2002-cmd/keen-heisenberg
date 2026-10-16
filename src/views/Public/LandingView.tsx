@@ -1,427 +1,513 @@
-import React from 'react';
-import { Button, Card, Col, Row, Tag, Typography, Space } from 'antd';
+import React, { useState, useRef } from 'react';
 import {
-  RocketOutlined,
-  ReadOutlined,
-  QuestionCircleOutlined,
-  BulbOutlined,
-  CheckCircleOutlined,
-  HistoryOutlined,
-  LockOutlined,
-  FileSearchOutlined,
-  ClockCircleOutlined,
-  ArrowRightOutlined,
-} from '@ant-design/icons';
+  Sparkles,
+  FlaskConical,
+  GraduationCap,
+  ArrowRight,
+  ShieldCheck,
+  Atom,
+  Activity,
+  FileText,
+  Brain,
+  Lightbulb,
+  HeartPulse,
+  Clock,
+  Layers,
+  Zap,
+} from 'lucide-react';
 import { useRouter } from '../../context/RouterContext';
 import { useAuth } from '../../context/AuthContext';
-
-const { Title, Paragraph, Text } = Typography;
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { BorderBeam } from '../../components/magicui/border-beam';
+import { Spotlight } from '../../components/magicui/spotlight';
+import { AnimatedBeam } from '../../components/magicui/animated-beam';
+import { NumberTicker } from '../../components/magicui/number-ticker';
+import { BentoGrid, BentoCard } from '../../components/magicui/bento-grid';
 
 export const LandingView: React.FC = () => {
   const { navigate } = useRouter();
-  const { user, activeRole } = useAuth();
+  const { user, activeRole, signInDemo } = useAuth();
+  const [demoLoading, setDemoLoading] = useState(false);
 
-  const handleStart = () => {
-    if (user) {
-      navigate(activeRole === 'instructor' ? '/app/teach' : '/app/today');
-    } else {
-      navigate('/auth/login');
+  // Live Hero Interactive Mini-Toolbox state
+  const [selectedGroup, setSelectedGroup] = useState<'aspirin' | 'ester' | 'salicylate'>('aspirin');
+
+  // Animated pipeline refs
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const aiRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLDivElement>(null);
+  const labRef = useRef<HTMLDivElement>(null);
+
+  const handleLaunchDemo = async (role: 'student' | 'instructor') => {
+    setDemoLoading(true);
+    const ok = await signInDemo(role);
+    setDemoLoading(false);
+    if (ok) {
+      navigate(role === 'instructor' ? '/app/teach' : '/app/today');
     }
   };
 
-  const steps = [
-    {
-      step: '1',
-      title: 'Öğren',
-      icon: <ReadOutlined style={{ fontSize: 24, color: '#2563EB' }} />,
-      desc: 'Sayfa ve paragraf atıflarıyla yetkili ders belgelerine dayandırılmış temel kavramları özümseyin.',
+  // Telemetry computation for the live Hero preview
+  const telemetry = {
+    aspirin: {
+      logP: '1.19',
+      safety: 96,
+      status: 'MUKOZAL HASAR ÖNLENDİ',
+      color: 'text-emerald-400',
+      tagColor: 'success' as const,
+      name: 'Asetilsalisilik Asit (Aspirin)',
+      desc: 'Ester bağı fenolik -OH grubunu maskeleyerek gastrik mukozadaki erozyon riskini bloke etti.',
     },
-    {
-      step: '2',
-      title: 'Hatırla',
-      icon: <QuestionCircleOutlined style={{ fontSize: 24, color: '#0284C7' }} />,
-      desc: 'Tek seçenekli, çoktan seçmeli ve klinik hesaplama sorularıyla kitapsız aktif hatırlama pratiği yapın.',
+    ester: {
+      logP: '1.85',
+      safety: 82,
+      status: 'YÜKSEK LİPOFİLİSİTE',
+      color: 'text-sky-400',
+      tagColor: 'default' as const,
+      name: 'Salisilik Asit Etil Esteri',
+      desc: 'Lipofilik bariyer aşımı arttı, oral biyoyararlanım %92 seviyesine yükseldi.',
     },
-    {
-      step: '3',
-      title: 'Uygula',
-      icon: <BulbOutlined style={{ fontSize: 24, color: '#D97706' }} />,
-      desc: 'Cevap açıklanmadan önce 3 kademeli Sokratik ipucu merdiveninden (Yönlendirme → Akıl Yürütme → Uygulama) yararlanın.',
+    salicylate: {
+      logP: '0.42',
+      safety: 34,
+      status: 'KRİTİK MUKOZAL HASAR',
+      color: 'text-rose-400',
+      tagColor: 'destructive' as const,
+      name: 'Serbest Salisilik Asit',
+      desc: 'Korumasız fenol grubu mide çeperinde lokal mikrovasküler kanamaya ve erozyona yol açıyor!',
     },
-    {
-      step: '4',
-      title: 'Eksik Gider',
-      icon: <CheckCircleOutlined style={{ fontSize: 24, color: '#059669' }} />,
-      desc: 'Kaynak belgenin ilgili bölümüne doğrudan atıf yapan ayrıntılı geri bildirimle kavram yanılgılarınızı anında teşhis edin.',
-    },
-    {
-      step: '5',
-      title: 'Tekrar Et',
-      icon: <HistoryOutlined style={{ fontSize: 24, color: '#7C3AED' }} />,
-      desc: 'Bilimsel olarak planlanmış 1, 3, 7 ve 14 günlük aralıklı tekrarlarla uzun süreli hafızayı ve klinik kavrayışı güçlendirin.',
-    },
-  ];
+  }[selectedGroup];
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      {/* Hero Section */}
-      <section
-        style={{
-          background: 'linear-gradient(180deg, #FFFFFF 0%, #EFF6FF 100%)',
-          padding: '80px 20px 60px',
-          borderBottom: '1px solid #E2E8F0',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ maxWidth: 840, margin: '0 auto' }}>
-          <Tag color="blue" style={{ padding: '6px 14px', fontSize: 13, borderRadius: 20, fontWeight: 600 }}>
-            <RocketOutlined style={{ marginRight: 6 }} /> CENNA.live Pilot 1.0 — Aktif Hatırlama & Bilinçli Pratik Motoru
-          </Tag>
-          <Title
-            level={1}
-            style={{
-              fontSize: 'clamp(32px, 5vw, 56px)',
-              fontWeight: 850,
-              color: '#0F172A',
-              letterSpacing: '-1.5px',
-              marginTop: 20,
-              marginBottom: 16,
-              lineHeight: 1.15,
-            }}
-          >
-            Kanıta Dayalı Pratik, <span style={{ color: '#2563EB' }}>Doğrulanmış Yapay Zekâ</span>.
-          </Title>
-          <Paragraph
-            style={{
-              fontSize: 'clamp(16px, 2.5vw, 20px)',
-              color: '#475569',
-              lineHeight: 1.6,
-              maxWidth: 720,
-              margin: '0 auto 32px',
-            }}
-          >
-            Pasif okuma yöntemlerinin ötesine geçin. CENNA.live yetkili ders materyallerinizi yapılandırılmış ~25 dakikalık
-            çalışma oturumlarına, kademeli Sokratik ipuçlarına ve aralıklı tekrar kuyruklarına dönüştürür.
-          </Paragraph>
+    <div className="relative min-h-screen bg-[#060B14] text-slate-100 overflow-x-hidden">
+      {/* 1. HERO SECTION WITH SPOTLIGHT & LIVE PREVIEW */}
+      <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80 overflow-hidden">
+        <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="#0EA5E9" />
 
-          <Space direction="horizontal" size="middle" wrap style={{ justifyContent: 'center' }}>
-            <Button
-              type="primary"
-              size="large"
-              icon={<ArrowRightOutlined />}
-              onClick={handleStart}
-              style={{
-                height: 50,
-                padding: '0 32px',
-                fontSize: 16,
-                fontWeight: 600,
-                borderRadius: 10,
-                backgroundColor: '#2563EB',
-                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
-              }}
-            >
-              {user ? 'Öğrenme Panelinize Giriş Yapın' : 'Hemen Başlayın'}
-            </Button>
-            <Button
-              size="large"
-              onClick={() => navigate('/how-it-works')}
-              style={{
-                height: 50,
-                padding: '0 28px',
-                fontSize: 16,
-                fontWeight: 600,
-                borderRadius: 10,
-              }}
-            >
-              Pedagojik Çerçeve & Metot
-            </Button>
-          </Space>
+        <div className="max-w-7xl mx-auto">
+          {/* Badge & Headline */}
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs font-semibold backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-sky-400 animate-pulse" />
+              <span>CENNA.live v2.0 • Yeni Nesil İlaç Tasarım & Klinik Kurtarma Laboratuvarı</span>
+            </div>
 
-          {/* Quick Metrics Bar */}
-          <div
-            style={{
-              marginTop: 48,
-              padding: '16px 24px',
-              backgroundColor: '#FFFFFF',
-              borderRadius: 12,
-              border: '1px solid #E2E8F0',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-around',
-              gap: 16,
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-            }}
-          >
-            <div>
-              <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                ~25 Dakika
-              </Text>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Hedef Günlük Çalışma Oturumu
-              </Text>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
+              Farmasötik Kimyayı <br />
+              <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+                Yaşamsal Simülasyonlarla
+              </span>{' '}
+              Pekiştirin.
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+              Statik slaytları unutun. PDF ders notlarından çıkarılan kavram grafikleri, 21 interaktif moleküler kurtarma görevi ve 3 kademeli Sokratik akıl yürütme iskelesiyle klinik yetkinliğinizi üst düzeye taşıyın.
+            </p>
+
+            {/* Hero CTAs */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+              {user ? (
+                <Button
+                  size="lg"
+                  onClick={() => navigate(activeRole === 'instructor' ? '/app/teach' : '/app/today')}
+                  className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold shadow-xl shadow-sky-500/25 px-8"
+                >
+                  <FlaskConical className="h-5 w-5 mr-2" />
+                  {activeRole === 'instructor' ? 'Eğitmen Çalışma Masasına Dön' : 'Klinik Laboratuvara Dön'}
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    size="lg"
+                    onClick={() => navigate('/auth/register')}
+                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold shadow-xl shadow-sky-500/25 px-7"
+                  >
+                    Hemen Başla (Ücretsiz Kayıt)
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    disabled={demoLoading}
+                    onClick={() => handleLaunchDemo('student')}
+                    className="border-slate-700 bg-slate-900/80 text-slate-200 hover:bg-slate-800 hover:border-slate-600 px-6"
+                  >
+                    <Zap className="h-4 w-4 mr-2 text-amber-400" />
+                    {demoLoading ? 'Demo Başlatılıyor...' : '1-Tıkla Canlı Demo'}
+                  </Button>
+                </>
+              )}
             </div>
-            <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
-            <div>
-              <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                1 · 3 · 7 · 14 Gün
-              </Text>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Aralıklı Tekrar Döngüsü
-              </Text>
-            </div>
-            <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
-            <div>
-              <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                3 Kademeli Merdiven
-              </Text>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                İlerleyici Sokratik İpuçları
-              </Text>
-            </div>
-            <div style={{ borderLeft: '1px solid #E2E8F0', height: 36 }} />
-            <div>
-              <Text strong style={{ fontSize: 18, color: '#0F172A', display: 'block' }}>
-                %100 Kaynağa Dayalı
-              </Text>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Eğitmen Onay Denetimi
-              </Text>
+          </div>
+
+          {/* Interactive Live Mini-Toolbox Preview Card */}
+          <div className="relative mt-16 max-w-4xl mx-auto">
+            <div className="relative rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl p-6 sm:p-8 backdrop-blur-xl">
+              <BorderBeam size={280} duration={14} colorFrom="#0EA5E9" colorTo="#10B981" />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    <h3 className="text-base font-bold text-white">
+                      Canlı İnteraktif Simülatör Önizlemesi
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Aşağıdaki fonksiyonel grupları değiştirerek molekülün LogP ve gastrik mukozal etkisini anında gözlemleyin.
+                  </p>
+                </div>
+                <Badge variant={telemetry.tagColor} className="self-start sm:self-auto font-mono text-[11px]">
+                  {telemetry.status}
+                </Badge>
+              </div>
+
+              {/* Functional Group Switcher */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('aspirin')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    selectedGroup === 'aspirin'
+                      ? 'border-sky-500 bg-sky-500/15 shadow-sm'
+                      : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="text-xs font-bold text-white">+ Asetil Kalkanı (-COCH₃)</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Ester bağı ile fenolü maskele (Aspirin)</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('ester')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    selectedGroup === 'ester'
+                      ? 'border-sky-500 bg-sky-500/15 shadow-sm'
+                      : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="text-xs font-bold text-white">+ Etil Ester Maskesi (-COOC₂H₅)</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Lipofilik absorbsiyonu artır</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('salicylate')}
+                  className={`p-3 rounded-xl border text-left transition-all ${
+                    selectedGroup === 'salicylate'
+                      ? 'border-rose-500 bg-rose-500/15 shadow-sm'
+                      : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="text-xs font-bold text-rose-300">Maskesiz Salisilat (-OH)</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Lokal asidik tahriş riski</div>
+                </button>
+              </div>
+
+              {/* Chemical SVG & Live Telemetry Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-slate-950/70 p-5 rounded-xl border border-slate-800/80">
+                {/* SVG Visualizer */}
+                <div className="flex flex-col items-center justify-center py-2">
+                  <svg className="w-48 h-36 overflow-visible" viewBox="0 0 200 160">
+                    {/* Benzene Ring */}
+                    <polygon
+                      points="100,45 135,65 135,105 100,125 65,105 65,65"
+                      fill="#0F172A"
+                      stroke="#38BDF8"
+                      strokeWidth="2.5"
+                    />
+                    <circle cx="100" cy="85" r="20" fill="none" stroke="#0284C7" strokeWidth="1.5" strokeDasharray="3 3" />
+
+                    {/* Functional group bonds */}
+                    <line x1="100" y1="45" x2="100" y2="15" stroke="#F59E0B" strokeWidth="2.5" />
+                    <text x="100" y="10" fill="#F59E0B" fontSize="11" fontWeight="bold" textAnchor="middle">
+                      -COOH (Karboksil)
+                    </text>
+
+                    <line x1="135" y1="65" x2="175" y2="50" stroke={selectedGroup === 'salicylate' ? '#F43F5E' : '#10B981'} strokeWidth="2.5" />
+                    <text x="180" y="52" fill={selectedGroup === 'salicylate' ? '#F43F5E' : '#10B981'} fontSize="11" fontWeight="bold" textAnchor="start">
+                      {selectedGroup === 'aspirin' ? '-O-COCH₃' : selectedGroup === 'ester' ? '-COOCH₂CH₃' : '-OH (Açık Fenol)'}
+                    </text>
+                  </svg>
+                  <div className="text-xs font-semibold text-slate-300 mt-2">{telemetry.name}</div>
+                </div>
+
+                {/* Telemetry HUD */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800">
+                    <span className="text-slate-400">Hesaplanan LogP:</span>
+                    <span className="font-mono font-bold text-white">{telemetry.logP}</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-slate-400">Gastrik Mukozal Güvenlik:</span>
+                      <span className={`font-mono font-bold ${telemetry.color}`}>%{telemetry.safety}</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 rounded-full ${
+                          telemetry.safety > 80 ? 'bg-emerald-500' : telemetry.safety > 50 ? 'bg-amber-500' : 'bg-rose-500'
+                        }`}
+                        style={{ width: `${telemetry.safety}%` }}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                    {telemetry.desc}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* The 5-Stage Learning Cycle */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 20px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <Tag color="cyan">Pedagojik Çerçeve</Tag>
-          <Title level={2} style={{ fontSize: 32, fontWeight: 800, marginTop: 12, color: '#0F172A' }}>
-            Kesintisiz Çalışma Döngüsü
-          </Title>
-          <Paragraph style={{ fontSize: 16, color: '#64748B', maxWidth: 640, margin: '0 auto' }}>
-            Derin kavramsal kavrayışı ve uzun vadeli kalıcılığı pekiştirmek için tasarlanmış bilimsel öğrenme modeli.
-          </Paragraph>
-        </div>
+      {/* 2. PEDAGOGICAL PIPELINE (ANIMATED BEAMS) */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80 bg-[#060B14]">
+        <div className="max-w-7xl mx-auto text-center space-y-4 mb-16">
+          <Badge variant="cyan" className="uppercase tracking-wider">
+            Bütünleşik Eğitim Metodolojisi
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+            Belgeden Kliniğe: 4 Kademeli Bilişsel İskele
+          </h2>
+          <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+            Bilginin ezberden çıkıp klinik refleks haline gelmesini sağlayan kesintisiz veri ve yapay zekâ akışı.
+          </p>
 
-        <Row gutter={[20, 20]}>
-          {steps.map((item) => (
-            <Col xs={24} sm={12} lg={4} key={item.step} style={{ flex: '1 1 200px' }}>
-              <Card
-                bordered
-                style={{
-                  height: '100%',
-                  borderRadius: 12,
-                  borderColor: '#E2E8F0',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-                bodyStyle={{ padding: 20 }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 16,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 10,
-                      backgroundColor: '#F1F5F9',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                  <Tag style={{ borderRadius: 12, fontWeight: 700, margin: 0 }}>
-                    Aşama {item.step}
-                  </Tag>
-                </div>
-                <Title level={4} style={{ margin: '0 0 8px 0', fontSize: 18, color: '#0F172A' }}>
-                  {item.title}
-                </Title>
-                <Text style={{ fontSize: 13, color: '#64748B', lineHeight: 1.5 }}>
-                  {item.desc}
-                </Text>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </section>
-
-      {/* Dual Value Proposition: Students & Instructors */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '64px 20px', borderTop: '1px solid #E2E8F0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <Row gutter={[40, 40]} align="middle">
-            <Col xs={24} md={12}>
-              <div style={{ paddingRight: 20 }}>
-                <Tag color="blue" style={{ marginBottom: 12 }}>Öğrenciler İçin</Tag>
-                <Title level={2} style={{ fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                  Bugün Neye Çalışmanız Gerektiğini Net Olarak Bilin
-                </Title>
-                <Paragraph style={{ fontSize: 15, color: '#475569', lineHeight: 1.7 }}>
-                  Artık nereden başlayacağınızı düşünerek vakit kaybetmeyin. Kişiselleştirilmiş <strong>Bugün</strong> panonuz,
-                  günü gelen aralıklı tekrarları hesaplar, eksik kaldığınız kavramları hedefler ve yüzeysel tanıma yerine
-                  gerçek kavrayış oluşturan kademeli ipuçlarıyla odaklı çalışma oturumları sunar.
-                </Paragraph>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Aktif Hatırlama:</strong> Anlık geri bildirim ve kaynak alıntıları içeren nitelikli sorular.
-                    </Text>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Sokratik İpucu Merdiveni:</strong> Cevap gösterilmeden önce yönlendirme, akıl yürütme ve uygulama ipuçları.
-                    </Text>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <CheckCircleOutlined style={{ color: '#059669', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Süreli Deneme Sınavları:</strong> Sunucu kontrollü süre takibi ve sınav sonrası ayrıntılı konu analizi.
-                    </Text>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card
-                bordered
-                style={{
-                  borderRadius: 16,
-                  borderColor: '#E2E8F0',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
-                  backgroundColor: '#F8FAFC',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text strong style={{ color: '#0F172A' }}>Aktif Kavram Kartı</Text>
-                  <Tag color="green">Kavrama: %72</Tag>
-                </div>
-                <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 8, border: '1px solid #E2E8F0', marginBottom: 12 }}>
-                  <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Klinik Farmakokinetik · Bölüm 4
-                  </Text>
-                  <Title level={4} style={{ margin: '4px 0 8px 0', fontSize: 17, color: '#0F172A' }}>
-                    Kreatinin Klerensi & Cockcroft-Gault Eşitliği
-                  </Title>
-                  <Text style={{ fontSize: 13, color: '#475569' }}>
-                    "Kadın hastalarda, ortalama kas kütlesinin daha düşük olması nedeniyle hesaplanan CrCl değeri 0.85 ile çarpılmalıdır."
-                  </Text>
-                  <div style={{ marginTop: 8, fontSize: 12, color: '#64748B' }}>
-                    Kaynak: <span style={{ textDecoration: 'underline' }}>Klinik_Farmakokinetik_El_Kitabi.pdf (Sayfa 42, Paragraf 3)</span>
-                  </div>
-                </div>
-                <Button block type="primary" onClick={handleStart} style={{ backgroundColor: '#2563EB', borderRadius: 8 }}>
-                  Aktif Hatırlama Sorularını Başlat
-                </Button>
-              </Card>
-            </Col>
-          </Row>
-
-          <div style={{ margin: '64px 0', borderTop: '1px solid #E2E8F0' }} />
-
-          <Row gutter={[40, 40]} align="middle">
-            <Col xs={24} md={12} order={2}>
-              <div style={{ paddingLeft: 20 }}>
-                <Tag color="purple" style={{ marginBottom: 12 }}>Eğitmenler İçin</Tag>
-                <Title level={2} style={{ fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
-                  Ders Materyallerinizi Güvenle Yönetin ve Denetleyin
-                </Title>
-                <Paragraph style={{ fontSize: 15, color: '#475569', lineHeight: 1.7 }}>
-                  Ders izlencelerini, sunum slaytlarını ve klinik notlarınızı yükleyin. CENNA.live belgelerinizden yapılandırılmış
-                  kavramları çıkarır ve yalnızca bu kaynaklara dayalı sorular üretir. <strong>İçerik İnceleme & Onay</strong> iş akışıyla,
-                  hiçbir yapay zekâ çıktısı eğitmen onayı olmadan öğrencilere ulaşmaz.
-                </Paragraph>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <FileSearchOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Otomatik Anlamsal Bölümleme:</strong> Üretilen her soru kaynak belgedeki doğrudan ilgili paragrafa bağlanır.
-                    </Text>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <LockOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Sıkı Onay Kapısı:</strong> Taslak içerikler incelenip onaylanana kadar <code>inceleme_bekliyor</code> durumunda tutulur.
-                    </Text>
-                  </div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <ClockCircleOutlined style={{ color: '#7C3AED', fontSize: 18, marginTop: 2 }} />
-                    <Text style={{ fontSize: 14, color: '#334155' }}>
-                      <strong>Sınıf Analitiği:</strong> Sınavlar öncesinde öğrencilerin en çok zorlandığı kavramları ve hata oranlarını tespit edin.
-                    </Text>
-                  </div>
-                </div>
-              </div>
-            </Col>
-            <Col xs={24} md={12} order={1}>
-              <Card
-                bordered
-                style={{
-                  borderRadius: 16,
-                  borderColor: '#E2E8F0',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
-                  backgroundColor: '#F8FAFC',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <Text strong style={{ color: '#0F172A' }}>Eğitmen İçerik Onay Kapısı</Text>
-                  <Tag color="orange">Durum: İnceleme Bekliyor</Tag>
-                </div>
-                <div style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 8, border: '1px solid #E2E8F0', marginBottom: 12 }}>
-                  <Text style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-                    Soru: 65 yaşında bir kadın hasta için (60 kg, Serum Cr 1.2 mg/dL) CrCl değerini hesaplayınız.
-                  </Text>
-                  <div style={{ marginTop: 8, fontSize: 12, color: '#64748B' }}>
-                    Kaynak Atfı: <Text code>Biyofarmasotik_Ders03.pdf (Bölüm #14)</Text>
-                  </div>
-                </div>
-                <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-                  <Button size="small" danger>Reddet</Button>
-                  <Button size="small">Düzenle</Button>
-                  <Button size="small" type="primary" style={{ backgroundColor: '#059669' }}>
-                    Onayla ve Yayınla
-                  </Button>
-                </Space>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </section>
-
-      {/* Call to action */}
-      <section style={{ backgroundColor: '#1E293B', color: '#FFFFFF', padding: '60px 20px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <Title level={2} style={{ color: '#FFFFFF', fontWeight: 800 }}>
-            Kanıta Dayalı Öğrenmeye Hazır mısınız?
-          </Title>
-          <Paragraph style={{ color: '#94A3B8', fontSize: 16, marginBottom: 28 }}>
-            CENNA.live pilot uygulamasına katılın ve yüksek akademik başarı için tasarlanmış kaynak odaklı, aktif pratik deneyimini yaşayın.
-          </Paragraph>
-          <Button
-            type="primary"
-            size="large"
-            onClick={handleStart}
-            style={{
-              height: 48,
-              padding: '0 32px',
-              fontSize: 16,
-              fontWeight: 600,
-              borderRadius: 8,
-              backgroundColor: '#2563EB',
-            }}
+          <div
+            ref={containerRef}
+            className="relative flex flex-col md:flex-row items-center justify-between gap-6 p-8 max-w-5xl mx-auto rounded-2xl bg-slate-900/40 border border-slate-800/80 mt-12"
           >
-            CENNA.live'a Başlayın
-          </Button>
+            {/* Stage 1 */}
+            <div
+              ref={pdfRef}
+              className="z-10 flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-800 w-full md:w-52 text-center"
+            >
+              <div className="h-12 w-12 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 mb-3">
+                <FileText className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-white">1. Yetkili Ders Notu</div>
+              <div className="text-[11px] text-slate-400 mt-1">PDF / DOCX doğrulanmış kaynaklar</div>
+            </div>
+
+            {/* Stage 2 */}
+            <div
+              ref={aiRef}
+              className="z-10 flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-800 w-full md:w-52 text-center"
+            >
+              <div className="h-12 w-12 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-3">
+                <Brain className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-white">2. AI Kavram Grafiği</div>
+              <div className="text-[11px] text-slate-400 mt-1">Önkoşul ilişkileri ve kavram haritası</div>
+            </div>
+
+            {/* Stage 3 */}
+            <div
+              ref={hintRef}
+              className="z-10 flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-800 w-full md:w-52 text-center"
+            >
+              <div className="h-12 w-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
+                <Lightbulb className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-white">3. Sokratik İpucu İskelesi</div>
+              <div className="text-[11px] text-slate-400 mt-1">3 kademeli zihinsel yönlendirme</div>
+            </div>
+
+            {/* Stage 4 */}
+            <div
+              ref={labRef}
+              className="z-10 flex flex-col items-center p-4 rounded-xl bg-slate-900 border border-slate-800 w-full md:w-52 text-center"
+            >
+              <div className="h-12 w-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3">
+                <HeartPulse className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-white">4. Moleküler Kurtarma</div>
+              <div className="text-[11px] text-slate-400 mt-1">Canlı hasta telemetrisi kurtarma</div>
+            </div>
+
+            {/* Animated Beams between stages */}
+            <AnimatedBeam containerRef={containerRef} fromRef={pdfRef} toRef={aiRef} />
+            <AnimatedBeam containerRef={containerRef} fromRef={aiRef} toRef={hintRef} />
+            <AnimatedBeam containerRef={containerRef} fromRef={hintRef} toRef={labRef} />
+          </div>
+        </div>
+      </section>
+
+      {/* 3. PLATFORM METRICS STRIP WITH NUMBER TICKER */}
+      <section className="py-14 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80 bg-slate-950/70">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-extrabold text-sky-400">
+              <NumberTicker value={21} />
+            </div>
+            <div className="text-xs sm:text-sm font-semibold text-slate-300">Klinik Kurtarma Görevi</div>
+            <div className="text-[11px] text-slate-500">Moleküler tasarım simülatörleri</div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400">
+              <NumberTicker value={412} />
+              <span>+</span>
+            </div>
+            <div className="text-xs sm:text-sm font-semibold text-slate-300">Aktif Hatırlama Sorusu</div>
+            <div className="text-[11px] text-slate-500">Sokratik ipucu basamaklı</div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-extrabold text-amber-400">
+              <span>%</span>
+              <NumberTicker value={94} />
+            </div>
+            <div className="text-xs sm:text-sm font-semibold text-slate-300">Uzun Süreli Hafıza Retansiyonu</div>
+            <div className="text-[11px] text-slate-500">FSRS aralıklı tekrar optimizasyonu</div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-extrabold text-purple-400">
+              <span>&lt;</span>
+              <NumberTicker value={45} />
+              <span>ms</span>
+            </div>
+            <div className="text-xs sm:text-sm font-semibold text-slate-300">Edge Yanıt Süresi</div>
+            <div className="text-[11px] text-slate-500">Cloudflare Pages & Workers altyapısı</div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. BENTO GRID FEATURES */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <Badge variant="purple" className="uppercase tracking-wider">
+              Yüksek Çözünürlüklü Özellikler
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+              Klinik Karar Verme Becerinizi Şekillendirin
+            </h2>
+            <p className="text-sm text-slate-400">
+              Hem öğrenciler hem de fakülte üyeleri için tasarlanmış bütünleşik araç seti.
+            </p>
+          </div>
+
+          <BentoGrid>
+            <BentoCard
+              name="21 İnteraktif Klinik Kurtarma Görevi"
+              description="Aspirin ester montajından doksorubisin kardiyotoksisite kalkanına kadar 21 gerçek vaka simülasyonu. Molekülü sentezleyin, hasta EKG ve hemodinamiğini kurtarın."
+              Icon={Atom}
+              badge="MED-CHEM HUD"
+              cta="Görevleri İncele"
+              href="/features"
+            />
+
+            <BentoCard
+              name="3 Kademeli Sokratik İpucu İskelesi"
+              description="Sistem cevabı doğrudan sunmaz. 1. Aşama Yönlendirme, 2. Aşama Farmakofor Hatırlatması ve 3. Aşama Uygulama Analizi ile öğrencinin kendi akıl yürütmesini sağlar."
+              Icon={Lightbulb}
+              badge="SOCRATIC FSM"
+              cta="Pedagojiyi Gör"
+              href="/how-it-works"
+            />
+
+            <BentoCard
+              name="Cockcroft-Gault & CrCl Hesaplayıcı"
+              description="Böbrek yetmezliği olan hastalarda aminoglikozid (Gentamisin) ve Teofilin dozlamasını hastanın serum kreatininine göre hassasça simüle edin."
+              Icon={Activity}
+              badge="PK/PD ENGINE"
+              cta="Klinik Motoru Gör"
+              href="/features"
+            />
+
+            <BentoCard
+              name="FSRS Aralıklı Tekrar Algoritması"
+              description="Unutma eğrisini yenen 1, 3, 7 ve 14 günlük optimal bellek takvimi. Hangi kavramın ne zaman tekrarlanacağını kişiselleştirilmiş FSRS skorları yönetir."
+              Icon={Clock}
+              badge="SPACED REVIEW"
+              cta="Algoritmayı İncele"
+              href="/features"
+            />
+
+            <BentoCard
+              name="Fakülte İçerik & Sınıf Yönetimi"
+              description="Öğretim üyeleri kendi ders notlarını (PDF/DOCX) yükleyebilir, tek tıkla yapay zekâ kavram grafiğini onaylayabilir ve sınıf başarı dağılımını canlı takip edebilir."
+              Icon={Layers}
+              badge="FACULTY HUB"
+              cta="Eğitmen Özellikleri"
+              href="/features"
+            />
+
+            <BentoCard
+              name="Sıfır Halüsinasyon & PostgreSQL RLS"
+              description="Tüm sorular kaynak ders notunun belirli sayfa ve paragraflarına atıfla kilitlenir. Satır düzeyi veri güvenliği (RLS) ile öğrenci verileri tam koruma altındadır."
+              Icon={ShieldCheck}
+              badge="VERIFIED TRUTH"
+              cta="Güvenlik Detayları"
+              href="/privacy"
+            />
+          </BentoGrid>
+        </div>
+      </section>
+
+      {/* 5. ONBOARDING ROLE BRIDGE & FINAL CALL TO ACTION */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#060B14] to-[#0B1528]">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <Badge variant="cyan" className="uppercase tracking-wider">
+            Hemen Başlayın
+          </Badge>
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            Klinik Farmakoloji Yetkinliğinizi <br />
+            Bugün Üst Seviyeye Taşıyın.
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            İster sınavlara hazırlanan bir eczacılık/tıp öğrencisi olun, ister müfredatını güçlendirmek isteyen bir öğretim üyesi.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto pt-4">
+            {/* Student Card */}
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 hover:border-sky-500/50 transition-all">
+              <div className="h-10 w-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Öğrenci & Stajyer Girişi</h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  21 Kurtarma Görevi, Sokratik İpuçları ve FSRS Aralıklı Tekrar kütüphanesi.
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate('/auth/register')}
+                className="w-full bg-sky-500 hover:bg-sky-400 text-white font-semibold text-xs"
+              >
+                Öğrenci Olarak Kaydol
+                <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+              </Button>
+            </div>
+
+            {/* Instructor Card */}
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 hover:border-emerald-500/50 transition-all">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <FlaskConical className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Fakülte & Eğitmen Girişi</h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Ders notu işleme, sınıf oluşturma ve öğrenci kavram yanılgı analitiği.
+                </p>
+              </div>
+              <Button
+                variant="emerald"
+                onClick={() => navigate('/auth/register')}
+                className="w-full font-semibold text-xs"
+              >
+                Eğitmen Olarak Kaydol
+                <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -150,15 +150,15 @@ export const ContentReviewWorkspace: React.FC = () => {
             <SafetyCertificateOutlined /> Halüsinasyon Önleyici İnceleme Geçidi
           </Tag>
         </div>
-        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
           İçerik İnceleme ve Yayımlama Alanı
         </Title>
-        <Text style={{ fontSize: 15, color: '#64748B' }}>
+        <Text style={{ fontSize: 15, color: '#94A3B8' }}>
           Yapay zekâ tarafından çıkarılan kavram ve aktif hatırlama sorularını öğrencilere sunmadan önce kaynak belgelerle karşılaştırarak doğrulayın.
         </Text>
       </div>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0', marginBottom: 24 }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A', marginBottom: 24 }}>
         <Tabs
           activeKey={activeTab}
           onChange={(k) => setActiveTab(k as any)}
@@ -174,13 +174,13 @@ export const ContentReviewWorkspace: React.FC = () => {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <Spin size="large" />
-          <Paragraph style={{ marginTop: 16, color: '#64748B' }}>İnceleme kuyruğu yükleniyor...</Paragraph>
+          <Paragraph style={{ marginTop: 16, color: '#94A3B8' }}>İnceleme kuyruğu yükleniyor...</Paragraph>
         </div>
       ) : totalCount === 0 ? (
-        <Card bordered style={{ borderRadius: 16, textAlign: 'center', padding: '48px 20px' }}>
-          <CheckCircleOutlined style={{ fontSize: 44, color: '#059669', marginBottom: 12 }} />
-          <Title level={4} style={{ color: '#0F172A', margin: 0 }}>İnceleme Kuyruğu Boş</Title>
-          <Paragraph style={{ color: '#64748B', marginTop: 4 }}>
+        <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A', textAlign: 'center', padding: '48px 20px' }}>
+          <CheckCircleOutlined style={{ fontSize: 44, color: '#10B981', marginBottom: 12 }} />
+          <Title level={4} style={{ color: '#F8FAFC', margin: 0 }}>İnceleme Kuyruğu Boş</Title>
+          <Paragraph style={{ color: '#94A3B8', marginTop: 4 }}>
             Şu anda <strong>{tabLabels[activeTab] || activeTab}</strong> aşamasında incelenecek bir içerik bulunmuyor.
           </Paragraph>
         </Card>
@@ -189,7 +189,7 @@ export const ContentReviewWorkspace: React.FC = () => {
           {/* Questions Section */}
           {reviewData.questions && reviewData.questions.length > 0 && (
             <div>
-              <Title level={4} style={{ color: '#0F172A', marginBottom: 16 }}>
+              <Title level={4} style={{ color: '#F8FAFC', marginBottom: 16 }}>
                 Aktif Hatırlama Soruları ({reviewData.questions.length})
               </Title>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -199,8 +199,9 @@ export const ContentReviewWorkspace: React.FC = () => {
                     bordered
                     style={{
                       borderRadius: 14,
-                      borderColor: '#E2E8F0',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                      borderColor: '#1E293B',
+                      backgroundColor: '#0F172A',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
                     }}
                     bodyStyle={{ padding: 24 }}
                   >
@@ -210,31 +211,31 @@ export const ContentReviewWorkspace: React.FC = () => {
                         <div
                           style={{
                             height: '100%',
-                            backgroundColor: '#F8FAFC',
+                            backgroundColor: '#0B132B',
                             padding: 16,
                             borderRadius: 10,
-                            border: '1px solid #E2E8F0',
+                            border: '1px solid #1E293B',
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                            <FileTextOutlined style={{ color: '#2563EB' }} />
-                            <Text strong style={{ fontSize: 13, color: '#1E293B' }}>
+                            <FileTextOutlined style={{ color: '#38BDF8' }} />
+                            <Text strong style={{ fontSize: 13, color: '#F8FAFC' }}>
                               Kaynak Bağı (Grounded Provenance)
                             </Text>
                           </div>
-                          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
-                            Kaynak Belge: <strong>{q.sources?.[0]?.resource_title || 'Klinik Farmakokinetik Kaynağı'}</strong>
+                          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8, color: '#94A3B8' }}>
+                            Kaynak Belge: <strong style={{ color: '#E2E8F0' }}>{q.sources?.[0]?.resource_title || 'Klinik Farmakokinetik Kaynağı'}</strong>
                             <br />
                             Konum: Sayfa {q.sources?.[0]?.page_number || '1'} (Paragraf {q.sources?.[0]?.paragraph_index || '1'})
                           </Text>
                           <div
                             style={{
-                              backgroundColor: '#FFFFFF',
+                              backgroundColor: '#070D1E',
                               padding: 12,
                               borderRadius: 6,
-                              border: '1px solid #E2E8F0',
+                              border: '1px solid #1E293B',
                               fontSize: 13,
-                              color: '#334155',
+                              color: '#CBD5E1',
                               lineHeight: 1.6,
                               fontStyle: 'italic',
                               maxHeight: 220,
@@ -258,7 +259,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                           </Tag>
                         </div>
 
-                        <Title level={5} style={{ color: '#0F172A', margin: '0 0 12px 0' }}>
+                        <Title level={5} style={{ color: '#F8FAFC', margin: '0 0 12px 0' }}>
                           {q.stem}
                         </Title>
 
@@ -271,12 +272,13 @@ export const ContentReviewWorkspace: React.FC = () => {
                                 style={{
                                   padding: '8px 12px',
                                   borderRadius: 6,
-                                  border: opt.key === q.correct_answer ? '1.5px solid #10B981' : '1px solid #E2E8F0',
-                                  backgroundColor: opt.key === q.correct_answer ? '#ECFDF5' : '#FFFFFF',
+                                  border: opt.key === q.correct_answer ? '1.5px solid #10B981' : '1px solid #1E293B',
+                                  backgroundColor: opt.key === q.correct_answer ? 'rgba(16, 185, 129, 0.15)' : '#070D1E',
+                                  color: '#F8FAFC',
                                   fontSize: 13,
                                 }}
                               >
-                                <strong>{opt.key}.</strong> {opt.text}
+                                <strong style={{ color: opt.key === q.correct_answer ? '#34D399' : '#38BDF8' }}>{opt.key}.</strong> {opt.text}
                                 {opt.key === q.correct_answer && (
                                   <Tag color="green" style={{ marginLeft: 8, fontSize: 10 }}>DOĞRU CEVAP</Tag>
                                 )}
@@ -285,11 +287,11 @@ export const ContentReviewWorkspace: React.FC = () => {
                           </div>
                         )}
 
-                        <div style={{ backgroundColor: '#F1F5F9', padding: 12, borderRadius: 8, marginBottom: 16 }}>
-                          <Text strong style={{ fontSize: 12, color: '#475569', display: 'block', marginBottom: 4 }}>
+                        <div style={{ backgroundColor: '#0B132B', padding: 12, borderRadius: 8, border: '1px solid #1E293B', marginBottom: 16 }}>
+                          <Text strong style={{ fontSize: 12, color: '#38BDF8', display: 'block', marginBottom: 4 }}>
                             Akademik Açıklama ve Gerekçe:
                           </Text>
-                          <Text style={{ fontSize: 13, color: '#334155' }}>
+                          <Text style={{ fontSize: 13, color: '#CBD5E1' }}>
                             {q.explanation}
                           </Text>
                         </div>
@@ -347,16 +349,16 @@ export const ContentReviewWorkspace: React.FC = () => {
           {/* Concepts Section */}
           {reviewData.concepts && reviewData.concepts.length > 0 && (
             <div style={{ marginTop: 16 }}>
-              <Title level={4} style={{ color: '#0F172A', marginBottom: 16 }}>
+              <Title level={4} style={{ color: '#F8FAFC', marginBottom: 16 }}>
                 Çıkarılan Akademik Kavramlar ({reviewData.concepts.length})
               </Title>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {reviewData.concepts.map((c) => (
-                  <Card key={c.id} bordered style={{ borderRadius: 12, borderColor: '#E2E8F0' }}>
+                  <Card key={c.id} bordered style={{ borderRadius: 12, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                       <div>
                         <Tag color="cyan">KAVRAM</Tag>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginLeft: 8 }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC', marginLeft: 8 }}>
                           {c.name}
                         </span>
                       </div>
@@ -364,7 +366,7 @@ export const ContentReviewWorkspace: React.FC = () => {
                         {c.status === 'published' ? 'Yayında' : 'İnceleme Bekliyor'}
                       </Tag>
                     </div>
-                    <Paragraph style={{ color: '#475569', fontSize: 14 }}>
+                    <Paragraph style={{ color: '#94A3B8', fontSize: 14 }}>
                       {c.description}
                     </Paragraph>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>

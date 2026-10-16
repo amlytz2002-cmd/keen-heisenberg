@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Result, Button, Spin, Typography } from 'antd';
-import { TeamOutlined } from '@ant-design/icons';
+import { Users, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { useRouter } from '../../context/RouterContext';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
-
-const { Title, Paragraph } = Typography;
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Skeleton } from '../../components/ui/skeleton';
 
 export const InviteRedeemView: React.FC = () => {
   const { params, navigate } = useRouter();
@@ -48,81 +48,126 @@ export const InviteRedeemView: React.FC = () => {
 
   if (authLoading || loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-        <Spin size="large" />
-        <Paragraph style={{ marginTop: 16, color: '#64748B' }}>Sınıf daveti doğrulanıyor...</Paragraph>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <Skeleton className="h-14 w-14 rounded-2xl bg-slate-800" />
+        <Skeleton className="h-6 w-48 bg-slate-800" />
+        <p className="text-xs text-slate-400">Sınıf davetiyesi doğrulanıyor...</p>
       </div>
     );
   }
 
   if (!user) {
+    const returnTarget = `/invite/${token}`;
     return (
-      <div style={{ maxWidth: 540, margin: '60px auto', padding: '0 20px' }}>
-        <Card bordered style={{ borderRadius: 16, textAlign: 'center', borderColor: '#E2E8F0' }}>
-          <TeamOutlined style={{ fontSize: 48, color: '#2563EB', marginBottom: 16 }} />
-          <Title level={3}>Sınıf Daveti</Title>
-          <Paragraph style={{ color: '#64748B' }}>
-            CENNA.live üzerinde bir akademik sınıfa katılmanız için bir davet aldınız. Katılmak için lütfen giriş yapın veya yeni bir hesap oluşturun.
-          </Paragraph>
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => navigate('/auth/login')}
-            style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 44, padding: '0 28px' }}
-          >
-            Giriş Yap ve Daveti Kabul Et
-          </Button>
-        </Card>
+      <div className="min-h-[70vh] flex items-center justify-center p-4 sm:p-6 bg-[#060B14]">
+        <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 p-8 shadow-2xl text-center space-y-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400">
+            <Users className="h-7 w-7" />
+          </div>
+
+          <div className="space-y-2">
+            <Badge variant="cyan" className="uppercase text-[10px]">
+              Akademik Sınıf Davetiyesi
+            </Badge>
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              Sanal Sınıfa Katılın
+            </h2>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              CENNA.live üzerinde öğretim üyeniz tarafından oluşturulmuş bir farmakoloji sınıfına davet edildiniz. Daveti onaylayıp sınıfa kaydolmak için giriş yapınız.
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Button
+              onClick={() => navigate(`/auth/login?redirect=${encodeURIComponent(returnTarget)}`)}
+              className="w-full bg-sky-500 hover:bg-sky-400 text-white font-semibold text-xs h-11"
+            >
+              Giriş Yap ve Daveti Kabul Et
+              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/auth/register?redirect=${encodeURIComponent(returnTarget)}`)}
+              className="w-full text-xs h-10 border-slate-700"
+            >
+              Yeni Hesap Oluştur
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (status === 'success') {
     return (
-      <div style={{ maxWidth: 540, margin: '60px auto', padding: '0 20px' }}>
-        <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
-          <Result
-            status="success"
-            title="Sınıfa Başarıyla Kaydoldunuz!"
-            subTitle={`${classroomData?.name || 'Sınıfın'} aktif bir üyesi oldunuz. Atanan derslerinizde aktif hatırlama çalışmalarına hemen başlayabilirsiniz.`}
-            extra={[
-              <Button
-                type="primary"
-                key="today"
-                onClick={() => navigate('/app/today')}
-                style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
-              >
-                Bugünün Çalışma Paneline Git
-              </Button>,
-              <Button key="classrooms" onClick={() => navigate('/app/classrooms')}>
-                Sınıflarımı Görüntüle
-              </Button>,
-            ]}
-          />
-        </Card>
+      <div className="min-h-[70vh] flex items-center justify-center p-4 sm:p-6 bg-[#060B14]">
+        <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 p-8 shadow-2xl text-center space-y-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+            <CheckCircle2 className="h-7 w-7" />
+          </div>
+
+          <div className="space-y-2">
+            <Badge variant="success" className="uppercase text-[10px]">
+              Kayıt Başarılı
+            </Badge>
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              Sınıfa Başarıyla Katıldınız!
+            </h2>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              <strong className="text-slate-200">{classroomData?.name || 'Klinik Farmakoloji Sınıfı'}</strong> aktif üyesi oldunuz. Atanan görevlere ve müfredata hemen başlayabilirsiniz.
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Button
+              onClick={() => navigate('/app/today')}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs h-11"
+            >
+              Bugünün Çalışma Masasına Git
+              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/app/classrooms')}
+              className="w-full text-xs h-10 border-slate-700"
+            >
+              Sınıflarımı Görüntüle
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 540, margin: '60px auto', padding: '0 20px' }}>
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
-        <Result
-          status="error"
-          title="Davet Kodu Kullanılamadı"
-          subTitle={errorMessage || 'Bu davet bağlantısının süresi dolmuş, kullanım sınırına ulaşılmış veya bağlantı geçersiz olabilir.'}
-          extra={[
-            <Button
-              type="primary"
-              key="classrooms"
-              onClick={() => navigate('/app/classrooms')}
-              style={{ backgroundColor: '#2563EB', borderRadius: 8 }}
-            >
-              Sınıflarım
-            </Button>,
-          ]}
-        />
-      </Card>
+    <div className="min-h-[70vh] flex items-center justify-center p-4 sm:p-6 bg-[#060B14]">
+      <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 p-8 shadow-2xl text-center space-y-6">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400">
+          <AlertCircle className="h-7 w-7" />
+        </div>
+
+        <div className="space-y-2">
+          <Badge variant="destructive" className="uppercase text-[10px]">
+            Hata
+          </Badge>
+          <h2 className="text-xl font-bold text-white tracking-tight">
+            Davet Kodu Kullanılamadı
+          </h2>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            {errorMessage || 'Bu davet bağlantısının süresi dolmuş, kullanım sınırına ulaşılmış veya bağlantı geçersiz olabilir.'}
+          </p>
+        </div>
+
+        <div className="pt-2">
+          <Button
+            onClick={() => navigate('/app/classrooms')}
+            className="w-full bg-slate-800 text-white font-semibold text-xs h-10 hover:bg-slate-700 border border-slate-700"
+          >
+            Sınıflarıma Dön
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

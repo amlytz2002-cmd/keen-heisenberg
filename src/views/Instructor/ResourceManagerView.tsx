@@ -148,13 +148,13 @@ export const ResourceManagerView: React.FC = () => {
       render: (_: any, r: any) => (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FileTextOutlined style={{ color: '#2563EB' }} />
-            <Text strong style={{ fontSize: 15, color: '#0F172A' }}>
+            <FileTextOutlined style={{ color: '#38BDF8' }} />
+            <Text strong style={{ fontSize: 15, color: '#F8FAFC' }}>
               {r.title}
             </Text>
             <Tag style={{ textTransform: 'uppercase', fontSize: 11 }}>{r.file_type || 'TXT'}</Tag>
           </div>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
             Ders: {r.course?.title || 'Atanmamış'}
           </Text>
         </div>
@@ -242,10 +242,10 @@ export const ResourceManagerView: React.FC = () => {
     <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 16px 64px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#F8FAFC' }}>
             Ders Belgeleri ve Semantik Parçalama
           </Title>
-          <Text style={{ fontSize: 15, color: '#64748B' }}>
+          <Text style={{ fontSize: 15, color: '#94A3B8' }}>
             Yetkili ders materyallerini yükleyin, paragraf kaynak bağıyla semantik parçalara ayırın ve soru taslakları üretin.
           </Text>
         </div>
@@ -253,13 +253,13 @@ export const ResourceManagerView: React.FC = () => {
           type="primary"
           icon={<UploadOutlined />}
           onClick={() => setUploadModalOpen(true)}
-          style={{ backgroundColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
+          style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', borderRadius: 8, height: 40, fontWeight: 600 }}
         >
           Yeni Belge Ekle
         </Button>
       </div>
 
-      <Card bordered style={{ borderRadius: 16, borderColor: '#E2E8F0' }}>
+      <Card bordered style={{ borderRadius: 16, borderColor: '#1E293B', backgroundColor: '#0F172A' }}>
         <Table
           dataSource={resources}
           columns={columns}
@@ -341,15 +341,15 @@ export const ResourceManagerView: React.FC = () => {
                   key={chunk.id || idx}
                   size="small"
                   bordered
-                  style={{ borderRadius: 8, borderColor: '#E2E8F0', backgroundColor: '#F8FAFC' }}
+                  style={{ borderRadius: 8, borderColor: '#1E293B', backgroundColor: '#0B132B' }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                     <Tag color="blue">Parça #{chunk.chunk_index || idx + 1}</Tag>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
+                    <Text type="secondary" style={{ fontSize: 12, color: '#94A3B8' }}>
                       Sayfa {chunk.page_number || 1} · {chunk.token_count || 120} belirteç
                     </Text>
                   </div>
-                  <Paragraph style={{ margin: 0, fontSize: 13, color: '#334155' }}>
+                  <Paragraph style={{ margin: 0, fontSize: 13, color: '#CBD5E1' }}>
                     {chunk.content}
                   </Paragraph>
                 </Card>
