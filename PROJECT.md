@@ -7,7 +7,7 @@ CENNA.live is transforming its Medicinal Chemistry curriculum into an active, Br
 - **Interactive Sandbox Layer**: Custom SVG/React widgets (`MolecularToolbox`, `EnzymeCleavageSimulator`, `ReceptorPocketFit`, `PatientVitalsMonitor`) dispatched via `WidgetRenderer.tsx`.
 - **Data & Gamification**: Zero-latency typed mission dataset (`src/data/courses/medicinalChemistryMissions.ts`), dual persistence via `MicrolearningContext.tsx` (synchronous `localStorage` + asynchronous Supabase `user_lesson_progress` / `user_gamification`).
 - **Testing & Quality Assurance**: Vitest v3 with 368 existing baseline tests + dedicated unit test suite `tests/medicinal_chemistry_missions.test.ts` (53 tests) testing all 21 mission contracts, interactions, and scoring rules (Total: 421 tests passed).
-- **Production Deployment**: Cloudflare Pages (`cennalive-pilot`) configured via `wrangler.toml`.
+- **Production Deployment**: Cloudflare Pages (`pharmiq-app` serving `cenna.live`) configured via `wrangler.toml`.
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source |
